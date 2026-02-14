@@ -1,15 +1,15 @@
 #ifndef NODOJUGADOR_H
 #define NODOJUGADOR_H
-#include <QString>
+#include "jugador.h"
 class NodoJugador
 {
 public:
 
     NodoJugador* siguiente;
     NodoJugador* anterior;
-    QString nombreJugador;
+    Jugador jugador;
     NodoJugador();
-    NodoJugador(QString nombre);
+    NodoJugador(Jugador jugador);
     ~NodoJugador();
 
 };

@@ -1,11 +1,10 @@
 #include "jugador.h"
-#include <QString>
 Jugador::Jugador() {}
 
-QString Jugador::getNombreJugador(){
+std::string Jugador::getNombreJugador(){
     return nombreJugador;
 }
-void Jugador::setNombreJugador(QString nombre){
+void Jugador::setNombreJugador(std::string nombre){
     nombreJugador = nombre;
 }
 

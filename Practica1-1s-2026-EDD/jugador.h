@@ -1,18 +1,17 @@
 #ifndef JUGADOR_H
 #define JUGADOR_H
-#include <QString>
-
+#include <string>
 class Jugador
 {
 public:
     Jugador();
-    void setNombreJugador(QString nombre);
-    QString getNombreJugador();
+    void setNombreJugador(std::string nombre);
+    std::string getNombreJugador();
 
 
 private:
-    QString nombreJugador;
-
+    std::string nombreJugador;
+    bool dijoUno;
 
 };
 

@@ -3,8 +3,8 @@
 
 ListaJugadores::ListaJugadores(): jugadorActual(nullptr), sentidoHorario(true){}
 
-void ListaJugadores::agregarJugador(QString nombre) {
-    NodoJugador* nuevo = new NodoJugador(nombre);
+void ListaJugadores::agregarJugador(Jugador jugador) {
+    NodoJugador* nuevo = new NodoJugador(jugador);
 
     if (!jugadorActual) {
 

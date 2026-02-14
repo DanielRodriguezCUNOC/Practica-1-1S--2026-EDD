@@ -1,13 +1,12 @@
 #ifndef LISTAJUGADORES_H
 #define LISTAJUGADORES_H
 #include "nodojugador.h"
-#include <QString>
 
 class ListaJugadores
 {
 public:
     ListaJugadores();
-    void agregarJugador(QString nombre);
+    void agregarJugador(Jugador jugador);
     void siguienteTurno();
     void invertirDireccion();
     NodoJugador* jugadorActual;
