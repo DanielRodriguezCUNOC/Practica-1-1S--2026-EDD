@@ -1,0 +1,22 @@
+# ninja log v6
+10874	39615	1771094391365985755	CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp.o	8a25456cc1f23f44
+2997	10652	1771094383489000421	CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/mocs_compilation.cpp.o	e214aedd77e5898e
+10655	14435	1771094391147986161	CMakeFiles/Practica1-1s-2026-EDD.dir/listajugadores.cpp.o	e580e1f16dc9b936
+1062	2997	1771094383448000498	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp	faff0343d71e3e5d
+1062	2997	1771094383448000498	Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp	faff0343d71e3e5d
+2997	10655	1771094383490399202	CMakeFiles/Practica1-1s-2026-EDD.dir/main.cpp.o	4b6c0e1bb9227c7a
+39615	40135	1771094420106932241	Practica1-1s-2026-EDD	23a775750886e7ec
+3000	10818	1771094383493115541	CMakeFiles/Practica1-1s-2026-EDD.dir/pantallajuego.cpp.o	4cc2708aa7ca63e4
+7	1062	1771094381547004037	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/timestamp	8773386a6ce98989
+2999	10810	1771094383492019241	CMakeFiles/Practica1-1s-2026-EDD.dir/ayuda.cpp.o	78b27aa9c296a20b
+2998	10060	1771094383491421053	CMakeFiles/Practica1-1s-2026-EDD.dir/configuraciones.cpp.o	4d6babfdadad4fae
+10061	16896	1771094390552987269	CMakeFiles/Practica1-1s-2026-EDD.dir/botonanimado.cpp.o	74741635877a146
+2998	11067	1771094383490952602	CMakeFiles/Practica1-1s-2026-EDD.dir/mainwindow.cpp.o	18c871ba0c352a39
+10812	16697	1771094391303985870	CMakeFiles/Practica1-1s-2026-EDD.dir/cartaui.cpp.o	d2a19a9faff48209
+10652	11661	1771094391143986168	CMakeFiles/Practica1-1s-2026-EDD.dir/nodojugador.cpp.o	eae6747196b02458
+7	1062	1771094381547004037	Practica1-1s-2026-EDD_autogen/timestamp	8773386a6ce98989
+10818	10874	1771094391309985859	CMakeFiles/Practica1-1s-2026-EDD.dir/carta.cpp.o	9cb5ab8eebea4ffa
+26	36	1771094365290034310	clean	13212c72f0a13d7
+9	26	1771094365273034342	CMakeFiles/clean.additional	459b51ed8cb08a8f
+7	1062	1771094381547004037	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/mocs_compilation.cpp	8773386a6ce98989
+7	1062	1771094381547004037	Practica1-1s-2026-EDD_autogen/mocs_compilation.cpp	8773386a6ce98989

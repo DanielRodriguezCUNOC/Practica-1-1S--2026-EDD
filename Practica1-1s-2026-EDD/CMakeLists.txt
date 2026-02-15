@@ -21,9 +21,15 @@ qt_add_executable(Practica1-1s-2026-EDD
     botonanimado.h botonanimado.cpp
 
     nodojugador.h nodojugador.cpp
-    listajugadores.h listajugadores.cpp
+
     Resources.qrc
     cartaui.h cartaui.cpp
+    carta.h carta.cpp
+    carta.cpp
+    nodo.h nodo.cpp
+    listagenerica.h listagenerica.cpp
+
+
 )
 
 target_include_directories(Practica1-1s-2026-EDD PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
