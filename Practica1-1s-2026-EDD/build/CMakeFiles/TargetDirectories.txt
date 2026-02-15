@@ -1,0 +1,9 @@
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/Practica1-1s-2026-EDD.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/edit_cache.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/rebuild_cache.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/list_install_components.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/install.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/install/local.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/install/strip.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/Practica1-1s-2026-EDD_autogen_timestamp_deps.dir
+/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/CMakeFiles/Practica1-1s-2026-EDD_autogen.dir
