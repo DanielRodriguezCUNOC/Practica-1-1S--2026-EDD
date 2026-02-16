@@ -16,8 +16,15 @@ public:
     void insertarInicio(const T& dato);
     void insertarFinal(const T& dato);
     void eliminarDato(const T& dato);
+    void eliminarDatoEnPosicion(int pos);
+    T& obtenerPrimerElemento();
+    T robarCarta();
+    Nodo<T>* siguienteTurno(Nodo<T>* nodoActual, bool horario = true);
     bool estaVacia();
     int getSize();
+    Nodo<T>* getCola();
 };
+
+#include "listagenerica.tpp"
 
 #endif // LISTAGENERICA_H

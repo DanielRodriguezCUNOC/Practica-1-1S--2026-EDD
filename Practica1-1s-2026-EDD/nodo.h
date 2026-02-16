@@ -1,6 +1,7 @@
 #ifndef NODO_H
 #define NODO_H
 
+
 template <typename T>
 class Nodo
 {
@@ -16,8 +17,10 @@ public:
     Nodo<T>* getSiguiente() const;
     Nodo<T>* getAnterior() const;
     T& getDato();
-    void setSiguiente(Nodo<T> dato);
-    void setAnterior(Nodo<T> dato);
+    void setSiguiente(Nodo<T>* dato);
+    void setAnterior(Nodo<T>* dato);
 };
+
+#include "nodo.tpp"
 
 #endif // NODO_H

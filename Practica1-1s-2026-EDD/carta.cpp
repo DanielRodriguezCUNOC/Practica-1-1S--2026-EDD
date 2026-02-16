@@ -7,3 +7,6 @@ Carta::~Carta(){}
 Color Carta::getColor(){
     return color;
 }
+void Carta::aplicarEfecto(){
+
+}

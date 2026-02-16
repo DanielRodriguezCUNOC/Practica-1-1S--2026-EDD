@@ -1,6 +1,8 @@
 #ifndef JUGADOR_H
 #define JUGADOR_H
 #include <string>
+#include "carta.h"
+#include "listagenerica.h"
 class Jugador
 {
 public:
@@ -12,7 +14,7 @@ public:
 private:
     std::string nombreJugador;
     bool dijoUno;
-
+    ListaGenerica<Carta*> mano;
 };
 
 

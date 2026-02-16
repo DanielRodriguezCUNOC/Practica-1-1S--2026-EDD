@@ -129,22 +129,6 @@ build CMakeFiles/Practica1-1s-2026-EDD.dir/carta.cpp.o: CXX_COMPILER__Practica1-
   OBJECT_DIR = CMakeFiles/Practica1-1s-2026-EDD.dir
   OBJECT_FILE_DIR = CMakeFiles/Practica1-1s-2026-EDD.dir
 
-build CMakeFiles/Practica1-1s-2026-EDD.dir/nodo.cpp.o: CXX_COMPILER__Practica1-1s-2026-EDD_unscanned_Debug /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/nodo.cpp || cmake_object_order_depends_target_Practica1-1s-2026-EDD
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
-  DEP_FILE = CMakeFiles/Practica1-1s-2026-EDD.dir/nodo.cpp.o.d
-  FLAGS = -DQT_QML_DEBUG -g -fdiagnostics-color=always -fPIC
-  INCLUDES = -I/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/include -I/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtCore -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/mkspecs/linux-g++ -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui
-  OBJECT_DIR = CMakeFiles/Practica1-1s-2026-EDD.dir
-  OBJECT_FILE_DIR = CMakeFiles/Practica1-1s-2026-EDD.dir
-
-build CMakeFiles/Practica1-1s-2026-EDD.dir/listagenerica.cpp.o: CXX_COMPILER__Practica1-1s-2026-EDD_unscanned_Debug /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/listagenerica.cpp || cmake_object_order_depends_target_Practica1-1s-2026-EDD
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
-  DEP_FILE = CMakeFiles/Practica1-1s-2026-EDD.dir/listagenerica.cpp.o.d
-  FLAGS = -DQT_QML_DEBUG -g -fdiagnostics-color=always -fPIC
-  INCLUDES = -I/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/include -I/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtCore -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/mkspecs/linux-g++ -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets -isystem /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui
-  OBJECT_DIR = CMakeFiles/Practica1-1s-2026-EDD.dir
-  OBJECT_FILE_DIR = CMakeFiles/Practica1-1s-2026-EDD.dir
-
 build CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp.o: CXX_COMPILER__Practica1-1s-2026-EDD_unscanned_Debug /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp || cmake_object_order_depends_target_Practica1-1s-2026-EDD
   DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp.o.d
@@ -161,7 +145,7 @@ build CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/EWIEGA4
 #############################################
 # Link the executable Practica1-1s-2026-EDD
 
-build Practica1-1s-2026-EDD: CXX_EXECUTABLE_LINKER__Practica1-1s-2026-EDD_Debug CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/mocs_compilation.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/main.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/mainwindow.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/configuraciones.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/ayuda.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/pantallajuego.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/botonanimado.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/nodojugador.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/cartaui.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/carta.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/nodo.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/listagenerica.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp.o | /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Widgets.so.6.10.2 /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Gui.so.6.10.2 /usr/lib64/libGLX.so /usr/lib64/libOpenGL.so /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Core.so.6.10.2 || Practica1-1s-2026-EDD_autogen Practica1-1s-2026-EDD_autogen_timestamp_deps
+build Practica1-1s-2026-EDD: CXX_EXECUTABLE_LINKER__Practica1-1s-2026-EDD_Debug CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/mocs_compilation.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/main.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/mainwindow.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/configuraciones.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/ayuda.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/pantallajuego.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/botonanimado.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/nodojugador.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/cartaui.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/carta.cpp.o CMakeFiles/Practica1-1s-2026-EDD.dir/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp.o | /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Widgets.so.6.10.2 /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Gui.so.6.10.2 /usr/lib64/libGLX.so /usr/lib64/libOpenGL.so /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Core.so.6.10.2 || Practica1-1s-2026-EDD_autogen Practica1-1s-2026-EDD_autogen_timestamp_deps
   FLAGS = -DQT_QML_DEBUG -g
   LINK_LIBRARIES = -Wl,-rpath,/home/luluwalilith/Qt/6.10.2/gcc_64/lib:  /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Widgets.so.6.10.2  /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Gui.so.6.10.2  /usr/lib64/libGLX.so  /usr/lib64/libOpenGL.so  /home/luluwalilith/Qt/6.10.2/gcc_64/lib/libQt6Core.so.6.10.2  -Wl,-rpath-link,/home/luluwalilith/Qt/6.10.2/gcc_64/lib
   OBJECT_DIR = CMakeFiles/Practica1-1s-2026-EDD.dir
