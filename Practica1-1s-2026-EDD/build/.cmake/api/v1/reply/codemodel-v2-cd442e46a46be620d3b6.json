@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-2f451d5816818c905fea.json",
+					"jsonFile" : "directory-.-Debug-20cc835764b3ee59c18e.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -44,7 +44,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Practica1-1s-2026-EDD::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Practica1-1s-2026-EDD-Debug-1a6fa2624f752285df6f.json",
+					"jsonFile" : "target-Practica1-1s-2026-EDD-Debug-3271cb5caad5cc0d4dff.json",
 					"name" : "Practica1-1s-2026-EDD",
 					"projectIndex" : 0
 				},

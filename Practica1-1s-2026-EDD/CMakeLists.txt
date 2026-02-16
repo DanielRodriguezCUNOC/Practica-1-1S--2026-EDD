@@ -26,8 +26,17 @@ qt_add_executable(Practica1-1s-2026-EDD
     cartaui.h cartaui.cpp
     carta.h carta.cpp
     carta.cpp
-    nodo.h nodo.tpp
-    listagenerica.h listagenerica.tpp
+    listagenerica.h
+
+
+    jugador.cpp
+    juego.h juego.cpp
+    utils.h
+    ladocarta.h ladocarta.cpp
+    listagenerica.cpp
+    nodo.cpp
+    cartanormal.h cartanormal.cpp
+    cartaflip.h cartaflip.cpp
 
 
 )

@@ -72,13 +72,13 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 45,
+				"line" : 53,
 				"parent" : 0
 			},
 			{
 				"command" : 5,
 				"file" : 1,
-				"line" : 37,
+				"line" : 45,
 				"parent" : 0
 			},
 			{
@@ -226,7 +226,7 @@
 			{
 				"command" : 13,
 				"file" : 1,
-				"line" : 35,
+				"line" : 43,
 				"parent" : 0
 			}
 		]
@@ -309,7 +309,12 @@
 				20,
 				22,
 				24,
-				32
+				26,
+				29,
+				30,
+				31,
+				33,
+				39
 			]
 		}
 	],
@@ -400,12 +405,12 @@
 			"sourceIndexes" : 
 			[
 				0,
-				27,
-				28,
-				29,
-				30,
-				31,
-				32
+				34,
+				35,
+				36,
+				37,
+				38,
+				39
 			]
 		},
 		{
@@ -421,7 +426,12 @@
 				17,
 				20,
 				22,
-				24
+				24,
+				26,
+				29,
+				30,
+				31,
+				33
 			]
 		},
 		{
@@ -437,7 +447,10 @@
 				19,
 				21,
 				23,
-				25
+				25,
+				27,
+				28,
+				32
 			]
 		},
 		{
@@ -458,18 +471,11 @@
 			]
 		},
 		{
-			"name" : "",
-			"sourceIndexes" : 
-			[
-				26
-			]
-		},
-		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				33,
-				34
+				40,
+				41
 			]
 		}
 	],
@@ -603,8 +609,47 @@
 		},
 		{
 			"backtrace" : 4,
-			"path" : "nodo.h",
+			"path" : "listagenerica.h",
 			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "jugador.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "juego.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "juego.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "utils.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "ladocarta.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "ladocarta.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "listagenerica.cpp",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
@@ -614,13 +659,14 @@
 		},
 		{
 			"backtrace" : 4,
-			"path" : "listagenerica.h",
+			"path" : "cartanormal.h",
 			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 4,
-			"path" : "listagenerica.tpp",
-			"sourceGroupIndex" : 5
+			"compileGroupIndex" : 0,
+			"path" : "cartanormal.cpp",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 0,
@@ -663,13 +709,13 @@
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/Practica1-1s-2026-EDD_autogen/timestamp.rule",
-			"sourceGroupIndex" : 6
+			"sourceGroupIndex" : 5
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/qrc_Resources.cpp.rule",
-			"sourceGroupIndex" : 6
+			"sourceGroupIndex" : 5
 		}
 	],
 	"type" : "EXECUTABLE"

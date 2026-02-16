@@ -454,6 +454,18 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.h",
+			"MU",
+			"EWIEGA46WW/moc_cartaflip.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.h",
+			"MU",
+			"EWIEGA46WW/moc_cartanormal.cpp",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaui.h",
 			"MU",
 			"EWIEGA46WW/moc_cartaui.cpp",
@@ -463,6 +475,24 @@
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/configuraciones.h",
 			"MU",
 			"EWIEGA46WW/moc_configuraciones.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/juego.h",
+			"MU",
+			"EWIEGA46WW/moc_juego.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/jugador.h",
+			"MU",
+			"EWIEGA46WW/moc_jugador.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocarta.cpp",
 			null
 		],
 		[
@@ -493,6 +523,12 @@
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/pantallajuego.h",
 			"MU",
 			"EWIEGA46WW/moc_pantallajuego.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/utils.h",
+			"MU",
+			"EWIEGA46WW/moc_utils.cpp",
 			null
 		]
 	],
@@ -570,6 +606,16 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.cpp",
+			"MU",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaui.cpp",
 			"MU",
 			null
@@ -580,12 +626,37 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/juego.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/jugador.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/listagenerica.cpp",
+			"MU",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/main.cpp",
 			"MU",
 			null
 		],
 		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/mainwindow.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/nodo.cpp",
 			"MU",
 			null
 		],

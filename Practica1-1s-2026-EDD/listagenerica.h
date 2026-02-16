@@ -21,10 +21,8 @@ public:
     T robarCarta();
     Nodo<T>* siguienteTurno(Nodo<T>* nodoActual, bool horario = true);
     bool estaVacia();
-    int getSize();
+    int getSize()const;
     Nodo<T>* getCola();
 };
-
-#include "listagenerica.tpp"
 
 #endif // LISTAGENERICA_H
