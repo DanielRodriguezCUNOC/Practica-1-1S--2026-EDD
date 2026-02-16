@@ -26,8 +26,8 @@ qt_add_executable(Practica1-1s-2026-EDD
     cartaui.h cartaui.cpp
     carta.h carta.cpp
     carta.cpp
-    nodo.h nodo.cpp
-    listagenerica.h listagenerica.cpp
+    nodo.h nodo.tpp
+    listagenerica.h listagenerica.tpp
 
 
 )
