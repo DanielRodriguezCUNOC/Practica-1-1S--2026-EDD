@@ -1,5 +1,5 @@
-#include "listagenerica.h"
 
+#include "listagenerica.h"
 template <typename T>
 ListaGenerica<T>::ListaGenerica():
     cabeza(nullptr), cola(nullptr), size(0){}
@@ -154,7 +154,7 @@ bool ListaGenerica<T>::estaVacia(){
 }
 
 template <typename T>
-int ListaGenerica<T>::getSize(){
+int ListaGenerica<T>::getSize()const{
 
     return size;
 }

@@ -21,6 +21,5 @@ public:
     void setAnterior(Nodo<T>* dato);
 };
 
-#include "nodo.tpp"
 
 #endif // NODO_H
