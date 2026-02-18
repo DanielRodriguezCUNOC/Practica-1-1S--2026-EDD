@@ -8,6 +8,7 @@ class Carta {
 
 public:
     virtual ~Carta();
+
     // Métodos Puros (El contrato que los hijos deben cumplir)
     virtual const LadoCarta& getLadoActivo() const = 0;
     virtual void voltear() = 0;

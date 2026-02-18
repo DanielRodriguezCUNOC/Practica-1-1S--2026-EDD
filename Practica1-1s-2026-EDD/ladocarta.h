@@ -10,25 +10,28 @@ private:
     TipoCarta tipo;
     Color color;
     int numero;
+    std::string rutaArchivo;
 
     // Métodos privados para generar nombres de archivo
     std::string colorToString() const;
     std::string tipoToString() const;
 
 public:
-    // Constructor (n = -1 por defecto para cartas de acción)
-    LadoCarta(TipoCarta t, Color c, int n = -1);
-    LadoCarta() = default; // Constructor vacío necesario para arrays/listas
+    // Constructor n=-1 sirve como identificador para las cartas que tienen efecto
+    LadoCarta(TipoCarta t, Color c, int n, std::string ruta);
+    LadoCarta() = default;
 
     TipoCarta getTipo() const;
     Color getColor() const;
     int getNumero() const;
 
-    // Genera: "AMARILLO", "ROSA", etc.
+
     std::string getNombreCarpetaColor() const;
 
-    // Genera: "A+1", "FLIP", "5", etc.
     std::string getNombreArchivo() const;
+
+    // Devuelve la ruta de la imagen
+    std::string getRutaArchivo() const;
 };
 
 #endif // LADOCARTA_H

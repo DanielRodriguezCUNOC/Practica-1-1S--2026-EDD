@@ -1,5 +1,8 @@
 
 #include "listagenerica.h"
+#include "carta.h"
+
+template class ListaGenerica<Carta*>;
 template <typename T>
 ListaGenerica<T>::ListaGenerica():
     cabeza(nullptr), cola(nullptr), size(0){}
@@ -174,6 +177,15 @@ Nodo<T>* ListaGenerica<T>::getCola(){
 template <typename T>
 T& ListaGenerica<T>::obtenerPrimerElemento(){
     return cabeza->getDato();
+}
+
+template <typename T>
+T& ListaGenerica<T>::obtenerElementoEnPosicion(int indice){
+    Nodo<T>* actual = cabeza;
+    for (int i = 0; i < indice; i++) {
+        actual = actual->getSiguiente();
+    }
+    return actual->getDato();
 }
 
 template <typename T>

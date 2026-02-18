@@ -37,6 +37,10 @@ qt_add_executable(Practica1-1s-2026-EDD
     nodo.cpp
     cartanormal.h cartanormal.cpp
     cartaflip.h cartaflip.cpp
+    jugador.h
+    cartaadivinar.h cartaadivinar.cpp
+    cartacambiarmazo.h cartacambiarmazo.cpp
+    rutaimagenes.h rutaimagenes.cpp
 
 
 )

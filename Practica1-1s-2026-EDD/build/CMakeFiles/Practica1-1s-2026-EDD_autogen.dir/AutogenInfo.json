@@ -454,6 +454,18 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.h",
+			"MU",
+			"EWIEGA46WW/moc_cartaadivinar.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.h",
+			"MU",
+			"EWIEGA46WW/moc_cartacambiarmazo.cpp",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.h",
 			"MU",
 			"EWIEGA46WW/moc_cartaflip.cpp",
@@ -523,6 +535,12 @@
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/pantallajuego.h",
 			"MU",
 			"EWIEGA46WW/moc_pantallajuego.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/rutaimagenes.h",
+			"MU",
+			"EWIEGA46WW/moc_rutaimagenes.cpp",
 			null
 		],
 		[
@@ -606,6 +624,16 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.cpp",
+			"MU",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.cpp",
 			"MU",
 			null
@@ -667,6 +695,11 @@
 		],
 		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/pantallajuego.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/rutaimagenes.cpp",
 			"MU",
 			null
 		]
