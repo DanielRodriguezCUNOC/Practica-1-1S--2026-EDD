@@ -3,9 +3,9 @@
 
 enum class TipoCarta {
     // Normal / Lado Claro
-    Numero, Roba1, Roba2, Salto, Reverse, Comodin,
+    Numero, Roba1, Roba2, Salto, Reverse, Comodin, Comodin4,
     // Lado Oscuro (Flip)
-    Roba4, Roba5, SaltoTodos, ColorEterno, Flip,
+    Roba3, Comodin6, Comodin2, SaltoTodos, ColorEterno, CambiarDireccion, Flip,
     // Especial para el reverso del UNO Normal
     DorsoGenerico,
     //Cartas personalizadas
@@ -14,7 +14,7 @@ enum class TipoCarta {
 
 enum class Color {
     Rojo, Amarillo, Azul, Verde,
-    Naranja, Rosa, Turquesa, Violeta,
+    Naranja, Rosa, Turquesa, Purpura,
     // Especiales
     Negro,      // Comodines
     Indefinido  // Para el reverso genérico

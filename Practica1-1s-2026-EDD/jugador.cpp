@@ -6,6 +6,7 @@ Jugador::Jugador() : nombreJugador(""), dijoUno(false) {}
 
 Jugador::Jugador(const std::string& nombre)
     : nombreJugador(nombre), dijoUno(false) {}
+Jugador::~Jugador(){}
 
 void Jugador::setNombreJugador(const std::string& nombre)
 {
@@ -37,15 +38,37 @@ int Jugador::cantidadCartas() const
     return mano.getSize();
 }
 
-/*void Jugador::robarCartas(int cantidad, Juego& juego)
+void Jugador::resetearUNO(){
+    dijoUno = false;
+}
+
+void Jugador::robarCartas(int cantidad, Juego& juego)
 {
     for (int i = 0; i < cantidad; i++)
     {
-        Carta* c = juego.robarDelMazo();
-        if (c)
-            mano.insertarFinal(c);
+        Carta* nueva = juego.robarDelMazo();
+        if (nueva != nullptr){
+            mano.insertarFinal(nueva);
+            resetearUNO();
+        }else{
+            //* Manejar logica de mazo vacio
+            break;
+        }
+
     }
-}*/
+}
+
+Carta* Jugador::seleccionarCarta(int indice){
+    if (indice < 0 || indice >= mano.getSize()) return nullptr;
+return mano.obtenerElementoEnPosicion(indice);
+}
+
+Carta* Jugador::usarCarta(int indice){
+    if(indice < 0 || indice >= mano.getSize()) return nullptr;
+    Carta* cartaAUsar = seleccionarCarta(indice);
+    mano.eliminarDatoEnPosicion(indice);
+    return cartaAUsar;
+}
 
 void Jugador::decirUNO()
 {

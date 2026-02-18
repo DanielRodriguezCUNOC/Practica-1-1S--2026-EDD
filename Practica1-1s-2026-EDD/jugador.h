@@ -17,6 +17,7 @@ private:
 
 public:
     Jugador();
+    ~Jugador();
     Jugador(const std::string& nombre);
     void setNombreJugador(const std::string& nombre);
     std::string getNombreJugador()const;
@@ -27,12 +28,12 @@ public:
     void quitarCarta(Carta* carta);
     int cantidadCartas() const;
 
-
+    Carta* seleccionarCarta(int indice);
     void robarCartas(int cantidad, Juego& juego);
-
-
+    Carta* usarCarta(int indice);
     void decirUNO();
     bool haDichoUNO() const;
+    void resetearUNO();
 };
 
 

@@ -18,6 +18,7 @@ public:
     void eliminarDato(const T& dato);
     void eliminarDatoEnPosicion(int pos);
     T& obtenerPrimerElemento();
+    T& obtenerElementoEnPosicion(int indice);
     T robarCarta();
     Nodo<T>* siguienteTurno(Nodo<T>* nodoActual, bool horario = true);
     bool estaVacia();

@@ -12,6 +12,14 @@ Practica1-1s-2026-EDD_autogen/timestamp: \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/moc_predefs.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/carta.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/carta.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaui.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaui.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/configuraciones.cpp \
@@ -27,6 +35,8 @@ Practica1-1s-2026-EDD_autogen/timestamp: \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/main.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/mainwindow.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/mainwindow.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/nodo.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/nodo.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/nodojugador.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/nodojugador.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/pantallajuego.cpp \
