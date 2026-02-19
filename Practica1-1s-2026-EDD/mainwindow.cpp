@@ -47,6 +47,7 @@ void MainWindow::on_btnAyuda_clicked()
 
         //* AQUÍ conectar la señal después de crear pantallaAyuda
         connect(pantallaAyuda, &Ayuda::volverMenuInicio, this, [=](){
+           // ui->stackedWidget->setCurrentIndex(0);
             ui->stackedWidget->setCurrentIndex(0);
         });
     }
@@ -55,10 +56,25 @@ void MainWindow::on_btnAyuda_clicked()
 
 void MainWindow::on_btnJugar_clicked()
 {
+    //* Obtenemos los datos de la pantalla de configuracion
+    int numJugadores = pantallaConfiguracion->getCantidadJugadores();
+    bool esFlip = pantallaConfiguracion->getEsModoFlip();
+
+    //*Validar datos
+    if (numJugadores < 2) {
+        QMessageBox::warning(this, "Error", "Se necesitan mínimo 2 jugadores para iniciar.");
+        return;
+    }
+
+
     if(!pantallaJuego){
         pantallaJuego = new PantallaJuego(this);
         ui->stackedWidget->addWidget(pantallaJuego);
+        connect(pantallaJuego, &PantallaJuego::salirPartida, this, [=](){
+            ui->stackedWidget->setCurrentIndex(0);
+        });
     }
+    pantallaJuego->iniciarNuevaPartida(numJugadores, esFlip);
     ui->stackedWidget->setCurrentWidget(pantallaJuego);
 }
 

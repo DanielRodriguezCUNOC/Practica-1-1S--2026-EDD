@@ -14,6 +14,8 @@ class Configuraciones : public QWidget
 public:
     explicit Configuraciones(QWidget *parent = nullptr);
     ~Configuraciones();
+    int getCantidadJugadores() const;
+    bool getEsModoFlip() const;
 
 private:
     Ui::Configuraciones *ui;
