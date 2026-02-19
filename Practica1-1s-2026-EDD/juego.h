@@ -19,10 +19,10 @@ private:
     // --- MÉTODOS PRIVADOS AUXILIARES (Gestión de Memoria Manual) ---
 
     // Genera cartas simples
-    void generarMazoNormalManual();
+    void generarMazoNormalManual(int numMazos);
 
     // Genera cartas dobles con reverso aleatorio
-    void generarMazoFlipManual();
+    void generarMazoFlipManual(int numMazos);
 
     // Algoritmos manuales de mezcla
     void mezclarArregloLados(LadoCarta* arreglo, int tamano);
@@ -33,7 +33,7 @@ public:
     ~Juego();
 
     // Inicializa el juego según el modo elegido
-    void inicializarMazo(bool modoFlip);
+    void inicializarMazo(bool modoFlip, int cantidadJugadores);
 
     // Baraja las cartas que ya están en la lista 'mazo'
     void barajarMazo();

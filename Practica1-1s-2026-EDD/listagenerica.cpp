@@ -1,8 +1,10 @@
 
 #include "listagenerica.h"
 #include "carta.h"
+#include "jugador.h"
 
 template class ListaGenerica<Carta*>;
+template class ListaGenerica<Jugador*>;
 template <typename T>
 ListaGenerica<T>::ListaGenerica():
     cabeza(nullptr), cola(nullptr), size(0){}

@@ -1,5 +1,13 @@
 /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/EWIEGA46WW/moc_pantallajuego.cpp: /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/pantallajuego.h \
   /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/moc_predefs.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/carta.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/juego.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/jugador.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/listagenerica.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/nodo.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/rutaimagenes.h \
+  /home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/utils.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtCore/q17memory.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtCore/q20functional.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtCore/q20iterator.h \
