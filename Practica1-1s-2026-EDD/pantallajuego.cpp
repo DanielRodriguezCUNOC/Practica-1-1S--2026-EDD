@@ -31,5 +31,6 @@ PantallaJuego::~PantallaJuego()
 void PantallaJuego:: iniciarNuevaPartida(int numJugadores, bool esFlip){
     //* Inicializar el mazo segun el modo
     juego->inicializarMazo(esFlip, numJugadores);
+
 }
 void PantallaJuego::on_btnSalirJuego_clicked() {}

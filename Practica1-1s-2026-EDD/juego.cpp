@@ -2,7 +2,7 @@
 #include "cartanormal.h"
 #include "cartaflip.h"
 #include <QWidget>
-Juego::Juego(): ladoOscuroActivo(false){
+Juego::Juego(): ladoOscuroActivo(false), indiceTurnoActual(0), sentidoJuego(1){
 }
 
 
@@ -352,5 +352,125 @@ void Juego::generarMazoNormalManual(int numMazos){
 
        for (int i = 0; i < cantidad; i++)
            mazo.insertarFinal(tempArray[i]);
+   }
+
+   void Juego::avanzarTurno() {
+
+       // Avanzamos el turno según el sentido (1 o -1)
+       indiceTurnoActual += sentidoJuego;
+
+       int numJugadores = jugadores.getSize();
+
+       // si salimos de los límites aplicado a una lista circular
+       if (indiceTurnoActual >= numJugadores) {
+           indiceTurnoActual = 0;
+       } else if (indiceTurnoActual < 0) {
+           indiceTurnoActual = numJugadores - 1;
+       }
+   }
+
+   void Juego::aplicarEfectoCarta(Carta* cartaJugada) {
+
+       // Obtenemos el lado activo sin importar si es CartaNormal o CartaFlip
+       const LadoCarta& lado = cartaJugada->getLadoActivo();
+       TipoCarta tipo = lado.getTipo();
+
+       // Actualizamos el color activo de la mesa
+       if (lado.getColor() != Color::Negro) {
+           colorActivo = lado.getColor();
+       }
+
+       // Aplicamos el efecto basado en el Tipo
+       switch (tipo) {
+       case TipoCarta::Numero:
+           // No hace nada especial, el turno avanzará normalmente al final
+           break;
+
+       case TipoCarta::Reverse:
+           // Invierte el sentido (de 1 a -1, o de -1 a 1)
+           sentidoJuego *= -1;
+
+           // Regla oficial de UNO: Si solo hay 2 jugadores, Reverse actúa como Salto
+           if (jugadores.getSize() == 2) {
+               avanzarTurno();
+           }
+           break;
+
+       case TipoCarta::Salto:
+           avanzarTurno(); // Avanza una vez extra para "saltar" al siguiente
+           break;
+
+       case TipoCarta::Roba2: {
+           avanzarTurno(); // El siguiente pierde el turno...
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+
+           // ... y roba 2 cartas
+           for(int i = 0; i < 2; i++) {
+               Carta* robada = robarDelMazo();
+               if(robada) victima->agregarCarta(robada);
+           }
+           break;
+       }
+
+       case TipoCarta::Flip:
+           // Invertimos el estado global del juego
+           ladoOscuroActivo = !ladoOscuroActivo;
+
+           // Recorremos TODAS las cartas y las volteamos
+           // 1. Voltear Mazo
+           for(int i = 0; i < mazo.getSize(); i++) {
+               mazo.obtenerElementoEnPosicion(i)->voltear();
+           }
+           // 2. Voltear Descarte
+           for(int i = 0; i < descarte.getSize(); i++) {
+               descarte.obtenerElementoEnPosicion(i)->voltear();
+           }
+           // 3. Voltear Manos de Jugadores
+           for(int i = 0; i < jugadores.getSize(); i++) {
+               Jugador* j = jugadores.obtenerElementoEnPosicion(i);
+               for(int k = 0; k < j->cantidadCartas(); k++) {
+                   j->getMano().obtenerElementoEnPosicion(k)->voltear();
+               }
+           }
+           // Actualizar el nuevo color activo según la nueva cara de la carta que quedó en el descarte
+           colorActivo = cartaJugada->getLadoActivo().getColor();
+           break;
+
+       case TipoCarta::SaltoTodos:
+           // En lugar de hacer mucha matemática, simplemente damos la vuelta completa
+           for(int i = 0; i < jugadores.getSize() - 1; i++) {
+               avanzarTurno();
+           }
+           break;
+
+       case TipoCarta::Comodin4: {
+           avanzarTurno();
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+           for(int i = 0; i < 4; i++) {
+               Carta* robada = robarDelMazo();
+               if(robada) victima->agregarCarta(robada);
+           }
+           // NOTA: El cambio de color se manejará desde la Interfaz Gráfica (PantallaJuego)
+           break;
+       }
+
+           // ... Agrega aquí Roba1, Roba5, ColorEterno, etc. siguiendo la misma lógica
+       }
+   }
+
+
+   void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano) {
+       // 1. El jugador tira la carta (la quitamos de su mano)
+       Carta* cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
+       jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
+
+       // 2. La ponemos en la pila de descarte
+       descarte.insertarInicio(cartaJugada); // Asumimos que el inicio es la cima
+
+       // 3. Procesamos qué hace esa carta
+       aplicarEfectoCarta(cartaJugada);
+
+       // 4. Preparamos el turno del siguiente jugador
+       avanzarTurno();
    }
 
