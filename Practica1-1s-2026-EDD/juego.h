@@ -14,7 +14,16 @@ private:
     ListaGenerica<Carta*> descarte;
     ListaGenerica<Jugador*> jugadores;
 
+    //* Para saber si esta del lado del flip
     bool ladoOscuroActivo;
+    //* Numero del jugador
+    int indiceTurnoActual;
+    //* 1 sentido horario, -1 sentido antihorario
+    int sentidoJuego;
+    //* El color que esta en la pila de descarte
+    Color colorActivo;
+    //* Permite obtener lass rutas de las imagenes
+    RutaImagenes ruta;
 
     // --- MÉTODOS PRIVADOS AUXILIARES (Gestión de Memoria Manual) ---
 
@@ -32,6 +41,7 @@ public:
     Juego();
     ~Juego();
 
+
     // Inicializa el juego según el modo elegido
     void inicializarMazo(bool modoFlip, int cantidadJugadores);
 
@@ -46,8 +56,13 @@ public:
 
     int getCantidadCartasMazo();
 
-    RutaImagenes ruta;
+    void avanzarTurno();
+    //* Metodo para la carta Reverse
+    void retrocederTurno();
 
+    //* Metodo para aplicar los efectos
+    void jugarCarta(Jugador* jugador, int indiceCartaEnMano);
+    void aplicarEfectoCarta(Carta* cartaJugada);
 };
 
 #endif // JUEGO_H
