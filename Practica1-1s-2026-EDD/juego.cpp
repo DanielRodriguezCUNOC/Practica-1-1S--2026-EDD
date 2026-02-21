@@ -369,7 +369,7 @@ void Juego::generarMazoNormalManual(int numMazos){
        }
    }
 
-   void Juego::aplicarEfectoCarta(Carta* cartaJugada) {
+   void Juego::aplicarEfectoCarta(Carta* cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado, const std::string& colorSeleccionado) {
 
        // Obtenemos el lado activo sin importar si es CartaNormal o CartaFlip
        const LadoCarta& lado = cartaJugada->getLadoActivo();
@@ -397,18 +397,43 @@ void Juego::generarMazoNormalManual(int numMazos){
            break;
 
        case TipoCarta::Salto:
-           avanzarTurno(); // Avanza una vez extra para "saltar" al siguiente
+           // Avanza una vez extra para "saltar" al siguiente
+           avanzarTurno();
            break;
 
-       case TipoCarta::Roba2: {
-           avanzarTurno(); // El siguiente pierde el turno...
+       case TipoCarta::Roba1:{
+
+            // El siguiente pierde el turno
+           avanzarTurno();
            Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
 
-           // ... y roba 2 cartas
+           // roba 1 carta
+           Carta* robada = robarDelMazo();
+           if(robada) victima ->agregarCarta(robada);
+           break;
+       }
+
+       case TipoCarta::Roba2: {
+
+           avanzarTurno();
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+
            for(int i = 0; i < 2; i++) {
                Carta* robada = robarDelMazo();
                if(robada) victima->agregarCarta(robada);
            }
+           break;
+       }
+       case TipoCarta::Roba3:{
+
+           avanzarTurno();
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+
+           for(int i = 0; i < 3;i++){
+               Carta* robada = robarDelMazo();
+               if(robada) victima->agregarCarta(robada);
+           }
+
            break;
        }
 
@@ -437,7 +462,7 @@ void Juego::generarMazoNormalManual(int numMazos){
            break;
 
        case TipoCarta::SaltoTodos:
-           // En lugar de hacer mucha matemática, simplemente damos la vuelta completa
+           // damos la vuelta completa a la lista de jugadores
            for(int i = 0; i < jugadores.getSize() - 1; i++) {
                avanzarTurno();
            }
@@ -450,27 +475,258 @@ void Juego::generarMazoNormalManual(int numMazos){
                Carta* robada = robarDelMazo();
                if(robada) victima->agregarCarta(robada);
            }
-           // NOTA: El cambio de color se manejará desde la Interfaz Gráfica (PantallaJuego)
            break;
        }
 
-           // ... Agrega aquí Roba1, Roba5, ColorEterno, etc. siguiendo la misma lógica
+       case TipoCarta::Comodin6:{
+           avanzarTurno();
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+           for(int i=0; i<6;i++){
+               Carta* robada = robarDelMazo();
+               if(robada) victima->agregarCarta(robada);
+           }
+           break;
        }
+
+       case TipoCarta::Comodin2:{
+           avanzarTurno();
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+           for(int i=0; i < 2; i++){
+               Carta* robada = robarDelMazo();
+               if(robada) victima->agregarCarta(robada);
+           }
+           break;
+       }
+
+       case TipoCarta::Comodin:{
+           Color nuevoColor = convertirStringAColor(colorSeleccionado);
+           colorActivo = nuevoColor;
+           break;
+       }
+
+
+
+       case TipoCarta::AdivinarCarta:{
+           if (jugadorSeleccionado.empty() || numeroSeleccionado == -1 || colorSeleccionado.empty()) {
+               qDebug() << "Error: Faltan datos para adivinar carta";
+               break;
+           }
+
+           Jugador* jugadorActual = getJugadorActual();
+           bool adivino = adivinoCarta(jugadorSeleccionado, numeroSeleccionado, colorSeleccionado);
+
+           if (adivino) {
+
+               Color colorObjetivo=convertirStringAColor(colorSeleccionado);
+               ListaGenerica<Carta*>& manoActual = jugadorActual->getMano();
+
+               //* Aqui decimos que el jugador manda las cartas del mismo color a la pila de descarte
+
+               for(int i = manoActual.getSize() -1; i >=0; i-- ){
+
+                   Carta* carta = manoActual.obtenerElementoEnPosicion(i);
+                   Color colorCarta = carta->getLadoActivo().getColor();
+
+                   if(colorCarta == colorObjetivo){
+
+                       Carta* cartaDescartar = manoActual.obtenerElementoEnPosicion(i);
+                       manoActual.eliminarDatoEnPosicion(i);
+                       descarte.insertarInicio(cartaDescartar);
+                   }
+               }
+           } else {
+               //* Decimos que el jugador que intento adivinar roba dos cartas como penalizacion
+               Jugador* jugadorActual = getJugadorActual();
+               for (int i = 0; i < 2; i++) {
+                   if(mazo.estaVacia()) barajarDescarte();
+                   Carta* robada = robarDelMazo();
+                   if (robada) jugadorActual->agregarCarta(robada);
+               }
+           }
+           break;
+       }
+           // ... Agrega aquí Roba1, Roba5, ColorEterno, etc. siguiendo la misma lógica
+
+       case TipoCarta::CambiarMano:{
+           int cartasEnManoVictima = 0;
+           avanzarTurno();
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+           cartasEnManoVictima = victima->getMano().getSize();
+
+           //* Aqui decimos que el jugador manda su mano a la pila de descarte
+           while(!victima->getMano().estaVacia()){
+               Carta* cartaDescartar = victima->getMano().obtenerElementoEnPosicion(0);
+               victima->getMano().eliminarDatoEnPosicion(0);
+               descarte.insertarInicio(cartaDescartar);
+           }
+
+           //* la victima roba la misma cantidad de cartas que mando a la pila
+           for(int i = 0; i < cartasEnManoVictima; i++){
+
+               if(mazo.estaVacia()){
+                   barajarDescarte();
+               }
+               Carta* robada = robarDelMazo();
+               if(robada) victima->agregarCarta(robada);
+           }
+
+           break;
+       }
+
+       case TipoCarta::ColorEterno:{
+           avanzarTurno();
+           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+           Color colorRobado = Color::Negro;
+           Color colorObjetivo = convertirStringAColor(colorSeleccionado);
+           do{
+               if(mazo.estaVacia()){
+                   barajarDescarte();
+               }
+
+               Carta* robada = robarDelMazo();
+
+               if(!robada) break;
+
+               colorRobado = robada->getLadoActivo().getColor();
+               victima->agregarCarta(robada);
+
+           }while(colorRobado != colorObjetivo);
+
+           break;
+       }
+
+    }
+
    }
 
 
-   void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano) {
+   void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
+                          const std::string& jugadorSeleccionado,
+                          int numeroAdivinado,
+                          const std::string& colorAdivinado) {
        // 1. El jugador tira la carta (la quitamos de su mano)
        Carta* cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
        jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
 
        // 2. La ponemos en la pila de descarte
-       descarte.insertarInicio(cartaJugada); // Asumimos que el inicio es la cima
+       descarte.insertarInicio(cartaJugada);
 
        // 3. Procesamos qué hace esa carta
-       aplicarEfectoCarta(cartaJugada);
+       aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
 
        // 4. Preparamos el turno del siguiente jugador
        avanzarTurno();
+   }
+
+   void Juego::repartirCartas(int cartasPorJugador) {
+
+       // Verificar que hay jugadores
+       if (jugadores.estaVacia()) {
+           qDebug() << "Error: No hay jugadores para repartir cartas";
+           return;
+       }
+
+       // Verificar que hay suficientes cartas en el mazo
+       int cartasNecesarias = jugadores.getSize() * cartasPorJugador;
+       if (mazo.getSize() < cartasNecesarias) {
+           qDebug() << "Error: No hay suficientes cartas en el mazo";
+           return;
+       }
+
+       // Repartir cartas a cada jugador
+       for (int i = 0; i < jugadores.getSize(); i++) {
+           Jugador* jugadorActual = jugadores.obtenerElementoEnPosicion(i);
+
+           for (int j = 0; j < cartasPorJugador; j++) {
+               Carta* cartaARobar = robarDelMazo();
+               if (cartaARobar) {
+                   jugadorActual->agregarCarta(cartaARobar);
+               }
+           }
+       }
+
+       // Colocar la primera carta en el descarte para comenzar el juego
+       if (!mazo.estaVacia()) {
+           Carta* primeraCarta = robarDelMazo();
+           descarte.insertarInicio(primeraCarta);
+
+           // Actualizar el color activo según la primera carta
+           if (primeraCarta) {
+               colorActivo = primeraCarta->getLadoActivo().getColor();
+
+               // Si es comodín se elige un color
+               if (colorActivo == Color::Negro) {
+                   // Elegir un color aleatorio
+                   Color coloresNormales[] = {Color::Rojo, Color::Azul,
+                                              Color::Verde, Color::Amarillo};
+                   colorActivo = coloresNormales[rand() % 4];
+               }
+           }
+       }
+
+       qDebug() << "Reparto completado. Mazo restante:" << mazo.getSize()
+                << "cartas. Primera carta en descarte.";
+   }
+
+   Jugador* Juego::getJugadorActual(){
+       return jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+   }
+
+   Jugador* Juego::getJugadorSeleccionado(std::string nombreJugador){
+       for(int i = 0; i < jugadores.getSize(); i++){
+           Jugador* temp = jugadores.obtenerElementoEnPosicion(i);
+           if(temp->getNombreJugador() == nombreJugador) return temp;
+       }
+       return nullptr;
+   }
+
+
+   bool Juego::adivinoCarta(std::string nombreSeleccionado, int numeroCarta, std::string colorCarta){
+           Jugador* jugadorSeleccionado = getJugadorSeleccionado(nombreSeleccionado);
+
+           if (!jugadorSeleccionado) return false;
+
+           // Convertir el string color a enum Color para comparar
+           Color colorAdivinado = convertirStringAColor(colorCarta);
+
+           // Recorrer la mano del jugador seleccionado
+           ListaGenerica<Carta*>& manoSeleccionada = jugadorSeleccionado->getMano();
+
+           for (int i = 0; i < manoSeleccionada.getSize(); i++) {
+               Carta* carta = manoSeleccionada.obtenerElementoEnPosicion(i);
+               const LadoCarta& lado = carta->getLadoActivo();
+
+               // Verificar si coincide número y color
+               if (lado.getTipo() == TipoCarta::Numero &&
+                   lado.getNumero() == numeroCarta &&
+                   lado.getColor() == colorAdivinado) {
+                   return true;
+               }
+           }
+
+           return false;
+       }
+
+
+   Color Juego::convertirStringAColor(const std::string& colorStr) {
+       if (colorStr == "Rojo") return Color::Rojo;
+       if (colorStr == "Azul") return Color::Azul;
+       if (colorStr == "Verde") return Color::Verde;
+       if (colorStr == "Amarillo") return Color::Amarillo;
+       // Si estás en modo oscuro
+       if (colorStr == "Rosa") return Color::Rosa;
+       if (colorStr == "Turquesa") return Color::Turquesa;
+       if (colorStr == "Naranja") return Color::Naranja;
+       if (colorStr == "Purpura") return Color::Purpura;
+       // Valor por defecto
+       return Color::Negro;
+   }
+
+   void Juego::barajarDescarte(){
+       while(descarte.getSize()>1){
+           Carta* carta = descarte.robarCarta();
+           mazo.insertarFinal(carta);
+       }
+       barajarMazo();
    }
 

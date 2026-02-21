@@ -47,6 +47,7 @@ public:
 
     // Baraja las cartas que ya están en la lista 'mazo'
     void barajarMazo();
+    void barajarDescarte();
 
     // Saca una carta del mazo
     Carta* robarDelMazo();
@@ -61,8 +62,19 @@ public:
     void retrocederTurno();
 
     //* Metodo para aplicar los efectos
-    void jugarCarta(Jugador* jugador, int indiceCartaEnMano);
-    void aplicarEfectoCarta(Carta* cartaJugada);
+    void jugarCarta(Jugador* jugador, int indiceCartaEnMano,
+                    const std::string& jugadorSeleccionado = "",
+                    int numeroAdivinado = -1,
+                    const std::string& colorAdivinado = "");
+    void aplicarEfectoCarta(Carta* cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado = -1, const std::string& colorSeleccionado = "");
+    bool adivinoCarta(std::string nombreJugadorElegido, int numeroCarta, std::string colorCarta);
+    Color convertirStringAColor(const std::string& colorStr);
+
+    //* Metodo para jugadores
+    void repartirCartas(int cartasPorJugador = 7);
+    Jugador* getJugadorActual();
+    Jugador* getJugadorSeleccionado(std::string nombreJugador);
+
 };
 
 #endif // JUEGO_H
