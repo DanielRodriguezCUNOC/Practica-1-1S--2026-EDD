@@ -72,13 +72,13 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 57,
+				"line" : 64,
 				"parent" : 0
 			},
 			{
 				"command" : 5,
 				"file" : 1,
-				"line" : 49,
+				"line" : 56,
 				"parent" : 0
 			},
 			{
@@ -226,7 +226,7 @@
 			{
 				"command" : 13,
 				"file" : 1,
-				"line" : 47,
+				"line" : 54,
 				"parent" : 0
 			}
 		]
@@ -313,11 +313,14 @@
 				29,
 				30,
 				31,
-				33,
-				35,
+				34,
+				36,
 				38,
 				40,
-				46
+				42,
+				44,
+				46,
+				52
 			]
 		}
 	],
@@ -408,12 +411,12 @@
 			"sourceIndexes" : 
 			[
 				0,
-				41,
-				42,
-				43,
-				44,
-				45,
-				46
+				47,
+				48,
+				49,
+				50,
+				51,
+				52
 			]
 		},
 		{
@@ -434,10 +437,13 @@
 				29,
 				30,
 				31,
-				33,
-				35,
+				34,
+				36,
 				38,
-				40
+				40,
+				42,
+				44,
+				46
 			]
 		},
 		{
@@ -457,10 +463,13 @@
 				27,
 				28,
 				32,
-				34,
-				36,
+				33,
+				35,
 				37,
-				39
+				39,
+				41,
+				43,
+				45
 			]
 		},
 		{
@@ -484,8 +493,8 @@
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				47,
-				48
+				53,
+				54
 			]
 		}
 	],
@@ -669,51 +678,84 @@
 		},
 		{
 			"backtrace" : 4,
-			"path" : "cartanormal.h",
-			"sourceGroupIndex" : 2
-		},
-		{
-			"backtrace" : 4,
-			"compileGroupIndex" : 0,
-			"path" : "cartanormal.cpp",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 4,
-			"path" : "cartaflip.h",
-			"sourceGroupIndex" : 2
-		},
-		{
-			"backtrace" : 4,
-			"compileGroupIndex" : 0,
-			"path" : "cartaflip.cpp",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 4,
 			"path" : "jugador.h",
 			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 4,
-			"path" : "cartaadivinar.h",
+			"path" : "rutaimagenes.h",
 			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 4,
 			"compileGroupIndex" : 0,
-			"path" : "cartaadivinar.cpp",
+			"path" : "rutaimagenes.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
-			"path" : "cartacambiarmazo.h",
+			"path" : "cartamanowidget.h",
 			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 4,
 			"compileGroupIndex" : 0,
-			"path" : "cartacambiarmazo.cpp",
+			"path" : "cartamanowidget.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "ladonumero.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "ladonumero.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "ladocomodincolor.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "ladocomodincolor.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "ladocomodinrobarseis.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "ladocomodinrobarseis.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "ladocomodincuatro.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "ladocomodincuatro.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "ladoflip.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "ladoflip.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{

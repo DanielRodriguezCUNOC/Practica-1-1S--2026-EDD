@@ -18,19 +18,14 @@ std::string Jugador::getNombreJugador() const
     return nombreJugador;
 }
 
-ListaGenerica<Carta*>& Jugador::getMano()
+ListaGenerica<Carta>& Jugador::getMano()
 {
     return mano;
 }
 
-void Jugador::agregarCarta(Carta* carta)
+void Jugador::agregarCarta(Carta carta)
 {
     mano.insertarFinal(carta);
-}
-
-void Jugador::quitarCarta(Carta* carta)
-{
-    mano.eliminarDato(carta);
 }
 
 int Jugador::cantidadCartas() const
@@ -46,26 +41,21 @@ void Jugador::robarCartas(int cantidad, Juego& juego)
 {
     for (int i = 0; i < cantidad; i++)
     {
-        Carta* nueva = juego.robarDelMazo();
-        if (nueva != nullptr){
-            mano.insertarFinal(nueva);
-            resetearUNO();
-        }else{
-            //* Manejar logica de mazo vacio
-            break;
-        }
+        Carta nueva = juego.robarDelMazo();
+        mano.insertarFinal(nueva);
+        resetearUNO();
 
     }
 }
 
-Carta* Jugador::seleccionarCarta(int indice){
+Carta Jugador::seleccionarCarta(int indice){
     if (indice < 0 || indice >= mano.getSize()) return nullptr;
 return mano.obtenerElementoEnPosicion(indice);
 }
 
-Carta* Jugador::usarCarta(int indice){
+Carta Jugador::usarCarta(int indice){
     if(indice < 0 || indice >= mano.getSize()) return nullptr;
-    Carta* cartaAUsar = seleccionarCarta(indice);
+    Carta cartaAUsar = seleccionarCarta(indice);
     mano.eliminarDatoEnPosicion(indice);
     return cartaAUsar;
 }

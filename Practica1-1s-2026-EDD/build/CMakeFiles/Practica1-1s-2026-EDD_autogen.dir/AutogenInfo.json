@@ -454,27 +454,9 @@
 			null
 		],
 		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.h",
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartamanowidget.h",
 			"MU",
-			"EWIEGA46WW/moc_cartaadivinar.cpp",
-			null
-		],
-		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.h",
-			"MU",
-			"EWIEGA46WW/moc_cartacambiarmazo.cpp",
-			null
-		],
-		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.h",
-			"MU",
-			"EWIEGA46WW/moc_cartaflip.cpp",
-			null
-		],
-		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.h",
-			"MU",
-			"EWIEGA46WW/moc_cartanormal.cpp",
+			"EWIEGA46WW/moc_cartamanowidget.cpp",
 			null
 		],
 		[
@@ -505,6 +487,42 @@
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.h",
 			"MU",
 			"EWIEGA46WW/moc_ladocarta.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincolor.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocomodincolor.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincuatro.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocomodincuatro.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarseis.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocomodinrobarseis.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoflip.h",
+			"MU",
+			"EWIEGA46WW/moc_ladoflip.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladonumero.h",
+			"MU",
+			"EWIEGA46WW/moc_ladonumero.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobauno.h",
+			"MU",
+			"EWIEGA46WW/moc_ladorobauno.cpp",
 			null
 		],
 		[
@@ -624,22 +642,7 @@
 			null
 		],
 		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.cpp",
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartamanowidget.cpp",
 			"MU",
 			null
 		],
@@ -665,6 +668,36 @@
 		],
 		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincolor.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincuatro.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarseis.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoflip.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladonumero.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobauno.cpp",
 			"MU",
 			null
 		],

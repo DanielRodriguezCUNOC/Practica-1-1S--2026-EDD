@@ -10,8 +10,8 @@ class Juego
 {
 private:
     // Estructuras de datos principales
-    ListaGenerica<Carta*> mazo;
-    ListaGenerica<Carta*> descarte;
+    ListaGenerica<Carta> mazo;
+    ListaGenerica<Carta> descarte;
     ListaGenerica<Jugador*> jugadores;
 
     //* Para saber si esta del lado del flip
@@ -35,7 +35,10 @@ private:
 
     // Algoritmos manuales de mezcla
     void mezclarArregloLados(LadoCarta* arreglo, int tamano);
-    void mezclarArregloCartas(Carta** arreglo, int tamano);
+    void mezclarArregloCartas(Carta arreglo, int tamano);
+
+    //* Funcion para calcular la cantidad de mazos
+    int cartasPorPartida(int cantJugadores);
 
 public:
     Juego();
@@ -50,12 +53,14 @@ public:
     void barajarDescarte();
 
     // Saca una carta del mazo
-    Carta* robarDelMazo();
+    Carta robarDelMazo();
 
     bool esLadoOscuro() const;
     void setLadoOscuro(bool estado);
 
     int getCantidadCartasMazo();
+    Color getColorActivo() const;
+    void setColorActivo(Color nuevoColor);
 
     void avanzarTurno();
     //* Metodo para la carta Reverse
@@ -66,7 +71,7 @@ public:
                     const std::string& jugadorSeleccionado = "",
                     int numeroAdivinado = -1,
                     const std::string& colorAdivinado = "");
-    void aplicarEfectoCarta(Carta* cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado = -1, const std::string& colorSeleccionado = "");
+    void aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado = -1, const std::string& colorSeleccionado = "");
     bool adivinoCarta(std::string nombreJugadorElegido, int numeroCarta, std::string colorCarta);
     Color convertirStringAColor(const std::string& colorStr);
 

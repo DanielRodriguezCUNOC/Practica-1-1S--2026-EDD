@@ -15,7 +15,6 @@ public:
     ~ListaGenerica();
     void insertarInicio(const T& dato);
     void insertarFinal(const T& dato);
-    void eliminarDato(const T& dato);
     void eliminarDatoEnPosicion(int pos);
     T& obtenerPrimerElemento();
     T& obtenerElementoEnPosicion(int indice);

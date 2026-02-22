@@ -3,7 +3,7 @@
 #include "carta.h"
 #include "jugador.h"
 
-template class ListaGenerica<Carta*>;
+template class ListaGenerica<Carta>;
 template class ListaGenerica<Jugador*>;
 template <typename T>
 ListaGenerica<T>::ListaGenerica():
@@ -84,39 +84,6 @@ void ListaGenerica<T>::insertarFinal(const T& dato) {
     cola = nuevo;
 
     size++;
-}
-
-template <typename T>
-void ListaGenerica<T>::eliminarDato(const T& dato) {
-
-    if(estaVacia()) return;
-
-    Nodo<T>* actual = cabeza;
-
-    for (int i = 0; i<size; i++) {
-        if(actual->getDato()==dato){
-
-            if(size == 1){
-                delete actual;
-                cabeza = nullptr;
-                cola = nullptr;
-            }else{
-                Nodo<T>* next = actual->getSiguiente();
-                Nodo<T>* prev = actual->getAnterior();
-
-                prev->setSiguiente(next);
-                next->setAnterior(prev);
-
-                if(actual == cabeza) cabeza = next;
-                if(actual == cola) cola = prev;
-
-                delete actual;
-            }
-            size--;
-            return;
-        }
-        actual = actual->getSiguiente();
-    }
 }
 
 template <typename T>
