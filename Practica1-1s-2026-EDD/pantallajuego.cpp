@@ -27,7 +27,7 @@ PantallaJuego::PantallaJuego(QWidget *parent)
     vista = new QGraphicsView(escena, this);
     vista->setStyleSheet("background: transparent; border: none;");
     vista->setRenderHint(QPainter::Antialiasing);
-/*
+
     //Usamos el widget para mostrar la mano
     if(ui->manoJugadorWidget->layout()){
         ui->manoJugadorWidget->layout()->addWidget(vista);
@@ -53,7 +53,7 @@ PantallaJuego::PantallaJuego(QWidget *parent)
     double xActual = (anchoContenedor - anchoTotalCartas) / 2.0;
 
     this->escena->setSceneRect(0, 0, anchoContenedor, 240);
-*/
+
 }
 
 PantallaJuego::~PantallaJuego()
@@ -68,7 +68,7 @@ void PantallaJuego:: iniciarNuevaPartida(int numJugadores, bool esFlip){
 
 }
 
-/*void PantallaJuego::dibujarMazo(ListaGenerica<Carta> mazo){
+void PantallaJuego::dibujarMazo(ListaGenerica<Carta> mazo){
     escena->clear(); // Limpia cartas anteriores
 
     int total = mazo.getSize();
@@ -83,7 +83,7 @@ void PantallaJuego:: iniciarNuevaPartida(int numJugadores, bool esFlip){
 
     for (int i = 0; i < total; ++i) {
         // Suponiendo que mazoBackend[i] tiene el ID y la Ruta de la imagen
-        CartaManoWidget* cartaAMostrar = new CartaManoWidget(i, QString::fromStdString(mazo.obtenerElementoEnPosicion(i).getRutaImagen()));
+        CartaManoWidget* cartaAMostrar = new CartaManoWidget(i, QString::fromStdString(mazo.obtenerElementoEnPosicion(i).getLadoActivo()->getRutaArchivo()));
 
         // Conectas la carta al slot de esta pantalla
         connect(cartaAMostrar, &CartaManoWidget::cartaSeleccionada, this, &PantallaJuego::onCartaSeleccionada);
@@ -92,6 +92,6 @@ void PantallaJuego:: iniciarNuevaPartida(int numJugadores, bool esFlip){
         cartaAMostrar->setPos(xActual + (i * separacion), 300); // 300 es la altura en el tapete
         cartaAMostrar->setZValue(i); // Para que se solapen correctamente de izq a der
 }
-}*/
+}
 
 void PantallaJuego::on_btnSalirJuego_clicked() {}

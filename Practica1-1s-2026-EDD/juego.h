@@ -1,5 +1,6 @@
 #ifndef JUEGO_H
 #define JUEGO_H
+
 #include "carta.h"
 #include "listagenerica.h"
 #include "jugador.h"
@@ -9,77 +10,102 @@
 class Juego
 {
 private:
-    // Estructuras de datos principales
+    // ====== ESTRUCTURAS PRINCIPALES ======
     ListaGenerica<Carta> mazo;
     ListaGenerica<Carta> descarte;
     ListaGenerica<Jugador*> jugadores;
 
-    //* Para saber si esta del lado del flip
+    // ====== ESTADO DEL JUEGO ======
     bool ladoOscuroActivo;
-    //* Numero del jugador
     int indiceTurnoActual;
-    //* 1 sentido horario, -1 sentido antihorario
-    int sentidoJuego;
-    //* El color que esta en la pila de descarte
+    int sentidoJuego;        // 1 horario, -1 antihorario
     Color colorActivo;
-    //* Permite obtener lass rutas de las imagenes
+
+    // ====== UTILIDADES ======
     RutaImagenes ruta;
 
-    // --- MÉTODOS PRIVADOS AUXILIARES (Gestión de Memoria Manual) ---
-
-    // Genera cartas simples
+    // ====== GENERACIÓN Y MEZCLA ======
     void generarMazoNormalManual(int numMazos);
-
-    // Genera cartas dobles con reverso aleatorio
     void generarMazoFlipManual(int numMazos);
 
-    // Algoritmos manuales de mezcla
-    void mezclarArregloLados(LadoCarta* arreglo, int tamano);
-    void mezclarArregloCartas(Carta arreglo, int tamano);
+    void mezclarArregloLados(LadoCarta* arreglo[], int tamano);
+    void mezclarArregloCartas(Carta arreglo[], int tamano);
 
-    //* Funcion para calcular la cantidad de mazos
     int cartasPorPartida(int cantJugadores);
 
 public:
+    // ====== CONSTRUCTOR / DESTRUCTOR ======
     Juego();
     ~Juego();
 
-
-    // Inicializa el juego según el modo elegido
+    // ====== INICIALIZACIÓN ======
     void inicializarMazo(bool modoFlip, int cantidadJugadores);
+    void repartirCartas(int cartasPorJugador = 7);
 
-    // Baraja las cartas que ya están en la lista 'mazo'
+    // ====== TURNOS ======
+    void avanzarTurno();
+    void retrocederTurno();
+
+    // ====== ACCIONES DE JUEGO ======
+    void jugarCarta(
+        Jugador* jugador,
+        int indiceCartaEnMano,
+        const std::string& jugadorSeleccionado = "",
+        int numeroAdivinado = -1,
+        const std::string& colorAdivinado = ""
+        );
+
+    void aplicarEfectoCarta(
+        Carta cartaJugada,
+        const std::string jugadorSeleccionado = "",
+        int numeroSeleccionado = -1,
+        const std::string& colorSeleccionado = ""
+        );
+
+    // ====== MAZO Y DESCARTE ======
     void barajarMazo();
     void barajarDescarte();
 
-    // Saca una carta del mazo
     Carta robarDelMazo();
+    void agregarADescarte(Carta carta);
 
-    bool esLadoOscuro() const;
-    void setLadoOscuro(bool estado);
+    bool mazoEstaVacio() const;
 
-    int getCantidadCartasMazo();
-    Color getColorActivo() const;
-    void setColorActivo(Color nuevoColor);
+    // ====== CONSULTAS DE CARTAS ======
+    bool adivinoCarta(
+        const std::string& nombreJugador,
+        int numeroCarta,
+        const std::string& colorCarta
+        );
 
-    void avanzarTurno();
-    //* Metodo para la carta Reverse
-    void retrocederTurno();
-
-    //* Metodo para aplicar los efectos
-    void jugarCarta(Jugador* jugador, int indiceCartaEnMano,
-                    const std::string& jugadorSeleccionado = "",
-                    int numeroAdivinado = -1,
-                    const std::string& colorAdivinado = "");
-    void aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado = -1, const std::string& colorSeleccionado = "");
-    bool adivinoCarta(std::string nombreJugadorElegido, int numeroCarta, std::string colorCarta);
     Color convertirStringAColor(const std::string& colorStr);
 
-    //* Metodo para jugadores
-    void repartirCartas(int cartasPorJugador = 7);
+    // ====== JUGADORES ======
     Jugador* getJugadorActual();
-    Jugador* getJugadorSeleccionado(std::string nombreJugador);
+    Jugador* getJugadorSeleccionado(const std::string& nombreJugador);
+    Jugador* getJugadorEnPosicion(int indice);
 
+    int getCantidadJugadores() const;
+
+    // ====== GETTERS ======
+    int getSentidoJuego() const;
+    bool getLadoOscuroActivo() const;
+    Color getColorActivo() const;
+    int getIndiceTurnoActual()const;
+
+    int getTamanoMazo() const;
+    int getTamanoDescarte() const;
+
+    ListaGenerica<Carta>& getMazo();
+    ListaGenerica<Carta>& getDescarte();
+    ListaGenerica<Jugador*>& getJugadores();
+
+    // ====== SETTERS ======
+    void setSentidoJuego(int sentido);
+    void setLadoOscuroActivo(bool activo);
+    void setColorActivo(Color color);
+    void setIndiceTurnoActual(int nuevoIndice);
 };
 
-#endif // JUEGO_H
+
+#endif

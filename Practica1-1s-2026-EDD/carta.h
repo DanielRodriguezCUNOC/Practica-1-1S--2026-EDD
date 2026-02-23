@@ -15,13 +15,13 @@ public:
     Carta(LadoCarta* claro, LadoCarta* oscuro);
     Carta(const Carta& cartaCopia);
     Carta& operator=(const Carta& cartaCopia);
+    Carta();
     ~Carta();
 
-    // Métodos Puros (El contrato que los hijos deben cumplir)
     LadoCarta* getLadoActivo() const;
     void voltear();
-    // Para saber si es carta especial sin cast
     bool esFlip() const;
+    bool esValida()const;
 };
 
 #endif // CARTA_H

@@ -10,6 +10,14 @@ LadoCarta* LadoComodinRobarSeis::clonar() const {
 
 void LadoComodinRobarSeis::aplicarEfecto(Juego* juego, const std::string& colorSeleccionado,
                                      const std::string jugadorSeleccionado, int numeroSeleccionado){
-    Color nuevoColor = juego->convertirStringAColor(colorSeleccionado);
-    juego->setColorActivo( nuevoColor);
+    // El siguiente jugador pierde el turno y roba 6 cartas
+    juego->avanzarTurno();
+    Jugador* victima = juego->getJugadorActual();
+
+    for(int i = 0; i < 6; i++) {
+        if(juego->mazoEstaVacio()) juego->barajarDescarte();
+
+        Carta robada = juego->robarDelMazo();
+        if(robada.esValida())victima->agregarCarta(robada);
+    }
 }

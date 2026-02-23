@@ -11,7 +11,11 @@ LadoCarta* LadoComodinColor::clonar() const {
 
 void LadoComodinColor::aplicarEfecto(Juego* juego, const std::string& colorSeleccionado,
 const std::string jugadorSeleccionado, int numeroSeleccionado){
-    Color nuevoColor = juego->convertirStringAColor(colorSeleccionado);
-    juego->setColorActivo( nuevoColor);
+
+    // Cambia el color activo al seleccionado por el jugador
+    if (!colorSeleccionado.empty()) {
+        Color nuevoColor = juego->convertirStringAColor(colorSeleccionado);
+        juego->setColorActivo(nuevoColor);
+    }
 }
 

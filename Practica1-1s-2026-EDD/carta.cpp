@@ -22,6 +22,8 @@ Carta& Carta::operator=(const Carta& copia) {
     return *this;
 }
 
+Carta::Carta(){}
+
 Carta::~Carta(){
     delete ladoClaro;
     if(ladoOscuro!= nullptr) delete ladoOscuro;
@@ -35,4 +37,9 @@ LadoCarta* Carta::getLadoActivo() const{
 bool Carta::esFlip() const{
     return ladoOscuro!=nullptr;
 }
-
+bool Carta::esValida()const{
+    return getLadoActivo()!=nullptr;
+}
+void Carta::voltear(){
+    estaVolteada = !estaVolteada;
+}

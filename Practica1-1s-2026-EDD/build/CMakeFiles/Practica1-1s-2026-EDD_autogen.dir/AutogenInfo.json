@@ -472,6 +472,12 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/excepciones.h",
+			"MU",
+			"EWIEGA46WW/moc_excepciones.cpp",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/juego.h",
 			"MU",
 			"EWIEGA46WW/moc_juego.cpp",
@@ -484,9 +490,33 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoadivinarcarta.h",
+			"MU",
+			"EWIEGA46WW/moc_ladoadivinarcarta.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiardireccion.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocambiardireccion.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiarmano.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocambiarmano.cpp",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.h",
 			"MU",
 			"EWIEGA46WW/moc_ladocarta.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocoloreterno.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocoloreterno.cpp",
 			null
 		],
 		[
@@ -496,15 +526,27 @@
 			null
 		],
 		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincuatro.h",
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarcuatro.h",
 			"MU",
-			"EWIEGA46WW/moc_ladocomodincuatro.cpp",
+			"EWIEGA46WW/moc_ladocomodinrobarcuatro.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobardos.h",
+			"MU",
+			"EWIEGA46WW/moc_ladocomodinrobardos.cpp",
 			null
 		],
 		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarseis.h",
 			"MU",
 			"EWIEGA46WW/moc_ladocomodinrobarseis.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladodorsogenerico.h",
+			"MU",
+			"EWIEGA46WW/moc_ladodorsogenerico.cpp",
 			null
 		],
 		[
@@ -520,9 +562,39 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoreverse.h",
+			"MU",
+			"EWIEGA46WW/moc_ladoreverse.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobados.h",
+			"MU",
+			"EWIEGA46WW/moc_ladorobados.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobatres.h",
+			"MU",
+			"EWIEGA46WW/moc_ladorobatres.cpp",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobauno.h",
 			"MU",
 			"EWIEGA46WW/moc_ladorobauno.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosalto.h",
+			"MU",
+			"EWIEGA46WW/moc_ladosalto.cpp",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosaltotodos.h",
+			"MU",
+			"EWIEGA46WW/moc_ladosaltotodos.cpp",
 			null
 		],
 		[
@@ -667,7 +739,27 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoadivinarcarta.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiardireccion.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiarmano.cpp",
+			"MU",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocoloreterno.cpp",
 			"MU",
 			null
 		],
@@ -677,12 +769,22 @@
 			null
 		],
 		[
-			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincuatro.cpp",
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarcuatro.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobardos.cpp",
 			"MU",
 			null
 		],
 		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarseis.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladodorsogenerico.cpp",
 			"MU",
 			null
 		],
@@ -697,7 +799,32 @@
 			null
 		],
 		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoreverse.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobados.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobatres.cpp",
+			"MU",
+			null
+		],
+		[
 			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobauno.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosalto.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosaltotodos.cpp",
 			"MU",
 			null
 		],

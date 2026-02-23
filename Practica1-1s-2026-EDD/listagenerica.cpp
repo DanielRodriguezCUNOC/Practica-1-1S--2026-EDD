@@ -2,6 +2,7 @@
 #include "listagenerica.h"
 #include "carta.h"
 #include "jugador.h"
+#include "excepciones.h"
 
 template class ListaGenerica<Carta>;
 template class ListaGenerica<Jugador*>;
@@ -13,18 +14,19 @@ ListaGenerica<T>::ListaGenerica():
 template <typename T>
 ListaGenerica<T>::~ListaGenerica(){
 
-    if(estaVacia()) return;
+    if (estaVacia()) return;
 
     Nodo<T>* actual = cabeza;
 
-    do{
+    do {
         Nodo<T>* siguiente = actual->getSiguiente();
         delete actual;
         actual = siguiente;
+    } while (actual != cabeza);
 
-    }while(actual != cabeza);
     cabeza = nullptr;
     cola = nullptr;
+    size = 0;
 }
 
 template <typename T>
@@ -81,7 +83,7 @@ void ListaGenerica<T>::insertarFinal(const T& dato) {
     cola->setSiguiente(nuevo);
     cabeza->setAnterior(nuevo);
 
-    cola = nuevo;
+    this->cola = nuevo;
 
     size++;
 }
@@ -133,14 +135,7 @@ int ListaGenerica<T>::getSize()const{
 
 template <typename T>
 Nodo<T>* ListaGenerica<T>::getCola(){
-    if(this->estaVacia()) return nullptr;
-
-    Nodo<T>* actual = this->cabeza;
-
-    while(actual->getSiguiente() != this->cabeza){
-        actual = actual->getSiguiente();
-    }
-    return actual;
+    return cola;
 }
 
 template <typename T>
@@ -150,15 +145,24 @@ T& ListaGenerica<T>::obtenerPrimerElemento(){
 
 template <typename T>
 T& ListaGenerica<T>::obtenerElementoEnPosicion(int indice){
+
+    if (indice < 0 || indice >= size)
+        throw IndiceFueraDeRangoException();
+
     Nodo<T>* actual = cabeza;
-    for (int i = 0; i < indice; i++) {
+
+    for (int i = 0; i < indice; i++)
         actual = actual->getSiguiente();
-    }
+
     return actual->getDato();
 }
 
 template <typename T>
 T ListaGenerica<T>::robarCarta(){
+
+    if (estaVacia())
+        return nullptr;
+
     T dato = cabeza->getDato();
     eliminarDatoEnPosicion(0);
     return dato;

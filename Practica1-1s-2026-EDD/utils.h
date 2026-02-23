@@ -3,7 +3,7 @@
 
 enum class TipoCarta {
     // Normal / Lado Claro
-    NUMERO, ROBA1, ROBA2, SALTO, REVERSE, COMODIN, COMODIN4,
+    NUMERO, ROBA1, ROBA2, SALTO, REVERSE, COMODIN, COMODIN4, BLOQUEO,
     // Lado Oscuro (Flip)
     ROBA3, COMODIN6, COMODIN2, SALTODOS, COLORETERNO, CAMBIARDIRECCION, FLIP,
     // Especial para el reverso del UNO Normal

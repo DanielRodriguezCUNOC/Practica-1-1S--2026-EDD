@@ -20,3 +20,4 @@ void CartaManoWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
 void CartaManoWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     setY(y() + 25);
 }
+
