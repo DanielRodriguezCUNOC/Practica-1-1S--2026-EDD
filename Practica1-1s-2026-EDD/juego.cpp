@@ -33,26 +33,20 @@ Juego::~Juego(){
     }
 }
 
-void Juego::inicializarMazo(bool modoFlip, int cantidadJugadores){
-
+void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip){
     ladoOscuroActivo = false;
 
     int numMazos = ((cantidadJugadores -1)/6)+1;
 
-    //modoFlip ? generarMazoFlipManual(numMazos) : generarMazoNormalManual(numMazos);
-    generarMazoNormalManual(numMazos);
+    modoFlip ? generarMazoFlipManual(numMazos) : generarMazoNormalManual(numMazos);
 
-    qDebug()<<"Recorriendo lista";
+    barajarMazo();
 
-    for(int i =0; i<mazo.getSize(); i++){
-        qDebug()<<mazo.obtenerElementoEnPosicion(i).getLadoActivo()->getNumero();
-    }
-   // barajarMazo();
+    repartirCartas();
 
 }
 
 void Juego::mezclarArregloLados(LadoCarta* arreglo[], int tamano) {
-
     // Algoritmo de Fisher-Yates para barajar el arreglo
     for (int i = tamano - 1; i > 0; i--) {
         // Generar un índice aleatorio entre 0 e i
@@ -78,7 +72,6 @@ void Juego::mezclarArregloCartas(Carta arreglo[], int size)
 }
 
 void Juego::generarMazoNormalManual(int numMazos){
-
     for(int n = 0; n <numMazos; n++){
 
     Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
@@ -149,7 +142,6 @@ void Juego::generarMazoNormalManual(int numMazos){
 }
 
 void Juego::generarMazoFlipManual(int numMazos){
-
     //* Cartas totales que debe tener un mazo de UNO FLIP
     int const CARTAS_POR_MAZO = 132;
     int cartasTotales = CARTAS_POR_MAZO * numMazos;
@@ -259,7 +251,6 @@ void Juego::generarMazoFlipManual(int numMazos){
         }
 
         // 4 cartas personalizadas por lado por color -> 4*2*2->16
-        // 4 cambio color comodin lado claro | 4 color eterno comodin lado oscuro
         for (int i = 0; i < 4; i++) {
 
             ladosClaros[idxClaro++] = new LadoAdivinarCarta(claro, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, claro));
@@ -271,13 +262,11 @@ void Juego::generarMazoFlipManual(int numMazos){
         }
 
     }
-
     // Mezclar aleatoriamente SOLO los lados oscuros
     mezclarArregloLados(ladosOscuros, idxOscuro);
 
     // Unir ambos lados en un objeto Carta y agregarlo al mazo final
     for(int i = 0; i < idxClaro; i++){
-
         mazo.insertarFinal(Carta(ladosClaros[i], ladosOscuros[i]));
     }
 
@@ -363,10 +352,13 @@ void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSelec
     if(ladoActual!=nullptr) ladoActual->aplicarEfecto(this,colorSeleccionado);
 
 }
+
+//* Agregar la UI para refrescarla cada vez que se realiza una accion
    void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
                           const std::string& jugadorSeleccionado,
                           int numeroAdivinado,
                           const std::string& colorAdivinado) {
+
        // El jugador tira la carta (la quitamos de su mano)
        Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
        jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
@@ -385,14 +377,12 @@ void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSelec
 
        // Verificar que hay jugadores
        if (jugadores.estaVacia()) {
-           qDebug() << "Error: No hay jugadores para repartir cartas";
            return;
        }
 
        // Verificar que hay suficientes cartas en el mazo
        int cartasNecesarias = jugadores.getSize() * cartasPorJugador;
        if (mazo.getSize() < cartasNecesarias) {
-           qDebug() << "Error: No hay suficientes cartas en el mazo";
            return;
        }
 
@@ -425,9 +415,6 @@ void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSelec
                }
            }
        }
-
-       qDebug() << "Reparto completado. Mazo restante:" << mazo.getSize()
-                << "cartas. Primera carta en descarte.";
    }
 
    Jugador* Juego::getJugadorActual(){
@@ -458,32 +445,10 @@ void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSelec
 
    void Juego::barajarMazo()
    {
-       int cantidad = mazo.getSize();
-       if (cantidad <= 1) return;
-
-       Carta buffer[cantidad];
-
-
-       for (int i = 0; i < cantidad; i++)
-       {
-           // devuelve Carta por valor
-           buffer[i] = mazo.robarCarta();
-       }
-
-       for (int i = cantidad - 1; i > 0; i--)
-       {
-           int j = rand() % (i + 1);
-
-           Carta temp = buffer[i];
-           buffer[i] = buffer[j];
-           buffer[j] = temp;
-       }
-
-       for (int i = 0; i < cantidad; i++)
-       {
-           mazo.insertarFinal(buffer[i]);
-       }
+       mazo.barajar();
    }
+
+
 
    void Juego::barajarDescarte(){
        while(descarte.getSize()>1){
@@ -503,5 +468,10 @@ void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSelec
 
    bool Juego::mazoEstaVacio()const{
        return mazo.getSize()<=0;
+   }
+
+   void Juego::setJugadorEnLista(const std::string nombreJugador){
+       Jugador* jugador = new Jugador(nombreJugador);
+       jugadores.insertarFinal(jugador);
    }
 

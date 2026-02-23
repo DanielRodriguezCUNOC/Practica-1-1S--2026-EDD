@@ -20,6 +20,9 @@ private:
     Juego* juego;
     QGraphicsScene* escena;
     QGraphicsView* vista;
+
+    int numJugadores;
+    bool modoJuego;
 signals:
     void salirPartida();
     void pedirNombres();
@@ -28,7 +31,7 @@ private slots:
     void on_btnSalirJuego_clicked();
 
 public:
-    explicit PantallaJuego(QWidget *parent = nullptr);
+    explicit PantallaJuego(int cantidadaJugdores, bool esFlip, QWidget *parent = nullptr);
     ~PantallaJuego();
     void iniciarNuevaPartida(int numJugadores, bool esFlip);
     void dibujarMazo(ListaGenerica<Carta> mazoBackend);

@@ -16,6 +16,8 @@ public:
     void insertarInicio(const T& dato);
     void insertarFinal(const T& dato);
     void eliminarDatoEnPosicion(int pos);
+    void barajar();
+
     T& obtenerPrimerElemento();
     T& obtenerElementoEnPosicion(int indice);
     T robarCarta();
@@ -23,6 +25,8 @@ public:
     bool estaVacia();
     int getSize()const;
     Nodo<T>* getCola();
+    Nodo<T>* getCabeza();
+
 };
 
 #endif // LISTAGENERICA_H

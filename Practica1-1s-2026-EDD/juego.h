@@ -39,7 +39,7 @@ public:
     ~Juego();
 
     // ====== INICIALIZACIÓN ======
-    void inicializarMazo(bool modoFlip, int cantidadJugadores);
+    void inicializarMazo(int cantidadJugadores, bool modoFlip);
     void repartirCartas(int cartasPorJugador = 7);
 
     // ====== TURNOS ======
@@ -105,6 +105,7 @@ public:
     void setLadoOscuroActivo(bool activo);
     void setColorActivo(Color color);
     void setIndiceTurnoActual(int nuevoIndice);
+    void setJugadorEnLista(const std::string nombreJugador);
 };
 
 

@@ -14,15 +14,20 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     this->setObjectName("MenuInicio");
 
+    pantallaMenu = ui->stackedWidget->widget(0);
+
     //* Inicializar todas las pantallas
-    pantallaConfiguracion = new Configuraciones(this);
-    pantallaAyuda = nullptr;  // Inicializar como nullptr
-    pantallaJuego = nullptr;  // Inicializar como nullptr
+    pantallaConfiguracion= nullptr;
+    pantallaAyuda = nullptr;
+    pantallaJuego = nullptr;
 
-    //* Agregar las pantallas al Stack
-    ui->stackedWidget->addWidget(this->pantallaConfiguracion);
+    //* Agregar configuracion al stack
+   // ui->stackedWidget->addWidget(pantallaConfiguracion);
 
-    //* Conectar botones (sin duplicados)
+    //* Mostrar menu al iniciar
+    ui->stackedWidget->setCurrentWidget(pantallaMenu);
+
+    //* Conectar botones
     connect(ui->btnJugar, &BotonAnimado::clicked, this, &MainWindow::on_btnJugar_clicked);
     connect(ui->btnConfigurar, &BotonAnimado::clicked, this, &MainWindow::on_btnConfigurar_clicked);
     connect(ui->btnAyuda, &BotonAnimado::clicked, this, &MainWindow::on_btnAyuda_clicked);
@@ -48,7 +53,7 @@ void MainWindow::on_btnAyuda_clicked()
         //* AQUÍ conectar la señal después de crear pantallaAyuda
         connect(pantallaAyuda, &Ayuda::volverMenuInicio, this, [=](){
            // ui->stackedWidget->setCurrentIndex(0);
-            ui->stackedWidget->setCurrentIndex(0);
+            ui->stackedWidget->setCurrentWidget(pantallaMenu);
         });
     }
     ui->stackedWidget->setCurrentWidget(pantallaAyuda);
@@ -66,16 +71,15 @@ void MainWindow::on_btnJugar_clicked()
         return;
     }
 
-
     if(!pantallaJuego){
-        pantallaJuego = new PantallaJuego(this);
+        pantallaJuego = new PantallaJuego(numJugadores, esFlip, this);
         ui->stackedWidget->addWidget(pantallaJuego);
         connect(pantallaJuego, &PantallaJuego::salirPartida, this, [=](){
-            ui->stackedWidget->setCurrentIndex(0);
+            ui->stackedWidget->setCurrentWidget(pantallaMenu);
         });
     }
-    pantallaJuego->iniciarNuevaPartida(numJugadores, esFlip);
     ui->stackedWidget->setCurrentWidget(pantallaJuego);
+
 }
 
 void MainWindow::on_btnConfigurar_clicked()
@@ -84,7 +88,7 @@ void MainWindow::on_btnConfigurar_clicked()
         pantallaConfiguracion = new Configuraciones(this);
         ui->stackedWidget->addWidget(pantallaConfiguracion);
         connect(pantallaConfiguracion, &Configuraciones::volverMenuInicio, this, [=](){
-            ui->stackedWidget->setCurrentWidget(0);
+            ui->stackedWidget->setCurrentWidget(pantallaMenu);
         });
     }
     ui->stackedWidget->setCurrentWidget(pantallaConfiguracion);

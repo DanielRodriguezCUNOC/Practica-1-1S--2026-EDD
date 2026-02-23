@@ -3,6 +3,7 @@
 #include "carta.h"
 #include "jugador.h"
 #include "excepciones.h"
+#include "qdebug.h"
 
 template class ListaGenerica<Carta>;
 template class ListaGenerica<Jugador*>;
@@ -161,7 +162,7 @@ template <typename T>
 T ListaGenerica<T>::robarCarta(){
 
     if (estaVacia())
-        return nullptr;
+        throw IndiceFueraDeRangoException();
 
     T dato = cabeza->getDato();
     eliminarDatoEnPosicion(0);
@@ -169,7 +170,53 @@ T ListaGenerica<T>::robarCarta(){
 }
 
 template <typename T>
+void ListaGenerica<T>::barajar() {
+
+    if (size <= 1) return;
+
+    // 1. Creamos un arreglo temporal de PUNTEROS A NODO (No a datos, así evitamos el truene)
+    Nodo<T>** arregloNodos = new Nodo<T>*[size];
+    Nodo<T>* actual = cabeza;
+
+    // 2. Guardamos las direcciones de todos los nodos
+    for (int i = 0; i < size; i++) {
+        arregloNodos[i] = actual;
+        actual = actual->getSiguiente();
+    }
+
+    // 3. Mezclamos las posiciones de los Nodos (Fisher-Yates)
+    for (int i = size - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        Nodo<T>* temp = arregloNodos[i];
+        arregloNodos[i] = arregloNodos[j];
+        arregloNodos[j] = temp;
+    }
+
+    // 4. Reconstruimos los enlaces de la lista circular con el nuevo orden
+    for (int i = 0; i < size; i++) {
+        Nodo<T>* nodoActual = arregloNodos[i];
+        Nodo<T>* nodoPrevio = (i == 0) ? arregloNodos[size - 1] : arregloNodos[i - 1];
+        Nodo<T>* nodoSiguiente = (i == size - 1) ? arregloNodos[0] : arregloNodos[i + 1];
+
+        nodoActual->setAnterior(nodoPrevio);
+        nodoActual->setSiguiente(nodoSiguiente);
+    }
+
+    // 5. Actualizamos quién es la cabeza y la cola
+    cabeza = arregloNodos[0];
+    cola = arregloNodos[size - 1];
+
+    // Limpiamos nuestra memoria temporal
+    delete[] arregloNodos;
+}
+
+template <typename T>
 Nodo<T>* ListaGenerica<T>::siguienteTurno(Nodo<T>* nodoActual, bool horario){
     return horario ? nodoActual->getSiguiente()
                    : nodoActual->getAnterior();
+}
+
+template <typename T>
+Nodo<T>* ListaGenerica<T>::getCabeza(){
+    return this->cabeza;
 }

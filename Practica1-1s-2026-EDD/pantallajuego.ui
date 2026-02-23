@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1080</width>
+    <width>1168</width>
     <height>840</height>
    </rect>
   </property>
@@ -117,16 +117,41 @@
            <height>16777215</height>
           </size>
          </property>
-         <widget class="QWidget" name="mazoCartas" native="true">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>260</y>
-            <width>120</width>
-            <height>80</height>
-           </rect>
-          </property>
-         </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QLabel" name="lblMostrarNombre">
+              <property name="minimumSize">
+               <size>
+                <width>300</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>300</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Turno</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="mazoCartas" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>320</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -261,7 +286,7 @@ color: black;</string>
   <customwidget>
    <class>BotonAnimado</class>
    <extends>QPushButton</extends>
-   <header location="global">botonanimado.h</header>
+   <header>botonanimado.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -2,12 +2,16 @@
 #include "botonanimado.h"
 #include "ui_pantallajuego.h"
 #include "cartamanowidget.h"
+#include <QInputDialog>
+#include <QMessageBox>
 
-PantallaJuego::PantallaJuego(QWidget *parent)
+PantallaJuego::PantallaJuego(int cantidadJugadores, bool esFlip, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::PantallaJuego)
     //* Inicializar el puntero de juego
     , juego(new Juego())
+    ,   numJugadores(cantidadJugadores)
+    , modoJuego(esFlip)
 {
     ui->setupUi(this);
     this ->setObjectName("PantallaJuego");
@@ -38,9 +42,10 @@ PantallaJuego::PantallaJuego(QWidget *parent)
 
     this->escena->clear();
 
+    iniciarNuevaPartida(numJugadores, modoJuego);
+
     int total = juego->getJugadorActual()->getMano().getSize();
     if (total == 0) return;
-
     double anchoContenedor = this->vista->viewport()->width();
     if (anchoContenedor < 1241) anchoContenedor = 1241;
 
@@ -62,9 +67,40 @@ PantallaJuego::~PantallaJuego()
     delete ui;
 }
 void PantallaJuego:: iniciarNuevaPartida(int numJugadores, bool esFlip){
-    //* Inicializar el mazo segun el modo
-    juego->inicializarMazo(esFlip, numJugadores);
 
+    int jugadoresAgregados=0;
+    bool ok;
+
+    do{
+
+        // Mostramos el diálogo para pedir el texto
+        QString nombreIngresado = QInputDialog::getText(this,
+                                                        "Nuevo Jugador",       // Título de la ventana
+                                                        "Ingresa el nombre del jugador:", // Mensaje
+                                                        QLineEdit::Normal,     // Modo del texto (normal, password, etc)
+                                                        "",                    // Texto por defecto (vacío)
+                                                        &ok);                  // Puntero a nuestro booleano
+
+        // Verificamos si presionó Aceptar y si no dejó el espacio en blanco
+        if (ok && !nombreIngresado.isEmpty()) {
+
+            std::string nombreStdString = nombreIngresado.toStdString();
+
+            juego->setJugadorEnLista(nombreStdString);
+
+            QMessageBox::information(this, "Éxito", "Jugador agregado: " + nombreIngresado);
+            jugadoresAgregados++;
+
+        } else if (ok && nombreIngresado.isEmpty()) {
+            QMessageBox::warning(this, "Cuidado", "El nombre no puede estar vacío.");
+        }
+
+    }while(jugadoresAgregados<=numJugadores);
+
+
+
+    //* Inicializar el mazo segun el modo
+    juego->inicializarMazo(numJugadores, esFlip);
 
 }
 
@@ -91,7 +127,13 @@ void PantallaJuego::dibujarMazo(ListaGenerica<Carta> mazo){
         escena->addItem(cartaAMostrar);
         cartaAMostrar->setPos(xActual + (i * separacion), 300); // 300 es la altura en el tapete
         cartaAMostrar->setZValue(i); // Para que se solapen correctamente de izq a der
+    }
 }
+
+void PantallaJuego:: onCartaSeleccionada(int idCarta){
+    Carta cartaSeleccionada = juego->getJugadorActual()->getMano().obtenerElementoEnPosicion(idCarta);
+    if(!cartaSeleccionada.esValida()) return;
+    juego->jugarCarta(juego->getJugadorActual(), idCarta);
 }
 
 void PantallaJuego::on_btnSalirJuego_clicked() {}

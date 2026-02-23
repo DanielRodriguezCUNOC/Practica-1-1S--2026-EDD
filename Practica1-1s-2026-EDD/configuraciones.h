@@ -23,6 +23,8 @@ public:
     bool getEsModoFlip() const;
 
 
+private slots:
+    void on_btnSalirConfig_clicked();
 };
 
 #endif // CONFIGURACIONES_H
