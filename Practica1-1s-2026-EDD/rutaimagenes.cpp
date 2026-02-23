@@ -7,7 +7,7 @@ std::string RutaImagenes::generarRuta(TipoCarta tipo, Color color, int numero){
     std::string modo = modoDeJuego(color);
 
     // Reutilizar números claros desde NORMAL
-    if(tipo == TipoCarta::Numero && esColorClaro(color)){
+    if(tipo == TipoCarta::NUMERO && esColorClaro(color)){
         modo = "NORMAL";
     }
 
@@ -18,13 +18,13 @@ std::string RutaImagenes::generarRuta(TipoCarta tipo, Color color, int numero){
 }
 
 bool RutaImagenes::esColorClaro(Color c){
-    return (c == Color::Rojo || c == Color::Azul ||
-            c == Color::Verde || c == Color::Amarillo);
+    return (c == Color::ROJO || c == Color::AZUL ||
+            c == Color::VERDE || c == Color::AMARILLO);
 }
 
 std::string RutaImagenes::modoDeJuego(Color c){
-    if(c == Color::Rosa || c == Color::Turquesa ||
-        c == Color::Naranja || c == Color::Purpura)
+    if(c == Color::ROSA || c == Color::TURQUESA ||
+        c == Color::NARANJA || c == Color::PURPURA)
         return "FLIP";
 
     return "NORMAL";
@@ -32,32 +32,32 @@ std::string RutaImagenes::modoDeJuego(Color c){
 
 std::string RutaImagenes::obtenerCarpetaColor(Color c){
     switch(c){
-    case Color::Rojo: return "ROJO";
-    case Color::Azul: return "AZUL";
-    case Color::Verde: return "VERDE";
-    case Color::Amarillo: return "AMARILLO";
+    case Color::ROJO: return "ROJO";
+    case Color::AZUL: return "AZUL";
+    case Color::VERDE: return "VERDE";
+    case Color::AMARILLO: return "AMARILLO";
 
-    case Color::Rosa: return "ROSADO";
-    case Color::Turquesa: return "TURQUESA";
-    case Color::Naranja: return "NARANJA";
-    case Color::Purpura: return "PURPURA";
+    case Color::ROSA: return "ROSADO";
+    case Color::TURQUESA: return "TURQUESA";
+    case Color::NARANJA: return "NARANJA";
+    case Color::PURPURA: return "PURPURA";
 
-    case Color::Negro: return "COMODINES";
+    case Color::NEGRO: return "COMODINES";
     default: return "VARIOS";
     }
 }
 
 std::string RutaImagenes::obtenerPrefijoColor(Color c){
     switch(c){
-    case Color::Rojo: return "R";
-    case Color::Azul: return "AZ";
-    case Color::Verde: return "V";
-    case Color::Amarillo: return "A";
+    case Color::ROJO: return "R";
+    case Color::AZUL: return "AZ";
+    case Color::VERDE: return "V";
+    case Color::AMARILLO: return "A";
 
-    case Color::Naranja: return "N";
-    case Color::Purpura: return "PU";
-    case Color::Rosa: return "P";
-    case Color::Turquesa: return "T";
+    case Color::NARANJA: return "N";
+    case Color::PURPURA: return "PU";
+    case Color::ROSA: return "P";
+    case Color::TURQUESA: return "T";
 
     default: return "";
     }
@@ -66,24 +66,24 @@ std::string RutaImagenes::obtenerPrefijoColor(Color c){
 std::string RutaImagenes::obtenerNombreArchivo(TipoCarta tipo, Color color, int numero, const std::string& modo){
 
     // -------- CARTAS NUMERO --------
-    if(tipo == TipoCarta::Numero){
+    if(tipo == TipoCarta::NUMERO){
         return obtenerPrefijoColor(color) + std::to_string(numero);
     }
 
     // -------- NORMAL --------
     if(modo == "NORMAL"){
         switch(tipo){
-        case TipoCarta::Roba2:   return obtenerPrefijoColor(color) + "+2";
-        case TipoCarta::Salto:   return obtenerPrefijoColor(color) + "B";
-        case TipoCarta::Reverse: return obtenerPrefijoColor(color) + "R";
+        case TipoCarta::ROBA2:   return obtenerPrefijoColor(color) + "+2";
+        case TipoCarta::BLOQUEO:   return obtenerPrefijoColor(color) + "B";
+        case TipoCarta::REVERSE: return obtenerPrefijoColor(color) + "R";
 
-        case TipoCarta::Comodin4: return "+4";
-        case TipoCarta::Comodin:  return "Comodin-Color";
+        case TipoCarta::COMODIN4: return "+4";
+        case TipoCarta::COMODIN:  return "Comodin-Color";
 
-        case TipoCarta::CambiarMano:  return "Comodin-Descartar-Cartas";
-        case TipoCarta::AdivinarCarta:return "Comodin-Adivinar-Numero-y-Color";
+        case TipoCarta::CAMBIARMANO:  return "Comodin-Descartar-Cartas";
+        case TipoCarta::ADIVINARCARTA:return "Comodin-Adivinar-Numero-y-Color";
 
-        case TipoCarta::DorsoGenerico:return "POSTERIOR";
+        case TipoCarta::DORSOGENERICO:return "POSTERIOR";
 
         default: break;
         }
@@ -92,21 +92,21 @@ std::string RutaImagenes::obtenerNombreArchivo(TipoCarta tipo, Color color, int 
     // -------- FLIP --------
     if(modo == "FLIP"){
         switch(tipo){
-        case TipoCarta::Roba1: return obtenerPrefijoColor(color) + "+1";
-        case TipoCarta::Roba3: return obtenerPrefijoColor(color) + "+3";
+        case TipoCarta::ROBA1: return obtenerPrefijoColor(color) + "+1";
+        case TipoCarta::ROBA3: return obtenerPrefijoColor(color) + "+3";
 
-        case TipoCarta::SaltoTodos: return obtenerPrefijoColor(color) + "PT";
-        case TipoCarta::CambiarDireccion: return obtenerPrefijoColor(color) + "D";
-        case TipoCarta::Flip: return obtenerPrefijoColor(color) + "F";
+        case TipoCarta::SALTODOS: return obtenerPrefijoColor(color) + "PT";
+        case TipoCarta::CAMBIARDIRECCION: return obtenerPrefijoColor(color) + "D";
+        case TipoCarta::FLIP: return obtenerPrefijoColor(color) + "F";
 
-        case TipoCarta::Comodin6: return "Comodin+6";
-        case TipoCarta::Comodin2: return "Comodin+2";
-        case TipoCarta::ColorEterno: return "Comodin-Cartas-Inifinitas-Flip";
+        case TipoCarta::COMODIN6: return "Comodin+6";
+        case TipoCarta::COMODIN2: return "Comodin+2";
+        case TipoCarta::COLORETERNO: return "Comodin-Cartas-Inifinitas-Flip";
 
-        case TipoCarta::AdivinarCarta:
+        case TipoCarta::ADIVINARCARTA:
             return "Comodin-Adivinar-Numero-y-Color";
 
-        case TipoCarta::CambiarMano:
+        case TipoCarta::CAMBIARMANO:
             return "Comodin-Descartar-Cartas";
 
         default: break;

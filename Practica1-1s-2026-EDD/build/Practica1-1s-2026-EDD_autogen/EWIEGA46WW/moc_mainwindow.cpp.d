@@ -151,21 +151,31 @@
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qimage.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qkeysequence.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpaintdevice.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpainter.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpalette.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpen.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpixelformat.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpixmap.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpolygon.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qregion.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qrgb.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qrgba64.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtextoption.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtgui-config.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtguiexports.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtguiglobal.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtransform.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qwindowdefs.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QGraphicsScene \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QGraphicsView \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QMainWindow \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QWidget \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qframe.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qgraphicsview.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qmainwindow.h \
+  /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qscrollarea.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qsizepolicy.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qtabwidget.h \
   /home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qtwidgets-config.h \

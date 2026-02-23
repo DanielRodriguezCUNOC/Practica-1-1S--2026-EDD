@@ -12,24 +12,53 @@ Practica1-1s-2026-EDD_autogen/timestamp: \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/build/Practica1-1s-2026-EDD_autogen/moc_predefs.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/carta.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/carta.h \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.cpp \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaadivinar.h \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.cpp \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartacambiarmazo.h \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.cpp \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaflip.h \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.cpp \
-	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartanormal.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartamanowidget.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartamanowidget.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaui.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/cartaui.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/configuraciones.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/configuraciones.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/excepciones.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/juego.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/juego.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/jugador.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/jugador.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoadivinarcarta.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoadivinarcarta.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiardireccion.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiardireccion.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiarmano.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocambiarmano.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocarta.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocoloreterno.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocoloreterno.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincolor.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodincolor.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarcuatro.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarcuatro.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobardos.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobardos.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarseis.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladocomodinrobarseis.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladodorsogenerico.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladodorsogenerico.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoflip.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoflip.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladonumero.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladonumero.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoreverse.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladoreverse.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobados.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobados.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobatres.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobatres.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobauno.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladorobauno.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosalto.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosalto.h \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosaltotodos.cpp \
+	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/ladosaltotodos.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/listagenerica.cpp \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/listagenerica.h \
 	/home/luluwalilith/QTPROJECTS/Practica-1-1S--2026-EDD/Practica1-1s-2026-EDD/main.cpp \
@@ -191,27 +220,37 @@ Practica1-1s-2026-EDD_autogen/timestamp: \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qimage.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qkeysequence.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpaintdevice.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpainter.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpainterpath.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpalette.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpen.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpixelformat.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpixmap.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qpolygon.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qregion.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qrgb.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qrgba64.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtextoption.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtgui-config.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtguiexports.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtguiglobal.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qtransform.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtGui/qwindowdefs.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QGraphicsPixmapItem \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QGraphicsScene \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QGraphicsView \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QMainWindow \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QPushButton \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/QWidget \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qabstractbutton.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qframe.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qgraphicsitem.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qgraphicsview.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qmainwindow.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qpushbutton.h \
+	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qscrollarea.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qsizepolicy.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qtabwidget.h \
 	/home/luluwalilith/Qt/6.10.2/gcc_64/include/QtWidgets/qtwidgets-config.h \

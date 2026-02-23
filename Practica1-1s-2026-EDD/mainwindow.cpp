@@ -80,6 +80,13 @@ void MainWindow::on_btnJugar_clicked()
 
 void MainWindow::on_btnConfigurar_clicked()
 {
+    if(!pantallaConfiguracion){
+        pantallaConfiguracion = new Configuraciones(this);
+        ui->stackedWidget->addWidget(pantallaConfiguracion);
+        connect(pantallaConfiguracion, &Configuraciones::volverMenuInicio, this, [=](){
+            ui->stackedWidget->setCurrentWidget(0);
+        });
+    }
     ui->stackedWidget->setCurrentWidget(pantallaConfiguracion);
 }
 

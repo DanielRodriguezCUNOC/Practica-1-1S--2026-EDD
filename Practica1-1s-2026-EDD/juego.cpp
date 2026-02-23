@@ -1,106 +1,79 @@
 #include "juego.h"
-#include "cartanormal.h"
-#include "cartaflip.h"
+#include "ladonumero.h"
+#include "ladorobauno.h"
+#include "ladorobados.h"
+#include "ladorobatres.h"
+#include "ladoadivinarcarta.h"
+#include "ladocambiardireccion.h"
+#include "ladocambiarmano.h"
+#include "ladoadivinarcarta.h"
+#include "ladocomodincolor.h"
+#include "ladocomodinrobardos.h"
+#include "ladocomodinrobarcuatro.h"
+#include "ladocomodinrobarseis.h"
+#include "ladocoloreterno.h"
+#include "ladoreverse.h"
+#include "ladosalto.h"
+#include "ladoflip.h"
+#include "ladosaltotodos.h"
+#include <cstdlib>
+#include <ctime>
 #include <QWidget>
+
 Juego::Juego(): ladoOscuroActivo(false), indiceTurnoActual(0), sentidoJuego(1){
 }
 
 
-void destruirListaCartas(ListaGenerica<Carta*>& lista){
-    while(!lista.estaVacia()){
-        delete lista.robarCarta();
-    }
-}
-
 Juego::~Juego(){
-    destruirListaCartas(mazo);
-    destruirListaCartas(descarte);
 
     while(!jugadores.estaVacia()){
         Jugador* j = jugadores.obtenerElementoEnPosicion(0);
         delete j;
         jugadores.eliminarDatoEnPosicion(0);
     }
-}
-
-/*
- * Juego::~Juego(){
-    //* borrar mazos
-    while(!mazo.estaVacia()){
-        delete mazo.robarCarta();
-    }
-
-    //* borrar mano de jugadores
-    while(!jugadores.estaVacia()){
-        Jugador* j = jugadores.obtenerElementoEnPosicion(0);
-
-        // borrar cartas de la mano del jugador
-        auto& mano = j->getMano();
-        while(mano.getSize() > 0){
-            delete mano.obtenerElementoEnPosicion(0);
-            mano.eliminarDatoEnPosicion(0);
-        }
-
-        delete j;
-        jugadores.eliminarDatoEnPosicion(0);
-    }
-
-    //* borrar la pila de descarte
-    while(!descarte.estaVacia()){
-        delete descarte.robarCarta();
-    }
-}*/
-
-Carta* Juego::robarDelMazo(){
-    if(mazo.estaVacia()){
-        return nullptr;
-    }
-    return mazo.robarCarta();
-}
-
-bool Juego::esLadoOscuro()const{
-    return ladoOscuroActivo;
-}
-
-void Juego::setLadoOscuro(bool estado){
-    ladoOscuroActivo = estado;
-}
-
-int Juego::getCantidadCartasMazo(){
-    return mazo.getSize();
 }
 
 void Juego::inicializarMazo(bool modoFlip, int cantidadJugadores){
 
-
-    while(!mazo.estaVacia()){
-        Carta* c = mazo.robarCarta();
-        delete c;
-    }
     ladoOscuroActivo = false;
 
     int numMazos = ((cantidadJugadores -1)/6)+1;
 
-    modoFlip ? generarMazoFlipManual(numMazos) : generarMazoNormalManual(numMazos);
+    //modoFlip ? generarMazoFlipManual(numMazos) : generarMazoNormalManual(numMazos);
+    generarMazoNormalManual(numMazos);
 
-    barajarMazo();
+    qDebug()<<"Recorriendo lista";
+
+    for(int i =0; i<mazo.getSize(); i++){
+        qDebug()<<mazo.obtenerElementoEnPosicion(i).getLadoActivo()->getNumero();
+    }
+   // barajarMazo();
+
 }
 
-void Juego::mezclarArregloLados(LadoCarta* arreglo, int size){
-    for (int i = size-1; i >0; i--) {
-        int j = rand() % (i+1);
-        LadoCarta temporal = arreglo[i];
+void Juego::mezclarArregloLados(LadoCarta* arreglo[], int tamano) {
+
+    // Algoritmo de Fisher-Yates para barajar el arreglo
+    for (int i = tamano - 1; i > 0; i--) {
+        // Generar un índice aleatorio entre 0 e i
+        int j = rand() % (i + 1);
+
+        // Intercambiar arreglo[i] con arreglo[j]
+        LadoCarta* temporal = arreglo[i];
         arreglo[i] = arreglo[j];
         arreglo[j] = temporal;
     }
 }
 
-void Juego::mezclarArregloCartas(Carta** arreglo, int size){
-    for(int i = size -1; i>0; i--){
-        int j = rand() % (i+1);
-        Carta* temporal = arreglo[i];
+void Juego::mezclarArregloCartas(Carta arreglo[], int size)
+{
+    for (int i = size - 1; i > 0; --i)
+    {
+        int j = rand() % (i + 1);
+
+        Carta temp = arreglo[i];
         arreglo[i] = arreglo[j];
-        arreglo[j] = temporal;
+        arreglo[j] = temp;
     }
 }
 
@@ -108,251 +81,209 @@ void Juego::generarMazoNormalManual(int numMazos){
 
     for(int n = 0; n <numMazos; n++){
 
-    Color colores[] = {Color::Rojo, Color::Azul, Color::Verde, Color::Amarillo};
-
-    for (int i = 0; i < 4; i++) {
-        Color c = colores[i];
-
+    Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
+        Color c;
         // 1 Cero por color
-        std::string numero0 = ruta.generarRuta(TipoCarta::Numero, c, 0);
-        mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Numero, c, 0, numero0)));
+        for(Color color : colores){
+        std::string rutaNumero0 = ruta.generarRuta(TipoCarta::NUMERO, color, 0);
+        mazo.insertarFinal(Carta(new LadoNumero(color, 0, rutaNumero0)));
+        }
 
         // 2 veces del 1-9
-        for (int n = 1; n <= 9; n++) {
-            std::string rutaNumero = ruta.generarRuta(TipoCarta::Numero, c, n);
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Numero, c, n, rutaNumero)));
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Numero, c, n, rutaNumero)));
+        for (int i = 1; i <= 36; i++) {
+
+            c= colores[i/9]; // j=1 -> 1/9 = 0 -> Rojo
+            int numero = (i%9) + 1; // si j = 4 (4%9) = 4 -> 4+1-> 5
+            std::string rutaNumero = ruta.generarRuta(TipoCarta::NUMERO, c, numero);
+
+            mazo.insertarFinal( Carta(new LadoNumero(c, numero, rutaNumero)));
+            mazo.insertarFinal( Carta(new LadoNumero(c, numero, rutaNumero)));
         }
 
-        // 2 veces Acciones (Roba2, Salto, Reverse)
+         // 2 veces Acciones (Roba2, Salto, Reverse)
+        for (Color c : colores) {
 
-        std::string rutaAccion = ruta.generarRuta(TipoCarta::Roba2, c);
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Roba2, c, -1, rutaAccion)));
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Roba2, c, -1, rutaAccion)));
+            std::string rutaAccion;
 
-            rutaAccion = ruta.generarRuta(TipoCarta::Salto, c);
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Salto, c, -1, rutaAccion)));
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Salto, c, -1, rutaAccion)));
+            rutaAccion = ruta.generarRuta(TipoCarta::ROBA2, c);
+            mazo.insertarFinal( Carta(new LadoRobaDos(c, -1, rutaAccion)));
+            mazo.insertarFinal( Carta(new LadoRobaDos(c, -1, rutaAccion)));
 
-            rutaAccion = ruta.generarRuta(TipoCarta::Reverse, c);
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Reverse, c, -1, rutaAccion)));
-            mazo.insertarFinal(new CartaNormal(LadoCarta(TipoCarta::Reverse, c, -1, rutaAccion)));
+            rutaAccion = ruta.generarRuta(TipoCarta::BLOQUEO, c);
+            mazo.insertarFinal( Carta(new LadoSalto(c, -1, rutaAccion)));
+            mazo.insertarFinal( Carta(new LadoSalto(c, -1, rutaAccion)));
 
-    }
+            rutaAccion = ruta.generarRuta(TipoCarta::REVERSE, c);
+            mazo.insertarFinal( Carta(new LadoReverse(c, -1, rutaAccion)));
+            mazo.insertarFinal( Carta(new LadoReverse(c, -1, rutaAccion)));
+        }
+
     std::string rutaComodinColor =
-        ruta.generarRuta(TipoCarta::Comodin, Color::Negro);
+        ruta.generarRuta(TipoCarta::COMODIN, Color::NEGRO);
     std::string rutaComodinRoba4 =
-        ruta.generarRuta(TipoCarta::Comodin4, Color::Negro);
+        ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO);
     std::string rutaComodinAdivinar =
-        ruta.generarRuta(TipoCarta::AdivinarCarta, Color::Negro);
+        ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO);
     std::string rutaComodinCambiarMano =
-        ruta.generarRuta(TipoCarta::CambiarMano, Color::Negro);
+        ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO);
 
     // 4 Comodines Color
-
     for(int i=0;i<4;i++)
-        mazo.insertarFinal(new CartaNormal(
-            LadoCarta(TipoCarta::Comodin, Color::Negro, -1, rutaComodinColor)));
+        mazo.insertarFinal( Carta(new LadoComodinColor(Color::NEGRO, -1, rutaComodinColor)));
 
     // 4 +4
-
     for(int i=0;i<4;i++)
-        mazo.insertarFinal(new CartaNormal(
-            LadoCarta(TipoCarta::Comodin4, Color::Negro, -1, rutaComodinRoba4)));
+        mazo.insertarFinal( Carta(new LadoComodinRobarCuatro(Color::NEGRO, -1, rutaComodinRoba4)));
 
     // 4 Adivinar
-
     for(int i=0;i<4;i++)
-        mazo.insertarFinal(new CartaNormal(
-            LadoCarta(TipoCarta::AdivinarCarta, Color::Negro, -1, rutaComodinAdivinar)));
+        mazo.insertarFinal( Carta(new LadoAdivinarCarta(Color::NEGRO, -1, rutaComodinAdivinar)));
 
     // 4 Cambiar Mano
-
     for(int i=0;i<4;i++)
-        mazo.insertarFinal(new CartaNormal(
-            LadoCarta(TipoCarta::CambiarMano, Color::Negro, -1, rutaComodinCambiarMano)));
-}
+        mazo.insertarFinal( Carta(new LadoCambiarMano(Color::NEGRO, -1, rutaComodinCambiarMano)));
+
     }
 
 
-   void Juego::generarMazoFlipManual(int numMazos) {
+}
 
-       //* Cartas totales que debe tener un mazo de UNO FLIP
-       int const CARTAS_POR_MAZO = 132;
-       //* Calculamos la cantidad de cartas segun los mazos
-       int cartasTotales = CARTAS_POR_MAZO * numMazos;
+void Juego::generarMazoFlipManual(int numMazos){
 
-       //* Una carta Flip tiene dos lados
-       LadoCarta* ladosClaros = new LadoCarta[cartasTotales];
-       LadoCarta* ladosOscuros = new LadoCarta[cartasTotales];
+    //* Cartas totales que debe tener un mazo de UNO FLIP
+    int const CARTAS_POR_MAZO = 132;
+    int cartasTotales = CARTAS_POR_MAZO * numMazos;
 
-       int idx = 0;
+    // Arreglos dinámicos temporales para guardar los punteros a cada lado
+    LadoCarta** ladosClaros = new LadoCarta*[cartasTotales];
+    LadoCarta** ladosOscuros = new LadoCarta*[cartasTotales];
 
-       for(int n =0; n < numMazos; n++){
+    // Contadores para saber en qué posición del arreglo vamos
+    int idxClaro = 0;
+    int idxOscuro = 0;
 
-       Color cClaros[] = {Color::Rojo, Color::Azul, Color::Verde, Color::Amarillo};
-       Color cOscuros[] = {Color::Rosa, Color::Turquesa, Color::Naranja, Color::Purpura};
+    Color cClaros[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
+    Color cOscuros[] = {Color::ROSA, Color::TURQUESA, Color::NARANJA, Color::PURPURA};
 
+    Color claro = Color::NEGRO;
+    Color oscuro = Color::NEGRO;
 
-       for (int i = 0; i < 4; i++) {
+    for(int n = 0; n < numMazos; n++){
 
-           Color cLuz = cClaros[i];
-           Color cDark = cOscuros[i];
-
-           // Numero 0
-           std::string rutaL0 = ruta.generarRuta(TipoCarta::Numero, cLuz, 0);
-           std::string rutaD0 = ruta.generarRuta(TipoCarta::Numero, cDark, 0);
-
-           ladosClaros[idx] = LadoCarta(TipoCarta::Numero, cLuz, 0, rutaL0);
-           ladosOscuros[idx] = LadoCarta(TipoCarta::Numero, cDark, 0, rutaD0);
-           idx++;
-
-           // Números 1-9 (2 veces)
-           for (int n = 1; n <= 9; n++) {
-
-               for (int k = 0; k < 2; k++) {
-
-                   std::string rutaL = ruta.generarRuta(TipoCarta::Numero, cLuz, n);
-                   std::string rutaD = ruta.generarRuta(TipoCarta::Numero, cDark, n);
-
-                   ladosClaros[idx] = LadoCarta(TipoCarta::Numero, cLuz, n, rutaL);
-                   ladosOscuros[idx] = LadoCarta(TipoCarta::Numero, cDark, n, rutaD);
-                   idx++;
-               }
-           }
+        // 4 Numero 0 por lado
+        for(Color color : cClaros){
+            ladosClaros[idxClaro++] = new LadoNumero(color, 0, ruta.generarRuta(TipoCarta::NUMERO, color, 0));
         }
 
-           for (int i = 0; i < 3; i++) {
-               Color cLuz = cClaros[i];
-               Color cDark = cOscuros[i];
+        // 4 Numero 0 por lado
+        for(Color color : cOscuros){
+            ladosOscuros[idxOscuro++] = new LadoNumero(color, 0, ruta.generarRuta(TipoCarta::NUMERO, color, 0));
+        }
 
-               for (int j = 0; j < 2; j++) {
+        // 2 veces del 1-9 por lado
+        for (int i = 1; i <= 36; i++) {
+            claro = cClaros[i/9];
+            oscuro = cOscuros[i/9];
+            int numero = (i%9) + 1;
 
-                   std::string rutaRoba1 = ruta.generarRuta(TipoCarta::Roba1, cLuz, -1);
-                    ladosClaros[idx] = LadoCarta(TipoCarta::Roba1, cLuz, -1, rutaRoba1);
+            ladosClaros[idxClaro++] = new LadoNumero(claro, numero, ruta.generarRuta(TipoCarta::NUMERO, claro, numero));
+            ladosClaros[idxClaro++] = new LadoNumero(claro, numero, ruta.generarRuta(TipoCarta::NUMERO, claro, numero));
 
-                   std::string rutaRoba3 = ruta.generarRuta(TipoCarta::Roba3, cDark, -1);
-                   ladosOscuros[idx] = LadoCarta(TipoCarta::Roba3, cDark, -1, rutaRoba3);
+            ladosOscuros[idxOscuro++] = new LadoNumero(oscuro, numero, ruta.generarRuta(TipoCarta::NUMERO, oscuro, numero));
+            ladosOscuros[idxOscuro++] = new LadoNumero(oscuro, numero, ruta.generarRuta(TipoCarta::NUMERO, oscuro, numero));
+        }
 
-                   idx++;
-               }
-               // Cambio dirección (claras y oscuras) - 2 copias cada uno
-               for (int j = 0; j < 2; j++) {
+        // 2 flip por cada color de cada lado
 
-                   std::string rutaReverse = ruta.generarRuta(TipoCarta::Reverse, cLuz);
-                   ladosClaros[idx] = LadoCarta(TipoCarta::Reverse, cLuz, -1, rutaReverse);
+        for (int i = 0; i < 4; i++) {
 
-                   std::string rutaReverseDark = ruta.generarRuta(TipoCarta::Reverse, cDark);
-                   ladosOscuros[idx] = LadoCarta(TipoCarta::Reverse, cDark, -1, rutaReverseDark);
-                   idx++;
-               }
+            claro = cClaros[i];
+            ladosClaros[idxClaro++] = new LadoFlip(claro, -1, ruta.generarRuta(TipoCarta::FLIP, claro));
+            ladosClaros[idxClaro++] = new LadoFlip(claro, -1, ruta.generarRuta(TipoCarta::FLIP, claro));
 
-               // Bloqueo (claras) y Salto a todos (oscuras) - 2 copias cada uno
-               for (int j = 0; j < 2; j++) {
-
-                   std::string rutaSalto = ruta.generarRuta(TipoCarta::Salto, cLuz);
-                   ladosClaros[idx] = LadoCarta(TipoCarta::Salto, cLuz, -1, rutaSalto);
-
-                   std::string rutaSaltoTodos = ruta.generarRuta(TipoCarta::SaltoTodos, cDark);
-                   ladosOscuros[idx] = LadoCarta(TipoCarta::SaltoTodos, cDark, -1, rutaSaltoTodos);
-                   idx++;
-               }
-
-               // Flip (claras y oscuras) - 2 copias cada uno
-               for(int j = 0; j < 2; j++){
-
-                   std::string rutaFlip = ruta.generarRuta(TipoCarta::Flip, cLuz);
-                   ladosClaros[idx] = LadoCarta(TipoCarta::Flip, cLuz, -1, rutaFlip);
-
-                   std::string rutaFlipDark = ruta.generarRuta(TipoCarta::Flip, cDark);
-                   ladosOscuros[idx] = LadoCarta(TipoCarta::Flip, cDark, -1, rutaFlipDark);
-               }
-           }
-
-           //* Comodines especiales
-
-           //* +2 multicolor (claras) y +6 multicolor (oscuras) - 4 copias
-           std::string rutaComodinRoba2 = ruta.generarRuta(TipoCarta::Comodin, Color::Negro); // +2
-           std::string rutaComodinRoba6 = ruta.generarRuta(TipoCarta::Comodin6, Color::Negro); // +6
-
-           for (int copia = 0; copia < 4; copia++) {
-
-               //* En el lado claro el comodin es +2
-               ladosClaros[idx] = LadoCarta(TipoCarta::Comodin, Color::Negro, -1, rutaComodinRoba2);
-
-               //* En el lado oscuro el comodin es +6
-               ladosOscuros[idx] = LadoCarta(TipoCarta::Comodin6, Color::Negro, -1, rutaComodinRoba6);
-               idx++;
-           }
-
-           // Cambio de color (claras) y Color eterno (oscuras) - 4 copias
-           std::string rutaCambioColor = ruta.generarRuta(TipoCarta::Comodin, Color::Negro);
-           std::string rutaColorEterno = ruta.generarRuta(TipoCarta::ColorEterno, Color::Negro);
-
-           for (int copia = 0; copia < 4; copia++) {
-               ladosClaros[idx] = LadoCarta(TipoCarta::Comodin, Color::Negro, -1, rutaCambioColor);
-               ladosOscuros[idx] = LadoCarta(TipoCarta::ColorEterno, Color::Negro, -1, rutaColorEterno);
-               idx++;
-           }
-
-           // Adivinar Carta (claras y oscuras) - 4 copias
-           std::string rutaAdivinarCarta = ruta.generarRuta(TipoCarta::AdivinarCarta, Color::Negro);
-
-           for (int copia = 0; copia < 4; copia++) {
-               ladosClaros[idx] = LadoCarta(TipoCarta::AdivinarCarta, Color::Negro, -1, rutaAdivinarCarta);
-               ladosOscuros[idx] = LadoCarta(TipoCarta::AdivinarCarta, Color::Negro, -1, rutaAdivinarCarta);
-               idx++;
-           }
-
-           // Cambiar Mano (claras y oscuras) - 4 copias
-           std::string rutaCambiarMano = ruta.generarRuta(TipoCarta::CambiarMano, Color::Negro);
-
-           for (int copia = 0; copia < 4; copia++) {
-               ladosClaros[idx] = LadoCarta(TipoCarta::CambiarMano, Color::Negro, -1, rutaCambiarMano);
-               ladosOscuros[idx] = LadoCarta(TipoCarta::CambiarMano, Color::Negro, -1, rutaCambiarMano);
-               idx++;
-           }
-
-
-       // Verificar que se generaron todas las cartas
-       if (idx != cartasTotales) {
-           qDebug() << "ERROR: Se generaron" << idx << "cartas, pero se esperaban" << cartasTotales;
-       }
-
-        //* Mezclar los lados oscuros para evitar repetir posicion en cada partida
-       mezclarArregloLados(ladosOscuros, idx);
-
-       //* Crear cartas Flip
-       for (int i = 0; i < idx; i++) {
-           Carta* nueva = new CartaFlip(ladosClaros[i], ladosOscuros[i]);
-           mazo.insertarFinal(nueva);
-       }
-
-       delete[] ladosClaros;
-       delete[] ladosOscuros;
-
-       }
-
-        qDebug() << "Mazo Flip generado con" << mazo.getSize() << "cartas (esperado:" << cartasTotales << ")";
-   }
+            oscuro = cOscuros[i];
+            ladosOscuros[idxOscuro++] = new LadoFlip(oscuro, -1, ruta.generarRuta(TipoCarta::FLIP, oscuro));
+            ladosOscuros[idxOscuro++] = new LadoFlip(oscuro, -1, ruta.generarRuta(TipoCarta::FLIP, oscuro));
+        }
 
 
 
+        // 2 veces Roba1 por color claro
+        for(Color color: cClaros){
+            ladosClaros[idxClaro++] = new LadoRobaUno(color, -1, ruta.generarRuta(TipoCarta::ROBA1, color));
+            ladosClaros[idxClaro++] = new LadoRobaUno(color, -1, ruta.generarRuta(TipoCarta::ROBA1, color));
+        }
+        // 2 veces Roba3 por color oscuro
+        for(Color color: cOscuros){
+            ladosOscuros[idxOscuro++] =new LadoRobaTres(color, -1, ruta.generarRuta(TipoCarta::ROBA3, color));
+            ladosOscuros[idxOscuro++] = new LadoRobaTres(color, -1, ruta.generarRuta(TipoCarta::ROBA3, color));
+        }
 
-   void Juego::barajarMazo() {
-       int cantidad = mazo.getSize();
-       if (cantidad <= 1) return;
+        // 2 veces cambio de direccion por lado
+        for (int i = 0; i < 4; i++) {
 
-       Carta* tempArray[300];
+            claro = cClaros[i];
+            ladosClaros[idxClaro++] = new LadoCambiarDireccion(claro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, claro));
+            ladosClaros[idxClaro++]= new LadoCambiarDireccion(claro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, claro));
 
-       for (int i = 0; i < cantidad; i++)
-           tempArray[i] = mazo.robarCarta();
+            oscuro = cOscuros[i];
+            ladosOscuros[idxOscuro++] = new LadoCambiarDireccion(oscuro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, oscuro));
+            ladosOscuros[idxOscuro++] = new LadoCambiarDireccion(oscuro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, oscuro));
+        }
 
-       mezclarArregloCartas(tempArray, cantidad);
+        // 2 veces bloqueo lado claro | 2 veces salto todo lado oscuro
+        for (int i = 0; i < 4; i++) {
 
-       for (int i = 0; i < cantidad; i++)
-           mazo.insertarFinal(tempArray[i]);
-   }
+            claro = cClaros[i];
+             ladosClaros[idxClaro++] = new LadoSalto(claro, -1, ruta.generarRuta(TipoCarta::BLOQUEO, claro));
+             ladosClaros[idxClaro++] = new LadoSalto(claro, -1, ruta.generarRuta(TipoCarta::BLOQUEO, claro));
+
+            oscuro = cOscuros[i];
+            ladosOscuros[idxOscuro++] = new LadoSaltoTodos(oscuro, -1, ruta.generarRuta(TipoCarta::SALTODOS, oscuro));
+            ladosOscuros[idxOscuro++] = new LadoSaltoTodos(oscuro, -1, ruta.generarRuta(TipoCarta::SALTODOS, oscuro));
+        }
+
+        // 4 +2 comodin lado claro | 4 +6 comodin lado oscuro
+        for (int i = 0; i < 4; i++) {
+
+            ladosClaros[idxClaro++] = new LadoComodinRobarDos(claro, -1, ruta.generarRuta(TipoCarta::COMODIN2, claro));
+
+            ladosOscuros[idxOscuro++] = new LadoComodinRobarSeis(oscuro, -1, ruta.generarRuta(TipoCarta::COMODIN6, oscuro));
+        }
+
+        // 4 cambio color comodin lado claro | 4 color eterno comodin lado oscuro
+        for (int i = 0; i < 4; i++) {
+
+            ladosClaros[idxClaro++] = new LadoComodinColor(claro, -1, ruta.generarRuta(TipoCarta::COMODIN, claro));
+            ladosOscuros[idxOscuro++] = new LadoColorEterno(oscuro, -1, ruta.generarRuta(TipoCarta::COLORETERNO, oscuro));
+        }
+
+        // 4 cartas personalizadas por lado por color -> 4*2*2->16
+        // 4 cambio color comodin lado claro | 4 color eterno comodin lado oscuro
+        for (int i = 0; i < 4; i++) {
+
+            ladosClaros[idxClaro++] = new LadoAdivinarCarta(claro, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, claro));
+            ladosOscuros[idxOscuro++] = new LadoAdivinarCarta(oscuro, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, oscuro));
+
+
+            ladosClaros[idxClaro++] = new LadoCambiarMano(claro, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, claro));
+            ladosOscuros[idxOscuro++] = new LadoCambiarMano(oscuro, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, oscuro));
+        }
+
+    }
+
+    // Mezclar aleatoriamente SOLO los lados oscuros
+    mezclarArregloLados(ladosOscuros, idxOscuro);
+
+    // Unir ambos lados en un objeto Carta y agregarlo al mazo final
+    for(int i = 0; i < idxClaro; i++){
+
+        mazo.insertarFinal(Carta(ladosClaros[i], ladosOscuros[i]));
+    }
+
+    delete[] ladosClaros;
+    delete[] ladosOscuros;
+}
 
    void Juego::avanzarTurno() {
 
@@ -369,252 +300,84 @@ void Juego::generarMazoNormalManual(int numMazos){
        }
    }
 
-   void Juego::aplicarEfectoCarta(Carta* cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado, const std::string& colorSeleccionado) {
 
-       // Obtenemos el lado activo sin importar si es CartaNormal o CartaFlip
-       const LadoCarta& lado = cartaJugada->getLadoActivo();
-       TipoCarta tipo = lado.getTipo();
-
-       // Actualizamos el color activo de la mesa
-       if (lado.getColor() != Color::Negro) {
-           colorActivo = lado.getColor();
+   Carta Juego::robarDelMazo(){
+       if(mazo.estaVacia()){
+           return nullptr;
        }
+       return mazo.robarCarta();
+   }
 
-       // Aplicamos el efecto basado en el Tipo
-       switch (tipo) {
-       case TipoCarta::Numero:
-           // No hace nada especial, el turno avanzará normalmente al final
-           break;
+   bool Juego::getLadoOscuroActivo()const{
+       return ladoOscuroActivo;
+   }
 
-       case TipoCarta::Reverse:
-           // Invierte el sentido (de 1 a -1, o de -1 a 1)
-           sentidoJuego *= -1;
+   void Juego::setLadoOscuroActivo(bool estado){
+       ladoOscuroActivo = estado;
+   }
 
-           // Regla oficial de UNO: Si solo hay 2 jugadores, Reverse actúa como Salto
-           if (jugadores.getSize() == 2) {
-               avanzarTurno();
-           }
-           break;
-
-       case TipoCarta::Salto:
-           // Avanza una vez extra para "saltar" al siguiente
-           avanzarTurno();
-           break;
-
-       case TipoCarta::Roba1:{
-
-            // El siguiente pierde el turno
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-
-           // roba 1 carta
-           Carta* robada = robarDelMazo();
-           if(robada) victima ->agregarCarta(robada);
-           break;
-       }
-
-       case TipoCarta::Roba2: {
-
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-
-           for(int i = 0; i < 2; i++) {
-               Carta* robada = robarDelMazo();
-               if(robada) victima->agregarCarta(robada);
-           }
-           break;
-       }
-       case TipoCarta::Roba3:{
-
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-
-           for(int i = 0; i < 3;i++){
-               Carta* robada = robarDelMazo();
-               if(robada) victima->agregarCarta(robada);
-           }
-
-           break;
-       }
-
-       case TipoCarta::Flip:
-           // Invertimos el estado global del juego
-           ladoOscuroActivo = !ladoOscuroActivo;
-
-           // Recorremos TODAS las cartas y las volteamos
-           // 1. Voltear Mazo
-           for(int i = 0; i < mazo.getSize(); i++) {
-               mazo.obtenerElementoEnPosicion(i)->voltear();
-           }
-           // 2. Voltear Descarte
-           for(int i = 0; i < descarte.getSize(); i++) {
-               descarte.obtenerElementoEnPosicion(i)->voltear();
-           }
-           // 3. Voltear Manos de Jugadores
-           for(int i = 0; i < jugadores.getSize(); i++) {
-               Jugador* j = jugadores.obtenerElementoEnPosicion(i);
-               for(int k = 0; k < j->cantidadCartas(); k++) {
-                   j->getMano().obtenerElementoEnPosicion(k)->voltear();
-               }
-           }
-           // Actualizar el nuevo color activo según la nueva cara de la carta que quedó en el descarte
-           colorActivo = cartaJugada->getLadoActivo().getColor();
-           break;
-
-       case TipoCarta::SaltoTodos:
-           // damos la vuelta completa a la lista de jugadores
-           for(int i = 0; i < jugadores.getSize() - 1; i++) {
-               avanzarTurno();
-           }
-           break;
-
-       case TipoCarta::Comodin4: {
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-           for(int i = 0; i < 4; i++) {
-               Carta* robada = robarDelMazo();
-               if(robada) victima->agregarCarta(robada);
-           }
-           break;
-       }
-
-       case TipoCarta::Comodin6:{
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-           for(int i=0; i<6;i++){
-               Carta* robada = robarDelMazo();
-               if(robada) victima->agregarCarta(robada);
-           }
-           break;
-       }
-
-       case TipoCarta::Comodin2:{
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-           for(int i=0; i < 2; i++){
-               Carta* robada = robarDelMazo();
-               if(robada) victima->agregarCarta(robada);
-           }
-           break;
-       }
-
-       case TipoCarta::Comodin:{
-           Color nuevoColor = convertirStringAColor(colorSeleccionado);
-           colorActivo = nuevoColor;
-           break;
-       }
-
-
-
-       case TipoCarta::AdivinarCarta:{
-           if (jugadorSeleccionado.empty() || numeroSeleccionado == -1 || colorSeleccionado.empty()) {
-               qDebug() << "Error: Faltan datos para adivinar carta";
-               break;
-           }
-
-           Jugador* jugadorActual = getJugadorActual();
-           bool adivino = adivinoCarta(jugadorSeleccionado, numeroSeleccionado, colorSeleccionado);
-
-           if (adivino) {
-
-               Color colorObjetivo=convertirStringAColor(colorSeleccionado);
-               ListaGenerica<Carta*>& manoActual = jugadorActual->getMano();
-
-               //* Aqui decimos que el jugador manda las cartas del mismo color a la pila de descarte
-
-               for(int i = manoActual.getSize() -1; i >=0; i-- ){
-
-                   Carta* carta = manoActual.obtenerElementoEnPosicion(i);
-                   Color colorCarta = carta->getLadoActivo().getColor();
-
-                   if(colorCarta == colorObjetivo){
-
-                       Carta* cartaDescartar = manoActual.obtenerElementoEnPosicion(i);
-                       manoActual.eliminarDatoEnPosicion(i);
-                       descarte.insertarInicio(cartaDescartar);
-                   }
-               }
-           } else {
-               //* Decimos que el jugador que intento adivinar roba dos cartas como penalizacion
-               Jugador* jugadorActual = getJugadorActual();
-               for (int i = 0; i < 2; i++) {
-                   if(mazo.estaVacia()) barajarDescarte();
-                   Carta* robada = robarDelMazo();
-                   if (robada) jugadorActual->agregarCarta(robada);
-               }
-           }
-           break;
-       }
-           // ... Agrega aquí Roba1, Roba5, ColorEterno, etc. siguiendo la misma lógica
-
-       case TipoCarta::CambiarMano:{
-           int cartasEnManoVictima = 0;
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-           cartasEnManoVictima = victima->getMano().getSize();
-
-           //* Aqui decimos que el jugador manda su mano a la pila de descarte
-           while(!victima->getMano().estaVacia()){
-               Carta* cartaDescartar = victima->getMano().obtenerElementoEnPosicion(0);
-               victima->getMano().eliminarDatoEnPosicion(0);
-               descarte.insertarInicio(cartaDescartar);
-           }
-
-           //* la victima roba la misma cantidad de cartas que mando a la pila
-           for(int i = 0; i < cartasEnManoVictima; i++){
-
-               if(mazo.estaVacia()){
-                   barajarDescarte();
-               }
-               Carta* robada = robarDelMazo();
-               if(robada) victima->agregarCarta(robada);
-           }
-
-           break;
-       }
-
-       case TipoCarta::ColorEterno:{
-           avanzarTurno();
-           Jugador* victima = jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-           Color colorRobado = Color::Negro;
-           Color colorObjetivo = convertirStringAColor(colorSeleccionado);
-           do{
-               if(mazo.estaVacia()){
-                   barajarDescarte();
-               }
-
-               Carta* robada = robarDelMazo();
-
-               if(!robada) break;
-
-               colorRobado = robada->getLadoActivo().getColor();
-               victima->agregarCarta(robada);
-
-           }while(colorRobado != colorObjetivo);
-
-           break;
-       }
-
-    }
-
+   int Juego::getTamanoMazo()const{
+       return mazo.getSize();
    }
 
 
+ListaGenerica<Jugador*>& Juego:: getJugadores(){
+    return jugadores;
+}
+
+ListaGenerica<Carta>& Juego::getMazo(){
+    return mazo;
+}
+
+ListaGenerica<Carta>& Juego::getDescarte(){
+    return descarte;
+}
+
+int Juego::getTamanoDescarte() const{
+    return descarte.getSize();
+}
+
+Jugador* Juego::getJugadorEnPosicion(int indice){
+    return jugadores.obtenerElementoEnPosicion(indice);
+}
+
+int Juego::getCantidadJugadores() const{
+    return jugadores.getSize();
+}
+
+int Juego::getSentidoJuego() const{
+    return sentidoJuego;
+}
+
+void Juego::setSentidoJuego(int sentido){
+    sentidoJuego = sentido;
+}
+
+void Juego::agregarADescarte(Carta carta){
+    descarte.insertarInicio(carta);
+}
+
+void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado, const std::string& colorSeleccionado) {
+    LadoCarta* ladoActual = cartaJugada.getLadoActivo();
+
+    if(ladoActual!=nullptr) ladoActual->aplicarEfecto(this,colorSeleccionado);
+
+}
    void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
                           const std::string& jugadorSeleccionado,
                           int numeroAdivinado,
                           const std::string& colorAdivinado) {
-       // 1. El jugador tira la carta (la quitamos de su mano)
-       Carta* cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
+       // El jugador tira la carta (la quitamos de su mano)
+       Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
        jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
 
-       // 2. La ponemos en la pila de descarte
+       // La ponemos en la pila de descarte
        descarte.insertarInicio(cartaJugada);
 
-       // 3. Procesamos qué hace esa carta
+       // Procesamos qué hace esa carta
        aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
 
-       // 4. Preparamos el turno del siguiente jugador
+       // Preparamos el turno del siguiente jugador
        avanzarTurno();
    }
 
@@ -638,27 +401,26 @@ void Juego::generarMazoNormalManual(int numMazos){
            Jugador* jugadorActual = jugadores.obtenerElementoEnPosicion(i);
 
            for (int j = 0; j < cartasPorJugador; j++) {
-               Carta* cartaARobar = robarDelMazo();
-               if (cartaARobar) {
-                   jugadorActual->agregarCarta(cartaARobar);
-               }
+               Carta cartaARobar = robarDelMazo();
+               if (cartaARobar.esValida()) jugadorActual->agregarCarta(cartaARobar);
+
            }
        }
 
        // Colocar la primera carta en el descarte para comenzar el juego
        if (!mazo.estaVacia()) {
-           Carta* primeraCarta = robarDelMazo();
+           Carta primeraCarta = robarDelMazo();
            descarte.insertarInicio(primeraCarta);
 
            // Actualizar el color activo según la primera carta
-           if (primeraCarta) {
-               colorActivo = primeraCarta->getLadoActivo().getColor();
+           if (primeraCarta.esValida()) {
+               colorActivo = primeraCarta.getLadoActivo()->getColor();
 
                // Si es comodín se elige un color
-               if (colorActivo == Color::Negro) {
+               if (colorActivo == Color::NEGRO) {
                    // Elegir un color aleatorio
-                   Color coloresNormales[] = {Color::Rojo, Color::Azul,
-                                              Color::Verde, Color::Amarillo};
+                   Color coloresNormales[] = {Color::ROJO, Color::AZUL,
+                                              Color::VERDE, Color::AMARILLO};
                    colorActivo = coloresNormales[rand() % 4];
                }
            }
@@ -672,7 +434,7 @@ void Juego::generarMazoNormalManual(int numMazos){
        return jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
    }
 
-   Jugador* Juego::getJugadorSeleccionado(std::string nombreJugador){
+   Jugador* Juego::getJugadorSeleccionado(const std::string& nombreJugador){
        for(int i = 0; i < jugadores.getSize(); i++){
            Jugador* temp = jugadores.obtenerElementoEnPosicion(i);
            if(temp->getNombreJugador() == nombreJugador) return temp;
@@ -680,53 +442,66 @@ void Juego::generarMazoNormalManual(int numMazos){
        return nullptr;
    }
 
+   Color Juego::convertirStringAColor(const std::string& colorStr) {
+       if (colorStr == "Rojo") return Color::ROJO;
+       if (colorStr == "Azul") return Color::AZUL;
+       if (colorStr == "Verde") return Color::VERDE;
+       if (colorStr == "Amarillo") return Color::AMARILLO;
+       // Si estás en modo oscuro
+       if (colorStr == "Rosa") return Color::ROSA;
+       if (colorStr == "Turquesa") return Color::TURQUESA;
+       if (colorStr == "Naranja") return Color::NARANJA;
+       if (colorStr == "Purpura") return Color::PURPURA;
+       // Valor por defecto
+       return Color::NEGRO;
+   }
 
-   bool Juego::adivinoCarta(std::string nombreSeleccionado, int numeroCarta, std::string colorCarta){
-           Jugador* jugadorSeleccionado = getJugadorSeleccionado(nombreSeleccionado);
+   void Juego::barajarMazo()
+   {
+       int cantidad = mazo.getSize();
+       if (cantidad <= 1) return;
 
-           if (!jugadorSeleccionado) return false;
+       Carta buffer[cantidad];
 
-           // Convertir el string color a enum Color para comparar
-           Color colorAdivinado = convertirStringAColor(colorCarta);
 
-           // Recorrer la mano del jugador seleccionado
-           ListaGenerica<Carta*>& manoSeleccionada = jugadorSeleccionado->getMano();
-
-           for (int i = 0; i < manoSeleccionada.getSize(); i++) {
-               Carta* carta = manoSeleccionada.obtenerElementoEnPosicion(i);
-               const LadoCarta& lado = carta->getLadoActivo();
-
-               // Verificar si coincide número y color
-               if (lado.getTipo() == TipoCarta::Numero &&
-                   lado.getNumero() == numeroCarta &&
-                   lado.getColor() == colorAdivinado) {
-                   return true;
-               }
-           }
-
-           return false;
+       for (int i = 0; i < cantidad; i++)
+       {
+           // devuelve Carta por valor
+           buffer[i] = mazo.robarCarta();
        }
 
+       for (int i = cantidad - 1; i > 0; i--)
+       {
+           int j = rand() % (i + 1);
 
-   Color Juego::convertirStringAColor(const std::string& colorStr) {
-       if (colorStr == "Rojo") return Color::Rojo;
-       if (colorStr == "Azul") return Color::Azul;
-       if (colorStr == "Verde") return Color::Verde;
-       if (colorStr == "Amarillo") return Color::Amarillo;
-       // Si estás en modo oscuro
-       if (colorStr == "Rosa") return Color::Rosa;
-       if (colorStr == "Turquesa") return Color::Turquesa;
-       if (colorStr == "Naranja") return Color::Naranja;
-       if (colorStr == "Purpura") return Color::Purpura;
-       // Valor por defecto
-       return Color::Negro;
+           Carta temp = buffer[i];
+           buffer[i] = buffer[j];
+           buffer[j] = temp;
+       }
+
+       for (int i = 0; i < cantidad; i++)
+       {
+           mazo.insertarFinal(buffer[i]);
+       }
    }
 
    void Juego::barajarDescarte(){
        while(descarte.getSize()>1){
-           Carta* carta = descarte.robarCarta();
+           Carta carta = descarte.robarCarta();
            mazo.insertarFinal(carta);
        }
        barajarMazo();
+   }
+
+   Color Juego::getColorActivo() const {
+       return colorActivo;
+   }
+
+   void Juego::setColorActivo(Color nuevoColor) {
+       this->colorActivo = nuevoColor;
+   }
+
+   bool Juego::mazoEstaVacio()const{
+       return mazo.getSize()<=0;
    }
 

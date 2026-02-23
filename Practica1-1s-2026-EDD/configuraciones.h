@@ -11,14 +11,18 @@ class Configuraciones : public QWidget
 {
     Q_OBJECT
 
+private:
+    Ui::Configuraciones *ui;
+signals:
+    void volverMenuInicio();
+
 public:
     explicit Configuraciones(QWidget *parent = nullptr);
     ~Configuraciones();
     int getCantidadJugadores() const;
     bool getEsModoFlip() const;
 
-private:
-    Ui::Configuraciones *ui;
+
 };
 
 #endif // CONFIGURACIONES_H

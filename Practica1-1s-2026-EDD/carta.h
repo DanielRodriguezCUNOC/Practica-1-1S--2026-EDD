@@ -5,16 +5,23 @@
 #include <string>
 
 class Carta {
+private:
+    LadoCarta* ladoClaro;
+    LadoCarta* ladoOscuro;
+    bool estaVolteada;
 
 public:
-    virtual ~Carta();
+    Carta(LadoCarta* claro);
+    Carta(LadoCarta* claro, LadoCarta* oscuro);
+    Carta(const Carta& cartaCopia);
+    Carta& operator=(const Carta& cartaCopia);
+    Carta();
+    ~Carta();
 
-    // Métodos Puros (El contrato que los hijos deben cumplir)
-    virtual const LadoCarta& getLadoActivo() const = 0;
-    virtual void voltear() = 0;
-    // Para saber si es carta especial sin cast
-    virtual bool esFlip() const = 0;
-    std::string getRutaImagen() const;
+    LadoCarta* getLadoActivo() const;
+    void voltear();
+    bool esFlip() const;
+    bool esValida()const;
 };
 
 #endif // CARTA_H

@@ -3,21 +3,21 @@
 
 enum class TipoCarta {
     // Normal / Lado Claro
-    Numero, Roba1, Roba2, Salto, Reverse, Comodin, Comodin4,
+    NUMERO, ROBA1, ROBA2, SALTO, REVERSE, COMODIN, COMODIN4, BLOQUEO,
     // Lado Oscuro (Flip)
-    Roba3, Comodin6, Comodin2, SaltoTodos, ColorEterno, CambiarDireccion, Flip,
+    ROBA3, COMODIN6, COMODIN2, SALTODOS, COLORETERNO, CAMBIARDIRECCION, FLIP,
     // Especial para el reverso del UNO Normal
-    DorsoGenerico,
-    //Cartas personalizadas
-    AdivinarCarta, CambiarMano
+    DORSOGENERICO,
+    // Cartas personalizadas
+    ADIVINARCARTA, CAMBIARMANO
 };
 
 enum class Color {
-    Rojo, Amarillo, Azul, Verde,
-    Naranja, Rosa, Turquesa, Purpura,
+    ROJO, AMARILLO, AZUL, VERDE,
+    NARANJA, ROSA, TURQUESA, PURPURA,
     // Especiales
-    Negro,      // Comodines
-    Indefinido  // Para el reverso genérico
+    NEGRO,      // Comodines
+    INDEFINIDO  // Para el reverso genérico
 };
 
 #endif // UTILS_H

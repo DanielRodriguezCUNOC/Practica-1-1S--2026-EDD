@@ -2,7 +2,7 @@
 #include "carta.h"
 #include "jugador.h"
 
-template class Nodo<Carta*>;
+template class Nodo<Carta>;
 template class Nodo<Jugador*>;
 template <typename T>
 Nodo<T>::Nodo(const T& dato): dato(dato), siguiente(nullptr), anterior(nullptr) {}

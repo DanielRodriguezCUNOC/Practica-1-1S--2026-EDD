@@ -35,12 +35,31 @@ qt_add_executable(Practica1-1s-2026-EDD
     ladocarta.h ladocarta.cpp
     listagenerica.cpp
     nodo.cpp
-    cartanormal.h cartanormal.cpp
-    cartaflip.h cartaflip.cpp
+
+
     jugador.h
-    cartaadivinar.h cartaadivinar.cpp
-    cartacambiarmazo.h cartacambiarmazo.cpp
+
+
     rutaimagenes.h rutaimagenes.cpp
+    cartamanowidget.h cartamanowidget.cpp
+    ladonumero.h ladonumero.cpp
+    ladocomodincolor.h ladocomodincolor.cpp
+    ladocomodinrobarseis.h ladocomodinrobarseis.cpp
+    ladocomodinrobarcuatro.h ladocomodinrobarcuatro.cpp
+    ladoflip.h ladoflip.cpp
+    ladorobauno.h ladorobauno.cpp
+    ladorobados.h ladorobados.cpp
+    ladosalto.h ladosalto.cpp
+    ladoreverse.h ladoreverse.cpp
+    ladorobatres.h ladorobatres.cpp
+    ladocomodinrobardos.h ladocomodinrobardos.cpp
+    ladosaltotodos.h ladosaltotodos.cpp
+    ladocoloreterno.h ladocoloreterno.cpp
+    ladocambiardireccion.h ladocambiardireccion.cpp
+    ladodorsogenerico.h ladodorsogenerico.cpp
+    ladoadivinarcarta.h ladoadivinarcarta.cpp
+    ladocambiarmano.h ladocambiarmano.cpp
+    excepciones.h
 
 
 )
