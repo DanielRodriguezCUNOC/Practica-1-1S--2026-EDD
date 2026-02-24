@@ -50,6 +50,7 @@ signals:
     void mazoActualizadoSignal(int cartasRestantes);
     void descarteActualizadoSignal(QString rutaCarta);
     void partidaIniciadaSignal();
+    void cartaInvalidaSignal();
 
 public:
     // ====== CONSTRUCTOR / DESTRUCTOR ======

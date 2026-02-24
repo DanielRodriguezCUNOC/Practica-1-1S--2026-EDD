@@ -23,8 +23,7 @@ private:
 
     int numJugadores;
     bool modoJuego;
-    bool actualizandoMano=false;
-      bool procesandoCarta = false;
+    bool actualizandoMano = false;
 signals:
     void salirPartida();
     void pedirNombres();
@@ -50,6 +49,7 @@ public slots:
     void onPartidaIniciada();
     void onRobarCarta();
     void onPasarTurno();
+    void onCartaInvalida();
 
 private:
     void configurarConexiones();

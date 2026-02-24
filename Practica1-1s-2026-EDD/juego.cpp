@@ -579,6 +579,14 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
                return;
            }
 
+           Carta cartaIntentada = jugadorActual->getMano().obtenerElementoEnPosicion(indiceCarta);
+           if (!puedeJugarCarta(cartaIntentada)) {
+               qDebug() << "[JUEGO] Carta NO válida para jugar - no coincide color/número";
+               emit cartaInvalidaSignal(); // Notificar a la UI
+               procesando = false;
+               return;
+           }
+
            // Jugar la carta SIN emitir señales inmediatas
            qDebug() << "[JUEGO] Llamando a jugarCartaSinSeñales";
            jugarCartaSinSeñales(jugadorActual, indiceCarta, "", -1, "");
@@ -603,54 +611,6 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
        qDebug() << "[JUEGO] === onCartaJugadaSlot FINALIZADO ===";
    }
 
-
-   bool Juego::puedeJugarCarta(const Carta& carta) {
-       qDebug() << "[JUEGO] Verificando si se puede jugar carta";
-
-       if (!carta.esValida()) {
-           qDebug() << "[JUEGO] Carta no válida";
-           return false;
-       }
-
-       if (descarte.estaVacia()) {
-           qDebug() << "[JUEGO] No hay cartas en descarte";
-           return true; // Primera carta siempre se puede jugar
-       }
-
-       try {
-           Carta cartaEnDescarte = descarte.obtenerElementoEnPosicion(0);
-           if (!cartaEnDescarte.esValida()) {
-               qDebug() << "[JUEGO] Carta en descarte no válida";
-               return true; // Si no hay carta válida en descarte, se puede jugar cualquiera
-           }
-
-           LadoCarta* ladoCartaJugar = carta.getLadoActivo();
-           LadoCarta* ladoDescarte = cartaEnDescarte.getLadoActivo();
-
-           if (!ladoCartaJugar || !ladoDescarte) {
-               qDebug() << "[JUEGO ERROR] Algún lado de carta es nullptr";
-               return false;
-           }
-
-           // Verificar compatibilidad
-           bool mismoColor = (ladoCartaJugar->getColor() == ladoDescarte->getColor());
-           bool mismoNumero = (ladoCartaJugar->getNumero() == ladoDescarte->getNumero());
-           bool esComodin = (ladoCartaJugar->getColor() == Color::NEGRO);
-
-           bool puedeJugar = mismoColor || mismoNumero || esComodin;
-
-           qDebug() << "[JUEGO] Puede jugar carta:" << puedeJugar;
-           qDebug() << "[JUEGO] Mismo color:" << mismoColor;
-           qDebug() << "[JUEGO] Mismo número:" << mismoNumero;
-           qDebug() << "[JUEGO] Es comodín:" << esComodin;
-
-           return puedeJugar;
-
-       } catch (...) {
-           qDebug() << "[JUEGO ERROR] Excepción al verificar si se puede jugar carta";
-           return false;
-       }
-   }
 
 
    void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado,
@@ -708,6 +668,12 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
            LadoCarta* ladoActivo = cartaJugada.getLadoActivo();
            if (ladoActivo) {
                colorActivo = ladoActivo->getColor();
+
+               // ✅ Emitir señal para actualizar imagen del descarte en la UI
+               QString rutaImagen = QString::fromStdString(ladoActivo->getRutaArchivo());
+               qDebug() << "[JUEGO] Emitiendo descarteActualizadoSignal con:" << rutaImagen;
+               emit descarteActualizadoSignal(rutaImagen);
+
            }
 
            // Aplicar efecto (SIN emitir señales desde aquí)
@@ -720,5 +686,67 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
 
        } catch (...) {
            qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en jugarCartaSinSeñales";
+       }
+   }
+
+
+   bool Juego::puedeJugarCarta(const Carta& carta) {
+       qDebug() << "[JUEGO] Verificando si se puede jugar carta";
+
+       if (!carta.esValida()) {
+           qDebug() << "[JUEGO] Carta no válida";
+           return false;
+       }
+
+       if (descarte.estaVacia()) {
+           return true; // Primera carta siempre se puede jugar
+       }
+
+       try {
+           Carta cartaEnDescarte = descarte.obtenerElementoEnPosicion(0);
+           if (!cartaEnDescarte.esValida()) {
+               return true;
+           }
+
+           LadoCarta* ladoCartaJugar = carta.getLadoActivo();
+           LadoCarta* ladoDescarte = cartaEnDescarte.getLadoActivo();
+
+           if (!ladoCartaJugar || !ladoDescarte) {
+               return false;
+           }
+
+           Color colorCarta    = ladoCartaJugar->getColor();
+           Color colorDescarte = ladoDescarte->getColor();
+           int   numeroCarta   = ladoCartaJugar->getNumero();
+           int   numDescarte   = ladoDescarte->getNumero();
+
+           // Comodín siempre puede jugarse
+           bool esComodin = (colorCarta == Color::NEGRO);
+
+           // Mismo color activo (puede diferir del descarte si se jugó comodín)
+           bool mismoColor = (colorCarta == colorActivo);
+
+           // Mismo número (ambos deben ser >= 0 para comparar)
+           bool mismoNumero = (numeroCarta >= 0 && numDescarte >= 0 && numeroCarta == numDescarte);
+
+           // Mismo tipo de carta especial (mismo número == -1 significa mismo tipo especial)
+           bool mismoTipo = (numeroCarta == -1 && numDescarte == -1 &&
+                             ladoCartaJugar->getTipo() == ladoDescarte->getTipo());
+
+           bool puedeJugar = esComodin || mismoColor || mismoNumero || mismoTipo;
+
+           qDebug() << "[JUEGO] colorActivo:" << static_cast<int>(colorActivo)
+                    << "colorCarta:" << static_cast<int>(colorCarta)
+                    << "colorDescarte:" << static_cast<int>(colorDescarte);
+           qDebug() << "[JUEGO] esComodin:" << esComodin
+                    << "mismoColor:" << mismoColor
+                    << "mismoNumero:" << mismoNumero
+                    << "mismoTipo:" << mismoTipo;
+           qDebug() << "[JUEGO] → puedeJugar:" << puedeJugar;
+
+           return puedeJugar;
+
+       } catch (...) {
+           return false;
        }
    }
