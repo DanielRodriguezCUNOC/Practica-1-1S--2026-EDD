@@ -20,7 +20,8 @@
 #include <ctime>
 #include <QWidget>
 
-Juego::Juego(): ladoOscuroActivo(false), indiceTurnoActual(0), sentidoJuego(1){
+Juego::Juego(QObject* parent): QObject(parent), ladoOscuroActivo(false),
+    indiceTurnoActual(0), sentidoJuego(1){
 }
 
 
@@ -34,16 +35,55 @@ Juego::~Juego(){
 }
 
 void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip){
+    qDebug() << "[JUEGO] Iniciando inicializarMazo";
+
+    // Limpiar mazo y descarte anteriores
+
+    while(mazo.getSize() > 0){
+        mazo.eliminarDatoEnPosicion(0);
+    }
+    while(descarte.getSize() > 0){
+        descarte.eliminarDatoEnPosicion(0);
+    }
+
     ladoOscuroActivo = false;
 
-    int numMazos = ((cantidadJugadores -1)/6)+1;
+    int numMazos = ((cantidadJugadores - 1) / 6) + 1;
+    qDebug() << "[JUEGO] Número de mazos a crear:" << numMazos;
 
-    modoFlip ? generarMazoFlipManual(numMazos) : generarMazoNormalManual(numMazos);
+    // Crear el mazo según el modo
+    if (modoFlip) {
+        generarMazoFlipManual(numMazos);
+    } else {
+        generarMazoNormalManual(numMazos);
+    }
 
+    qDebug() << "[JUEGO] Mazo creado con" << mazo.getSize() << "cartas";
+
+    // MEZCLAR EL MAZO COMPLETO
     barajarMazo();
+    qDebug() << "[JUEGO] Mazo mezclado";
 
+    // Repartir cartas a jugadores
     repartirCartas();
+    qDebug() << "[JUEGO] Cartas repartidas";
 
+    // Sacar primera carta para descarte
+    sacarPrimeraCarta();
+    qDebug() << "[JUEGO] Primera carta colocada en descarte";
+
+    emit partidaIniciadaSignal();
+}
+
+void Juego::sacarPrimeraCarta(){
+    if (!mazo.estaVacia()) {
+        Carta primeraCarta = robarDelMazo();
+        descarte.insertarInicio(primeraCarta);
+
+        // Emitir señal para actualizar UI inmediatamente
+        emit descarteActualizadoSignal(QString::fromStdString(
+            primeraCarta.getLadoActivo()->getRutaArchivo()));
+    }
 }
 
 void Juego::mezclarArregloLados(LadoCarta* arreglo[], int tamano) {
@@ -72,208 +112,194 @@ void Juego::mezclarArregloCartas(Carta arreglo[], int size)
 }
 
 void Juego::generarMazoNormalManual(int numMazos){
-    for(int n = 0; n <numMazos; n++){
-
-    Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
-        Color c;
-        // 1 Cero por color
-        for(Color color : colores){
-        std::string rutaNumero0 = ruta.generarRuta(TipoCarta::NUMERO, color, 0);
-        mazo.insertarFinal(Carta(new LadoNumero(color, 0, rutaNumero0)));
-        }
-
-        // 2 veces del 1-9
-        for (int i = 1; i <= 36; i++) {
-
-            c= colores[i/9]; // j=1 -> 1/9 = 0 -> Rojo
-            int numero = (i%9) + 1; // si j = 4 (4%9) = 4 -> 4+1-> 5
-            std::string rutaNumero = ruta.generarRuta(TipoCarta::NUMERO, c, numero);
-
-            mazo.insertarFinal( Carta(new LadoNumero(c, numero, rutaNumero)));
-            mazo.insertarFinal( Carta(new LadoNumero(c, numero, rutaNumero)));
-        }
-
-         // 2 veces Acciones (Roba2, Salto, Reverse)
-        for (Color c : colores) {
-
-            std::string rutaAccion;
-
-            rutaAccion = ruta.generarRuta(TipoCarta::ROBA2, c);
-            mazo.insertarFinal( Carta(new LadoRobaDos(c, -1, rutaAccion)));
-            mazo.insertarFinal( Carta(new LadoRobaDos(c, -1, rutaAccion)));
-
-            rutaAccion = ruta.generarRuta(TipoCarta::BLOQUEO, c);
-            mazo.insertarFinal( Carta(new LadoSalto(c, -1, rutaAccion)));
-            mazo.insertarFinal( Carta(new LadoSalto(c, -1, rutaAccion)));
-
-            rutaAccion = ruta.generarRuta(TipoCarta::REVERSE, c);
-            mazo.insertarFinal( Carta(new LadoReverse(c, -1, rutaAccion)));
-            mazo.insertarFinal( Carta(new LadoReverse(c, -1, rutaAccion)));
-        }
-
-    std::string rutaComodinColor =
-        ruta.generarRuta(TipoCarta::COMODIN, Color::NEGRO);
-    std::string rutaComodinRoba4 =
-        ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO);
-    std::string rutaComodinAdivinar =
-        ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO);
-    std::string rutaComodinCambiarMano =
-        ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO);
-
-    // 4 Comodines Color
-    for(int i=0;i<4;i++)
-        mazo.insertarFinal( Carta(new LadoComodinColor(Color::NEGRO, -1, rutaComodinColor)));
-
-    // 4 +4
-    for(int i=0;i<4;i++)
-        mazo.insertarFinal( Carta(new LadoComodinRobarCuatro(Color::NEGRO, -1, rutaComodinRoba4)));
-
-    // 4 Adivinar
-    for(int i=0;i<4;i++)
-        mazo.insertarFinal( Carta(new LadoAdivinarCarta(Color::NEGRO, -1, rutaComodinAdivinar)));
-
-    // 4 Cambiar Mano
-    for(int i=0;i<4;i++)
-        mazo.insertarFinal( Carta(new LadoCambiarMano(Color::NEGRO, -1, rutaComodinCambiarMano)));
-
-    }
-
-
-}
-
-void Juego::generarMazoFlipManual(int numMazos){
-    //* Cartas totales que debe tener un mazo de UNO FLIP
-    int const CARTAS_POR_MAZO = 132;
-    int cartasTotales = CARTAS_POR_MAZO * numMazos;
-
-    // Arreglos dinámicos temporales para guardar los punteros a cada lado
-    LadoCarta** ladosClaros = new LadoCarta*[cartasTotales];
-    LadoCarta** ladosOscuros = new LadoCarta*[cartasTotales];
-
-    // Contadores para saber en qué posición del arreglo vamos
-    int idxClaro = 0;
-    int idxOscuro = 0;
-
-    Color cClaros[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
-    Color cOscuros[] = {Color::ROSA, Color::TURQUESA, Color::NARANJA, Color::PURPURA};
-
-    Color claro = Color::NEGRO;
-    Color oscuro = Color::NEGRO;
+    qDebug() << "[MAZO NORMAL] Iniciando creación con" << numMazos << "mazos";
 
     for(int n = 0; n < numMazos; n++){
+        Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
 
-        // 4 Numero 0 por lado
-        for(Color color : cClaros){
-            ladosClaros[idxClaro++] = new LadoNumero(color, 0, ruta.generarRuta(TipoCarta::NUMERO, color, 0));
+        // === CARTAS NUMÉRICAS ===
+        // 1 carta de 0 por color (4 cartas)
+        for(Color color : colores){
+            std::string rutaNumero0 = ruta.generarRuta(TipoCarta::NUMERO, color, 0);
+            mazo.insertarFinal(Carta(new LadoNumero(color, 0, rutaNumero0)));
         }
 
-        // 4 Numero 0 por lado
-        for(Color color : cOscuros){
-            ladosOscuros[idxOscuro++] = new LadoNumero(color, 0, ruta.generarRuta(TipoCarta::NUMERO, color, 0));
+        // 2 cartas de cada número 1-9 por color (72 cartas)
+        for(Color color : colores) {
+            for(int numero = 1; numero <= 9; numero++) {
+                std::string rutaNumero = ruta.generarRuta(TipoCarta::NUMERO, color, numero);
+                // Primera carta
+                mazo.insertarFinal(Carta(new LadoNumero(color, numero, rutaNumero)));
+                // Segunda carta
+                mazo.insertarFinal(Carta(new LadoNumero(color, numero, rutaNumero)));
+            }
         }
+        qDebug() << "[MAZO NORMAL] Creadas 76 cartas numéricas. Total:" << mazo.getSize();
 
-        // 2 veces del 1-9 por lado
-        for (int i = 1; i <= 36; i++) {
-            claro = cClaros[i/9];
-            oscuro = cOscuros[i/9];
-            int numero = (i%9) + 1;
+        // === CARTAS ESPECIALES DE COLOR ===
+        // 2 cartas de cada tipo por color
+        for (Color color : colores) {
+            // 2 cartas +2
+            for(int i = 0; i < 2; i++) {
+                std::string rutaRoba2 = ruta.generarRuta(TipoCarta::ROBA2, color);
+                mazo.insertarFinal(Carta(new LadoRobaDos(color, -1, rutaRoba2)));
+            }
 
-            ladosClaros[idxClaro++] = new LadoNumero(claro, numero, ruta.generarRuta(TipoCarta::NUMERO, claro, numero));
-            ladosClaros[idxClaro++] = new LadoNumero(claro, numero, ruta.generarRuta(TipoCarta::NUMERO, claro, numero));
+            // 2 cartas Bloqueo
+            for(int i = 0; i < 2; i++) {
+                std::string rutaBloqueo = ruta.generarRuta(TipoCarta::BLOQUEO, color);
+                mazo.insertarFinal(Carta(new LadoSalto(color, -1, rutaBloqueo)));
+            }
 
-            ladosOscuros[idxOscuro++] = new LadoNumero(oscuro, numero, ruta.generarRuta(TipoCarta::NUMERO, oscuro, numero));
-            ladosOscuros[idxOscuro++] = new LadoNumero(oscuro, numero, ruta.generarRuta(TipoCarta::NUMERO, oscuro, numero));
+            // 2 cartas Reversa
+            for(int i = 0; i < 2; i++) {
+                std::string rutaReverse = ruta.generarRuta(TipoCarta::REVERSE, color);
+                mazo.insertarFinal(Carta(new LadoReverse(color, -1, rutaReverse)));
+            }
         }
+        qDebug() << "[MAZO NORMAL] Creadas 24 cartas especiales de color. Total:" << mazo.getSize();
 
-        // 2 flip por cada color de cada lado
+        // === CARTAS COMODÍN ===
+        // 4 cartas de cada tipo comodín
+        std::string rutaComodinColor = ruta.generarRuta(TipoCarta::COMODIN, Color::NEGRO);
+        std::string rutaComodinRoba4 = ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO);
+        std::string rutaComodinAdivinar = ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO);
+        std::string rutaComodinCambiarMano = ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO);
 
-        for (int i = 0; i < 4; i++) {
-
-            claro = cClaros[i];
-            ladosClaros[idxClaro++] = new LadoFlip(claro, -1, ruta.generarRuta(TipoCarta::FLIP, claro));
-            ladosClaros[idxClaro++] = new LadoFlip(claro, -1, ruta.generarRuta(TipoCarta::FLIP, claro));
-
-            oscuro = cOscuros[i];
-            ladosOscuros[idxOscuro++] = new LadoFlip(oscuro, -1, ruta.generarRuta(TipoCarta::FLIP, oscuro));
-            ladosOscuros[idxOscuro++] = new LadoFlip(oscuro, -1, ruta.generarRuta(TipoCarta::FLIP, oscuro));
+        for(int i = 0; i < 4; i++) {
+            mazo.insertarFinal(Carta(new LadoComodinColor(Color::NEGRO, -1, rutaComodinColor)));
+            mazo.insertarFinal(Carta(new LadoComodinRobarCuatro(Color::NEGRO, -1, rutaComodinRoba4)));
+            mazo.insertarFinal(Carta(new LadoAdivinarCarta(Color::NEGRO, -1, rutaComodinAdivinar)));
+            mazo.insertarFinal(Carta(new LadoCambiarMano(Color::NEGRO, -1, rutaComodinCambiarMano)));
         }
-
-
-
-        // 2 veces Roba1 por color claro
-        for(Color color: cClaros){
-            ladosClaros[idxClaro++] = new LadoRobaUno(color, -1, ruta.generarRuta(TipoCarta::ROBA1, color));
-            ladosClaros[idxClaro++] = new LadoRobaUno(color, -1, ruta.generarRuta(TipoCarta::ROBA1, color));
-        }
-        // 2 veces Roba3 por color oscuro
-        for(Color color: cOscuros){
-            ladosOscuros[idxOscuro++] =new LadoRobaTres(color, -1, ruta.generarRuta(TipoCarta::ROBA3, color));
-            ladosOscuros[idxOscuro++] = new LadoRobaTres(color, -1, ruta.generarRuta(TipoCarta::ROBA3, color));
-        }
-
-        // 2 veces cambio de direccion por lado
-        for (int i = 0; i < 4; i++) {
-
-            claro = cClaros[i];
-            ladosClaros[idxClaro++] = new LadoCambiarDireccion(claro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, claro));
-            ladosClaros[idxClaro++]= new LadoCambiarDireccion(claro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, claro));
-
-            oscuro = cOscuros[i];
-            ladosOscuros[idxOscuro++] = new LadoCambiarDireccion(oscuro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, oscuro));
-            ladosOscuros[idxOscuro++] = new LadoCambiarDireccion(oscuro, -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, oscuro));
-        }
-
-        // 2 veces bloqueo lado claro | 2 veces salto todo lado oscuro
-        for (int i = 0; i < 4; i++) {
-
-            claro = cClaros[i];
-             ladosClaros[idxClaro++] = new LadoSalto(claro, -1, ruta.generarRuta(TipoCarta::BLOQUEO, claro));
-             ladosClaros[idxClaro++] = new LadoSalto(claro, -1, ruta.generarRuta(TipoCarta::BLOQUEO, claro));
-
-            oscuro = cOscuros[i];
-            ladosOscuros[idxOscuro++] = new LadoSaltoTodos(oscuro, -1, ruta.generarRuta(TipoCarta::SALTODOS, oscuro));
-            ladosOscuros[idxOscuro++] = new LadoSaltoTodos(oscuro, -1, ruta.generarRuta(TipoCarta::SALTODOS, oscuro));
-        }
-
-        // 4 +2 comodin lado claro | 4 +6 comodin lado oscuro
-        for (int i = 0; i < 4; i++) {
-
-            ladosClaros[idxClaro++] = new LadoComodinRobarDos(claro, -1, ruta.generarRuta(TipoCarta::COMODIN2, claro));
-
-            ladosOscuros[idxOscuro++] = new LadoComodinRobarSeis(oscuro, -1, ruta.generarRuta(TipoCarta::COMODIN6, oscuro));
-        }
-
-        // 4 cambio color comodin lado claro | 4 color eterno comodin lado oscuro
-        for (int i = 0; i < 4; i++) {
-
-            ladosClaros[idxClaro++] = new LadoComodinColor(claro, -1, ruta.generarRuta(TipoCarta::COMODIN, claro));
-            ladosOscuros[idxOscuro++] = new LadoColorEterno(oscuro, -1, ruta.generarRuta(TipoCarta::COLORETERNO, oscuro));
-        }
-
-        // 4 cartas personalizadas por lado por color -> 4*2*2->16
-        for (int i = 0; i < 4; i++) {
-
-            ladosClaros[idxClaro++] = new LadoAdivinarCarta(claro, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, claro));
-            ladosOscuros[idxOscuro++] = new LadoAdivinarCarta(oscuro, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, oscuro));
-
-
-            ladosClaros[idxClaro++] = new LadoCambiarMano(claro, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, claro));
-            ladosOscuros[idxOscuro++] = new LadoCambiarMano(oscuro, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, oscuro));
-        }
-
-    }
-    // Mezclar aleatoriamente SOLO los lados oscuros
-    mezclarArregloLados(ladosOscuros, idxOscuro);
-
-    // Unir ambos lados en un objeto Carta y agregarlo al mazo final
-    for(int i = 0; i < idxClaro; i++){
-        mazo.insertarFinal(Carta(ladosClaros[i], ladosOscuros[i]));
+        qDebug() << "[MAZO NORMAL] Creadas 16 cartas comodín. Total:" << mazo.getSize();
     }
 
-    delete[] ladosClaros;
-    delete[] ladosOscuros;
+    qDebug() << "[MAZO NORMAL] Mazo completo creado. Total cartas:" << mazo.getSize();
+    qDebug() << "[MAZO NORMAL] Esperadas:" << (116 * numMazos);
 }
 
+
+
+void Juego::generarMazoFlipManual(int numMazos){
+    qDebug() << "[MAZO FLIP] Iniciando creación con" << numMazos << "mazos";
+
+    for(int n = 0; n < numMazos; n++){
+        qDebug() << "[MAZO FLIP] Creando mazo" << (n+1) << "de" << numMazos;
+
+        Color cClaros[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
+        Color cOscuros[] = {Color::ROSA, Color::TURQUESA, Color::NARANJA, Color::PURPURA};
+
+        // === CARTAS NUMÉRICAS === (76 cartas: 38 cartas x 2 lados = 76 efectos)
+
+        // 1 carta de 0 por cada color (4 cartas)
+        for(int i = 0; i < 4; i++){
+            LadoCarta* ladoClaro = new LadoNumero(cClaros[i], 0, ruta.generarRuta(TipoCarta::NUMERO, cClaros[i], 0));
+            LadoCarta* ladoOscuro = new LadoNumero(cOscuros[i], 0, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[i], 0));
+            mazo.insertarFinal(Carta(ladoClaro, ladoOscuro));
+        }
+        qDebug() << "[MAZO FLIP] Creadas 4 cartas de 0. Total mazo:" << mazo.getSize();
+
+        // 2 cartas de cada número 1-9 por color (36 cartas)
+        for(int color = 0; color < 4; color++){
+            for(int numero = 1; numero <= 9; numero++){
+                // Primera carta del número
+                LadoCarta* ladoClaro1 = new LadoNumero(cClaros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cClaros[color], numero));
+                LadoCarta* ladoOscuro1 = new LadoNumero(cOscuros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[color], numero));
+                mazo.insertarFinal(Carta(ladoClaro1, ladoOscuro1));
+
+                // Segunda carta del número
+                LadoCarta* ladoClaro2 = new LadoNumero(cClaros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cClaros[color], numero));
+                LadoCarta* ladoOscuro2 = new LadoNumero(cOscuros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[color], numero));
+                mazo.insertarFinal(Carta(ladoClaro2, ladoOscuro2));
+            }
+        }
+        qDebug() << "[MAZO FLIP] Creadas 72 cartas numéricas 1-9. Total mazo:" << mazo.getSize();
+        // Total numéricas: 76 cartas
+
+        // === CARTAS ESPECIALES DE COLOR === (32 cartas)
+
+        for(int color = 0; color < 4; color++){
+            // 2 cartas: +1 (claro) / +3 (oscuro)
+            for(int i = 0; i < 2; i++){
+                LadoCarta* ladoRoba1 = new LadoRobaUno(cClaros[color], -1, ruta.generarRuta(TipoCarta::ROBA1, cClaros[color]));
+                LadoCarta* ladoRoba3 = new LadoRobaTres(cOscuros[color], -1, ruta.generarRuta(TipoCarta::ROBA3, cOscuros[color]));
+                mazo.insertarFinal(Carta(ladoRoba1, ladoRoba3));
+            }
+
+            // 2 cartas: Cambio dirección (ambos lados)
+            for(int i = 0; i < 2; i++){
+                LadoCarta* ladoCambioClaro = new LadoCambiarDireccion(cClaros[color], -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, cClaros[color]));
+                LadoCarta* ladoCambioOscuro = new LadoCambiarDireccion(cOscuros[color], -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, cOscuros[color]));
+                mazo.insertarFinal(Carta(ladoCambioClaro, ladoCambioOscuro));
+            }
+
+            // 2 cartas: Bloqueo (claro) / Salto todos (oscuro)
+            for(int i = 0; i < 2; i++){
+                LadoCarta* ladoBloqueo = new LadoSalto(cClaros[color], -1, ruta.generarRuta(TipoCarta::BLOQUEO, cClaros[color]));
+                LadoCarta* ladoSaltoTodos = new LadoSaltoTodos(cOscuros[color], -1, ruta.generarRuta(TipoCarta::SALTODOS, cOscuros[color]));
+                mazo.insertarFinal(Carta(ladoBloqueo, ladoSaltoTodos));
+            }
+
+            // 2 cartas: FLIP (ambos lados)
+            for(int i = 0; i < 2; i++){
+                LadoCarta* ladoFlipClaro = new LadoFlip(cClaros[color], -1, ruta.generarRuta(TipoCarta::FLIP, cClaros[color]));
+                LadoCarta* ladoFlipOscuro = new LadoFlip(cOscuros[color], -1, ruta.generarRuta(TipoCarta::FLIP, cOscuros[color]));
+                mazo.insertarFinal(Carta(ladoFlipClaro, ladoFlipOscuro));
+            }
+        }
+        qDebug() << "[MAZO FLIP] Creadas 32 cartas especiales de color. Total mazo:" << mazo.getSize();
+
+        // === CARTAS COMODÍN === (24 cartas)
+
+        // 4 cartas: +2 (claro) / +6 (oscuro)
+        for(int i = 0; i < 4; i++){
+            LadoCarta* ladoComodin2 = new LadoComodinRobarDos(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN2, Color::NEGRO));
+            LadoCarta* ladoComodin6 = new LadoComodinRobarSeis(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN6, Color::NEGRO));
+            mazo.insertarFinal(Carta(ladoComodin2, ladoComodin6));
+        }
+
+        // 4 cartas: Cambio color (claro) / Color eterno (oscuro)
+        for(int i = 0; i < 4; i++){
+            LadoCarta* ladoComodinColor = new LadoComodinColor(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN, Color::NEGRO));
+            LadoCarta* ladoColorEterno = new LadoColorEterno(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COLORETERNO, Color::NEGRO));
+            mazo.insertarFinal(Carta(ladoComodinColor, ladoColorEterno));
+        }
+
+        // 4 cartas: Adivinar carta (ambos lados)
+        for(int i = 0; i < 4; i++){
+            LadoCarta* ladoAdivinarClaro = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
+            LadoCarta* ladoAdivinarOscuro = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
+            mazo.insertarFinal(Carta(ladoAdivinarClaro, ladoAdivinarOscuro));
+        }
+
+        // 4 cartas: Cambiar mano (ambos lados)
+        for(int i = 0; i < 4; i++){
+            LadoCarta* ladoCambiarClaro = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
+            LadoCarta* ladoCambiarOscuro = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
+            mazo.insertarFinal(Carta(ladoCambiarClaro, ladoCambiarOscuro));
+        }
+
+        // 4 cartas: Eclipse (claro) / Espía (oscuro)
+        for(int i = 0; i < 4; i++){
+            LadoCarta* ladoAdivinarCarta = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
+            LadoCarta* ladoCambiarMano = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
+            mazo.insertarFinal(Carta(ladoAdivinarCarta, ladoCambiarMano));
+        }
+
+        // 4 cartas: +4 (claro) - estas parecen ser especiales adicionales
+        for(int i = 0; i < 4; i++){
+            LadoCarta* ladoComodin4Claro = new LadoComodinRobarCuatro(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO));
+            LadoCarta* ladoComodin4Oscuro = new LadoComodinRobarCuatro(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO));
+            mazo.insertarFinal(Carta(ladoComodin4Claro, ladoComodin4Oscuro));
+        }
+
+        qDebug() << "[MAZO FLIP] Creadas 24 cartas comodín. Total mazo:" << mazo.getSize();
+    }
+
+    qDebug() << "[MAZO FLIP] Mazo completo creado. Total cartas:" << mazo.getSize();
+    qDebug() << "[MAZO FLIP] Esperadas:" << (132 * numMazos);
+}
    void Juego::avanzarTurno() {
 
        // Avanzamos el turno según el sentido (1 o -1)
@@ -346,32 +372,67 @@ void Juego::agregarADescarte(Carta carta){
     descarte.insertarInicio(carta);
 }
 
-void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado, int numeroSeleccionado, const std::string& colorSeleccionado) {
-    LadoCarta* ladoActual = cartaJugada.getLadoActivo();
-
-    if(ladoActual!=nullptr) ladoActual->aplicarEfecto(this,colorSeleccionado);
-
-}
 
 //* Agregar la UI para refrescarla cada vez que se realiza una accion
-   void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
-                          const std::string& jugadorSeleccionado,
-                          int numeroAdivinado,
-                          const std::string& colorAdivinado) {
+void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
+                       const std::string& jugadorSeleccionado,
+                       int numeroAdivinado,
+                       const std::string& colorAdivinado) {
 
-       // El jugador tira la carta (la quitamos de su mano)
-       Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
-       jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
+    // Verificaciones de seguridad
+    if (!jugador || indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize()) {
+        qDebug() << "Error: Parámetros inválidos en jugarCarta";
+        return;
+    }
 
-       // La ponemos en la pila de descarte
-       descarte.insertarInicio(cartaJugada);
+    try {
 
-       // Procesamos qué hace esa carta
-       aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
 
-       // Preparamos el turno del siguiente jugador
-       avanzarTurno();
-   }
+        // El jugador tira la carta (la quitamos de su mano)
+        Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
+        if (!cartaJugada.esValida()) {
+            qDebug() << "Error: Carta inválida seleccionada";
+            return;
+        }
+
+        jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
+
+        // La ponemos en la pila de descarte
+        descarte.insertarInicio(cartaJugada);
+
+        // EMITIR SEÑALES: La carta fue jugada
+        emit cartaJugadaSignal(indiceCartaEnMano);
+        emit manoActualizadaSignal();
+
+        // Actualizar información del descarte
+        if (cartaJugada.esValida()) {
+            colorActivo = cartaJugada.getLadoActivo()->getColor();
+            QString ruta = QString::fromStdString(cartaJugada.getLadoActivo()->getRutaArchivo());
+            emit descarteActualizadoSignal(ruta);
+        }
+
+        qDebug() << "[JUEGO] Antes de llamar a aplicarEfectoCarta";
+        // Procesamos qué hace esa carta
+        aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
+        qDebug() << "[JUEGO] Después de llamar a aplicarEfectoCarta";
+
+        // Preparamos el turno del siguiente jugador
+        avanzarTurno();
+
+        // EMITIR SEÑAL DE TURNO CAMBIADO
+        Jugador* nuevoJugador = getJugadorActual();
+        if (nuevoJugador) {
+            emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+            emit manoActualizadaSignal(); // La mano del nuevo jugador
+        }
+
+        // Actualizar estado del mazo
+        emit mazoActualizadoSignal(mazo.getSize());
+
+    } catch (...) {
+        qDebug() << "Error crítico en jugarCarta. Índice:" << indiceCartaEnMano;
+    }
+}
 
    void Juego::repartirCartas(int cartasPorJugador) {
 
@@ -473,5 +534,42 @@ void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSelec
    void Juego::setJugadorEnLista(const std::string nombreJugador){
        Jugador* jugador = new Jugador(nombreJugador);
        jugadores.insertarFinal(jugador);
+   }
+
+   void Juego::onCartaJugadaSlot(int indiceCarta) {
+       Jugador* jugadorActual = getJugadorActual();
+       if (jugadorActual) {
+           jugarCarta(jugadorActual, indiceCarta);
+       }
+   }
+
+
+   void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado,
+                                  int numeroSeleccionado, const std::string& colorSeleccionado) {
+
+       qDebug() << "[JUEGO] === Iniciando aplicarEfectoCarta ===";
+
+       if (!cartaJugada.esValida()) {
+           qDebug() << "[JUEGO ERROR] Carta inválida recibida";
+           return;
+       }
+
+       LadoCarta* ladoActual = cartaJugada.getLadoActivo();
+       if (!ladoActual) {
+           qDebug() << "[JUEGO ERROR] Lado actual es nullptr";
+           return;
+       }
+
+       qDebug() << "[JUEGO] Aplicando efecto de carta tipo:" << static_cast<int>(ladoActual->getTipo());
+
+       try {
+           // Llamar al método aplicarEfecto del lado activo de la carta
+           ladoActual->aplicarEfecto(this, colorSeleccionado, jugadorSeleccionado, numeroSeleccionado);
+           qDebug() << "[JUEGO] Efecto aplicado correctamente";
+       } catch (...) {
+           qDebug() << "[JUEGO ERROR] Excepción al aplicar efecto de carta";
+       }
+
+       qDebug() << "[JUEGO] === Finalizó aplicarEfectoCarta ===";
    }
 

@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+
 enum class TipoCarta {
     // Normal / Lado Claro
     NUMERO, ROBA1, ROBA2, SALTO, REVERSE, COMODIN, COMODIN4, BLOQUEO,

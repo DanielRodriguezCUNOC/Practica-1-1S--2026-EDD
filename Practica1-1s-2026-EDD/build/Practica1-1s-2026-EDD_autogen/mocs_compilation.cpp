@@ -4,5 +4,6 @@
 #include "EWIEGA46WW/moc_cartamanowidget.cpp"
 #include "EWIEGA46WW/moc_cartaui.cpp"
 #include "EWIEGA46WW/moc_configuraciones.cpp"
+#include "EWIEGA46WW/moc_juego.cpp"
 #include "EWIEGA46WW/moc_mainwindow.cpp"
 #include "EWIEGA46WW/moc_pantallajuego.cpp"

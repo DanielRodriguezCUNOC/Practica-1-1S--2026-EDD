@@ -23,6 +23,7 @@ private:
 
     int numJugadores;
     bool modoJuego;
+    bool actualizandoMano=false;
 signals:
     void salirPartida();
     void pedirNombres();
@@ -30,13 +31,28 @@ signals:
 private slots:
     void on_btnSalirJuego_clicked();
 
+    void on_btnRobarCarta_clicked();
+
+    void on_btnPasarTurno_clicked();
+
 public:
     explicit PantallaJuego(int cantidadaJugdores, bool esFlip, QWidget *parent = nullptr);
     ~PantallaJuego();
     void iniciarNuevaPartida(int numJugadores, bool esFlip);
     void dibujarMazo(ListaGenerica<Carta> mazoBackend);
-    void onCartaSeleccionada(int id);
 
+public slots:
+    void onCartaSeleccionada(int idCarta);
+    void actualizarManoJugador();
+    void actualizarTurno(QString nombreJugador);
+    void actualizarDescarte(QString rutaCarta);
+    void onPartidaIniciada();
+    void onRobarCarta();
+    void onPasarTurno();
+
+private:
+    void configurarConexiones();
+    void mostrarCartaDescarte(Carta carta);
 
 
 };
