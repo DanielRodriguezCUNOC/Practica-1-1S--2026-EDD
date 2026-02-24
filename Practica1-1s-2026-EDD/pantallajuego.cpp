@@ -158,6 +158,9 @@ void PantallaJuego::configurarConexiones()
     connect(juego, &Juego::partidaIniciadaSignal,
             this, &PantallaJuego::onPartidaIniciada);
 
+    connect(juego, &Juego::cartaInvalidaSignal,
+            this, &PantallaJuego::onCartaInvalida);
+
     // Conectar botones de acción
     connect(ui->btnRobarCarta, &BotonAnimado::clicked,
             this, &PantallaJuego::onRobarCarta);
@@ -178,7 +181,7 @@ void PantallaJuego::actualizarManoJugador()
 {
     qDebug() << "[PANTALLA] === actualizarManoJugador INICIADO ===";
 
-    if (actualizandoMano || procesandoCarta) {
+    if (actualizandoMano) {
         qDebug() << "[PANTALLA] Ya actualizando mano, saliendo";
         return;
     }
@@ -257,12 +260,12 @@ void PantallaJuego::actualizarManoJugador()
             xActual += separacion;
         }
 
-        // CONECTAR señales DESPUÉS de crear todas las cartas
-        QTimer::singleShot(100, this, [this]() {
-            const QList<QGraphicsItem *> items = escena->items();
+        // CONECTAR señales de cada carta inmediatamente
+        {
+            const QList<QGraphicsItem *> itemsConexion = escena->items();
             int cartasConectadas = 0;
 
-            for (QGraphicsItem *item : items) {
+            for (QGraphicsItem *item : itemsConexion) {
                 CartaManoWidget *carta = dynamic_cast<CartaManoWidget *>(item);
                 if (carta) {
                     connect(carta, &CartaManoWidget::cartaSeleccionada,
@@ -271,7 +274,7 @@ void PantallaJuego::actualizarManoJugador()
                 }
             }
             qDebug() << "[PANTALLA] Conectadas" << cartasConectadas << "cartas";
-        });
+        }
 
         ui->lblCantidadCartas->setText(QString("Cartas: %1").arg(total));
 
@@ -334,12 +337,23 @@ void PantallaJuego::onCartaSeleccionada(int idCartaOriginal)
     qDebug() << "[PANTALLA] ID Carta seleccionada:" << idCartaOriginal;
 
     static bool bloqueado = false;
-    if (bloqueado || procesandoCarta || actualizandoMano) {
+    if (bloqueado || actualizandoMano) {
         qDebug() << "[PANTALLA] BLOQUEADO";
         return;
     }
 
     bloqueado = true;
+
+    // DESCONECTAR TODAS las cartas inmediatamente para evitar re-disparo
+    {
+        const QList<QGraphicsItem *> itemsViejos = escena->items();
+        for (QGraphicsItem *item : itemsViejos) {
+            CartaManoWidget *carta = dynamic_cast<CartaManoWidget *>(item);
+            if (carta) {
+                disconnect(carta, nullptr, this, nullptr);
+            }
+        }
+    }
 
     try {
         if (!juego) {
@@ -428,29 +442,70 @@ void PantallaJuego::onCartaSeleccionada(int idCartaOriginal)
         qDebug() << "[PANTALLA] ✅ Procesando carta en posición REAL" << posicionVisual;
 
         // PROCESAR con la posición CORRECTA
-        procesandoCarta = true;
         juego->onCartaJugadaSlot(posicionVisual);
 
     } catch (...) {
         qDebug() << "[PANTALLA ERROR CRÍTICO] Excepción en onCartaSeleccionada";
     }
 
-    procesandoCarta = false;
     bloqueado = false;
     qDebug() << "[PANTALLA] === onCartaSeleccionada FINALIZADO ===";
 }
+
 void PantallaJuego::onRobarCarta()
 {
-    Jugador *jugadorActual = juego->getJugadorActual();
-    if (!jugadorActual)
+    qDebug() << "[PANTALLA] === onRobarCarta INICIADO ===";
+
+    Jugador* jugadorActual = juego->getJugadorActual();
+    if (!jugadorActual) return;
+
+    // ✅ Verificar si el jugador tiene alguna carta válida para jugar
+    bool tieneCartaValida = false;
+    ListaGenerica<Carta>& mano = jugadorActual->getMano();
+
+    for (int i = 0; i < mano.getSize(); i++) {
+        Carta carta = mano.obtenerElementoEnPosicion(i);
+        if (juego->puedeJugarCarta(carta)) {
+            tieneCartaValida = true;
+            break;
+        }
+    }
+
+    if (tieneCartaValida) {
+        qDebug() << "[PANTALLA] Jugador tiene cartas válidas, no puede robar";
+        QMessageBox::warning(this, "No puedes robar",
+                             "Tienes cartas que puedes jugar.\n¡Debes jugar una carta primero!");
         return;
+    }
+
+    // ✅ Robar carta del mazo
+    if (juego->mazoEstaVacio()) {
+        qDebug() << "[PANTALLA] Mazo vacío, barajando descarte...";
+        juego->barajarDescarte();
+    }
 
     Carta nuevaCarta = juego->robarDelMazo();
-    if (nuevaCarta.esValida())
-    {
+    if (nuevaCarta.esValida()) {
         jugadorActual->agregarCarta(nuevaCarta);
+        qDebug() << "[PANTALLA] Carta robada agregada a la mano";
+
+        // ✅ Actualizar la mano visualmente
+        actualizarManoJugador();
+
+        // ✅ Pasar turno automáticamente después de robar
         juego->avanzarTurno();
+
+        Jugador* nuevoJugador = juego->getJugadorActual();
+        if (nuevoJugador) {
+            actualizarTurno(QString::fromStdString(nuevoJugador->getNombreJugador()));
+        }
+
+        qDebug() << "[PANTALLA] Turno avanzado tras robar carta";
+    } else {
+        QMessageBox::information(this, "Mazo vacío", "No hay cartas disponibles para robar.");
     }
+
+    qDebug() << "[PANTALLA] === onRobarCarta FINALIZADO ===";
 }
 
 void PantallaJuego::onPasarTurno()
@@ -468,4 +523,14 @@ void PantallaJuego::on_btnRobarCarta_clicked()
 void PantallaJuego::on_btnPasarTurno_clicked()
 {
     onPasarTurno();
+}
+
+// ...existing code...
+void PantallaJuego::onCartaInvalida()
+{
+    qDebug() << "[PANTALLA] Carta inválida - no coincide color/número";
+    QMessageBox::warning(this, "Carta inválida",
+                         "Esta carta no puede jugarse ahora.\n"
+                         "Debe coincidir con el color o número de la carta en descarte.\n"
+                         "Si no tienes carta válida, roba del mazo.");
 }

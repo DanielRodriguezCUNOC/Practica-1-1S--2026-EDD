@@ -2,6 +2,7 @@
 #include <QPixmap>
 #include <QCursor>
 #include <QFileInfo>
+#include <QGraphicsSceneMouseEvent>
 CartaManoWidget::CartaManoWidget(int idCarta, QString rutaImg, QGraphicsItem* parent):
     QObject(), QGraphicsPixmapItem(parent), id(idCarta){
 
@@ -24,7 +25,7 @@ CartaManoWidget::CartaManoWidget(int idCarta, QString rutaImg, QGraphicsItem* pa
 }
 void CartaManoWidget::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     emit cartaSeleccionada(this->id);
-    QGraphicsPixmapItem:mousePressEvent(event);
+    event->accept();   // Consumir el evento (evita propagación y recursión)
 }
 
 void CartaManoWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
