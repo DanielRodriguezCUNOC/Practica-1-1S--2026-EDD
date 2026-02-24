@@ -5,6 +5,8 @@
 CartaManoWidget::CartaManoWidget(int idCarta, QString rutaImg, QGraphicsItem* parent):
     QObject(), QGraphicsPixmapItem(parent), id(idCarta){
 
+    qDebug() << "[CARTA WIDGET] Creando carta con ID:" << id << "ruta:" << rutaImg;
+
     QString rutaValida = buscarImagenAlternativa(rutaImg);
 
     QPixmap pixmap;
@@ -18,6 +20,7 @@ CartaManoWidget::CartaManoWidget(int idCarta, QString rutaImg, QGraphicsItem* pa
     setPixmap(pixmap);
     setAcceptHoverEvents(true);
     setFlag(QGraphicsItem::ItemIsSelectable, false);
+    qDebug() << "[CARTA WIDGET] Carta creada exitosamente con ID:" << idCarta;
 }
 void CartaManoWidget::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     emit cartaSeleccionada(this->id);
@@ -120,4 +123,8 @@ QString CartaManoWidget::buscarImagenAlternativa(QString rutaOriginal) {
     // Último recurso: devolver la original (fallará, pero ya manejamos eso)
     qDebug() << "  No se encontró ninguna alternativa";
     return rutaOriginal;
+}
+
+int CartaManoWidget::getIdCarta(){
+    return id;
 }

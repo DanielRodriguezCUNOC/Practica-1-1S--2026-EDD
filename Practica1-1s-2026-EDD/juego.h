@@ -37,6 +37,11 @@ private:
 
     int cartasPorPartida(int cantJugadores);
 
+    void jugarCartaSinSeñales(Jugador* jugador, int indiceCartaEnMano,
+                              const std::string& jugadorSeleccionado,
+                              int numeroAdivinado,
+                              const std::string& colorAdivinado);
+
 
 signals:
     void cartaJugadaSignal(int idCarta);
@@ -84,7 +89,7 @@ public:
 
     bool mazoEstaVacio() const;
 
-    // ====== CONSULTAS DE CARTAS ======
+    // ====== CARTAS ======
     bool adivinoCarta(
         const std::string& nombreJugador,
         int numeroCarta,
@@ -92,6 +97,8 @@ public:
         );
 
     Color convertirStringAColor(const std::string& colorStr);
+
+    bool puedeJugarCarta(const Carta& carta);
 
     // ====== JUGADORES ======
     Jugador* getJugadorActual();

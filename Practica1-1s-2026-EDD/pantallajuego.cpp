@@ -176,104 +176,125 @@ void PantallaJuego::onPartidaIniciada()
 
 void PantallaJuego::actualizarManoJugador()
 {
+    qDebug() << "[PANTALLA] === actualizarManoJugador INICIADO ===";
 
-    if (actualizandoMano){
-         qDebug() << "Ya se está actualizando la mano, ignorando llamada";
+    if (actualizandoMano || procesandoCarta) {
+        qDebug() << "[PANTALLA] Ya actualizando mano, saliendo";
         return;
     }
+
     actualizandoMano = true;
 
     try {
+        // DESCONECTAR TODAS las señales PRIMERO
         const QList<QGraphicsItem *> items = escena->items();
-        for (QGraphicsItem *item : items)
-        {
+        for (QGraphicsItem *item : items) {
             CartaManoWidget *carta = dynamic_cast<CartaManoWidget *>(item);
-            if (carta)
-            {
-                disconnect(carta, &CartaManoWidget::cartaSeleccionada,
-                           this, &PantallaJuego::onCartaSeleccionada);
+            if (carta) {
+                disconnect(carta, nullptr, this, nullptr);
             }
         }
 
-        // Limpiar escena actual
+        // Limpiar escena
         escena->clear();
 
         Jugador *jugadorActual = juego->getJugadorActual();
         if (!jugadorActual) {
+            qDebug() << "[PANTALLA ERROR] No hay jugador actual";
             actualizandoMano = false;
             return;
         }
 
         ListaGenerica<Carta> &mano = jugadorActual->getMano();
         int total = mano.getSize();
-        if (total == 0)
-        {
+
+        qDebug() << "[PANTALLA] Jugador actual tiene" << total << "cartas";
+
+        if (total == 0) {
             actualizandoMano = false;
             QMessageBox::information(this, "¡Ganador!",
                                      QString("%1 ha ganado la partida!").arg(QString::fromStdString(jugadorActual->getNombreJugador())));
             return;
         }
 
-    // Configurar la escena
-    double anchoContenedor = ui->manoJugadorWidget->width() - 20;
-    double altoContenedor = ui->manoJugadorWidget->height() - 20;
+        // Calcular posicionamiento
+        double anchoContenedor = this->vista->viewport()->width();
+        if (anchoContenedor < 1241) anchoContenedor = 1241;
 
-    double anchoCarta = 135.0;
-    double separacionMinima = 25.0;
-    double separacionMaxima = 85.0;
+        double anchoCarta = 135.0;
+        double ideal = (total > 1) ? (anchoContenedor - 30 - anchoCarta) / (total - 1) : 0;
+        double separacion = (total > 1) ? qBound(25.0, ideal, 85.0) : 0;
+        double anchoTotalCartas = anchoCarta + (total - 1) * separacion;
+        double xActual = (anchoContenedor - anchoTotalCartas) / 2.0;
 
-    double separacion;
-    if (total > 1)
-    {
-        separacion = (anchoContenedor - anchoCarta) / (total - 1);
-        separacion = qBound(separacionMinima, separacion, separacionMaxima);
-    }
-    else
-    {
-        separacion = 0;
-    }
+        this->escena->setSceneRect(0, 0, anchoContenedor, 240);
 
-    double anchoTotalCartas = anchoCarta + (total - 1) * separacion;
-    double xInicial = (anchoContenedor - anchoTotalCartas) / 2.0;
+        // CREAR CARTAS CON ÍNDICES CORRECTOS
+        for (int i = 0; i < total; i++) {
+            Carta carta = mano.obtenerElementoEnPosicion(i);
+            if (!carta.esValida()) {
+                qDebug() << "[PANTALLA ERROR] Carta en posición" << i << "no es válida";
+                continue;
+            }
 
-    if (xInicial < 10)
-        xInicial = 10;
+            LadoCarta *ladoActivo = carta.getLadoActivo();
+            if (!ladoActivo) {
+                qDebug() << "[PANTALLA ERROR] Lado activo nulo en posición" << i;
+                continue;
+            }
 
-    escena->setSceneRect(0, 0, anchoContenedor + 20, altoContenedor);
+            QString rutaImagen = QString::fromStdString(ladoActivo->getRutaArchivo());
 
-    for (int i = 0; i < total; ++i)
-    {
-        Carta carta = mano.obtenerElementoEnPosicion(i);
-        QString ruta = QString::fromStdString(carta.getLadoActivo()->getRutaArchivo());
+            // CREAR CARTA CON ÍNDICE CORRECTO
+            CartaManoWidget *cartaWidget = new CartaManoWidget(i, rutaImagen, nullptr);
+            cartaWidget->setPos(xActual, 0);
 
-        // Asegurar que la ruta tenga el prefijo correcto si es necesario
-        if (!ruta.startsWith(":") && !ruta.startsWith("/"))
-        {
-            // Si es una ruta relativa, agregar el prefijo de recursos
-            ruta = ":/assets/" + ruta; // Ajusta esto según tu estructura de carpetas
+            qDebug() << "[PANTALLA] Creada carta" << i << "en posición" << xActual;
+
+            // Agregar a la escena
+            escena->addItem(cartaWidget);
+
+            xActual += separacion;
         }
 
-        CartaManoWidget *cartaWidget = new CartaManoWidget(i, ruta);
+        // CONECTAR señales DESPUÉS de crear todas las cartas
+        QTimer::singleShot(100, this, [this]() {
+            const QList<QGraphicsItem *> items = escena->items();
+            int cartasConectadas = 0;
 
-        connect(cartaWidget, &CartaManoWidget::cartaSeleccionada,
-                this, &PantallaJuego::onCartaSeleccionada);
+            for (QGraphicsItem *item : items) {
+                CartaManoWidget *carta = dynamic_cast<CartaManoWidget *>(item);
+                if (carta) {
+                    connect(carta, &CartaManoWidget::cartaSeleccionada,
+                            this, &PantallaJuego::onCartaSeleccionada, Qt::UniqueConnection);
+                    cartasConectadas++;
+                }
+            }
+            qDebug() << "[PANTALLA] Conectadas" << cartasConectadas << "cartas";
+        });
 
-        escena->addItem(cartaWidget);
+        ui->lblCantidadCartas->setText(QString("Cartas: %1").arg(total));
 
-        double yPos = (altoContenedor - 180) / 2.0; // Alto aproximado
-        cartaWidget->setPos(xInicial + (i * separacion), yPos);
-        cartaWidget->setZValue(i);
+        qDebug() << "[PANTALLA] Mano actualizada correctamente con" << total << "cartas";
+
+    } catch (...) {
+        qDebug() << "[PANTALLA ERROR CRÍTICO] Excepción en actualizarManoJugador";
     }
 
-    vista->setSceneRect(escena->itemsBoundingRect());
-    vista->centerOn(escena->sceneRect().center());
-
-    ui->lblCantidadCartas->setText(QString("Cartas: %1").arg(total));
-    }catch(...){
-        qDebug() << "Error en actualizarManoJugador";
-    }
     actualizandoMano = false;
+    qDebug() << "[PANTALLA] === actualizarManoJugador FINALIZADO ===";
+
+    qDebug() << "[PANTALLA DEBUG] === CARTAS CREADAS ===";
+    const QList<QGraphicsItem *> itemsDebug = escena->items();
+    for (QGraphicsItem *item : itemsDebug) {
+        CartaManoWidget *carta = dynamic_cast<CartaManoWidget *>(item);
+        if (carta) {
+            qDebug() << "[PANTALLA] Carta ID:" << carta->getIdCarta() << "Pos X:" << carta->pos().x();
+        }
+    }
+    qDebug() << "[PANTALLA DEBUG] === FIN CARTAS ===";
 }
+
 
 void PantallaJuego::actualizarTurno(QString nombreJugador)
 {
@@ -306,25 +327,118 @@ void PantallaJuego::actualizarDescarte(QString rutaCarta)
     }
 }
 
-void PantallaJuego::onCartaSeleccionada(int idCarta)
+
+void PantallaJuego::onCartaSeleccionada(int idCartaOriginal)
 {
-    // Prevenir múltiples selecciones simultáneas
-        if (actualizandoMano) {
-        qDebug() << "Ignorando selección de carta durante actualización";
+    qDebug() << "[PANTALLA] === onCartaSeleccionada INICIADO ===";
+    qDebug() << "[PANTALLA] ID Carta seleccionada:" << idCartaOriginal;
+
+    static bool bloqueado = false;
+    if (bloqueado || procesandoCarta || actualizandoMano) {
+        qDebug() << "[PANTALLA] BLOQUEADO";
         return;
     }
 
-    // Usar QTimer para evitar problemas de sincronización
-    QTimer::singleShot(0, this, [this, idCarta]() {
-        try {
-            qDebug() << "Procesando carta seleccionada:" << idCarta;
-            juego->onCartaJugadaSlot(idCarta);
-        } catch (...) {
-            qDebug() << "Error al procesar carta seleccionada:" << idCarta;
-        }
-    });
-}
+    bloqueado = true;
 
+    try {
+        if (!juego) {
+            qDebug() << "[PANTALLA ERROR] Juego es nullptr";
+            bloqueado = false;
+            return;
+        }
+
+        Jugador* jugadorActual = juego->getJugadorActual();
+        if (!jugadorActual) {
+            qDebug() << "[PANTALLA ERROR] No hay jugador actual";
+            bloqueado = false;
+            return;
+        }
+
+        // Obtener todas las cartas de la escena
+        const QList<QGraphicsItem *> items = escena->items();
+
+        // Arrays manuales para ordenamiento
+        CartaManoWidget* cartasArray[20];  // Máximo 20 cartas
+        double posicionesX[20];
+        int totalCartas = 0;
+
+        // Recopilar cartas y sus posiciones
+        for (QGraphicsItem *item : items) {
+            CartaManoWidget *carta = dynamic_cast<CartaManoWidget *>(item);
+            if (carta && totalCartas < 20) {
+                cartasArray[totalCartas] = carta;
+                posicionesX[totalCartas] = carta->pos().x();
+                totalCartas++;
+            }
+        }
+
+        qDebug() << "[PANTALLA] Encontradas" << totalCartas << "cartas en escena";
+
+        // ORDENAMIENTO BURBUJA MANUAL por posición X
+        for (int i = 0; i < totalCartas - 1; i++) {
+            for (int j = 0; j < totalCartas - 1 - i; j++) {
+                if (posicionesX[j] > posicionesX[j + 1]) {
+                    // Intercambiar posiciones
+                    double tempPos = posicionesX[j];
+                    posicionesX[j] = posicionesX[j + 1];
+                    posicionesX[j + 1] = tempPos;
+
+                    // Intercambiar cartas
+                    CartaManoWidget* tempCarta = cartasArray[j];
+                    cartasArray[j] = cartasArray[j + 1];
+                    cartasArray[j + 1] = tempCarta;
+                }
+            }
+        }
+
+        // BUSCAR la posición de la carta seleccionada EN EL ARRAY ORDENADO
+        int posicionVisual = -1;
+        for (int i = 0; i < totalCartas; i++) {
+            if (cartasArray[i]->getIdCarta() == idCartaOriginal) {
+                posicionVisual = i;  // Esta ES la posición real en la mano
+                break;
+            }
+        }
+
+        if (posicionVisual == -1) {
+            qDebug() << "[PANTALLA ERROR] Carta no encontrada en array ordenado";
+            bloqueado = false;
+            return;
+        }
+
+        qDebug() << "[PANTALLA] Carta ID" << idCartaOriginal << "está en posición visual" << posicionVisual;
+
+        // VALIDAR que la posición existe en la mano actual
+        int cartasEnMano = jugadorActual->getMano().getSize();
+        if (posicionVisual >= cartasEnMano) {
+            qDebug() << "[PANTALLA ERROR] Posición" << posicionVisual << "fuera de rango de" << cartasEnMano;
+            bloqueado = false;
+            return;
+        }
+
+        // VALIDAR que la carta existe
+        Carta cartaSeleccionada = jugadorActual->getMano().obtenerElementoEnPosicion(posicionVisual);
+        if (!cartaSeleccionada.esValida()) {
+            qDebug() << "[PANTALLA ERROR] Carta en posición" << posicionVisual << "no es válida";
+            bloqueado = false;
+            return;
+        }
+
+        qDebug() << "[PANTALLA] ✅ Procesando carta en posición REAL" << posicionVisual;
+
+        // PROCESAR con la posición CORRECTA
+        procesandoCarta = true;
+        juego->onCartaJugadaSlot(posicionVisual);
+
+    } catch (...) {
+        qDebug() << "[PANTALLA ERROR CRÍTICO] Excepción en onCartaSeleccionada";
+    }
+
+    procesandoCarta = false;
+    bloqueado = false;
+    qDebug() << "[PANTALLA] === onCartaSeleccionada FINALIZADO ===";
+}
 void PantallaJuego::onRobarCarta()
 {
     Jugador *jugadorActual = juego->getJugadorActual();

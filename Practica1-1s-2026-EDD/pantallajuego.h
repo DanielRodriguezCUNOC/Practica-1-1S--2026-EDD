@@ -24,6 +24,7 @@ private:
     int numJugadores;
     bool modoJuego;
     bool actualizandoMano=false;
+      bool procesandoCarta = false;
 signals:
     void salirPartida();
     void pedirNombres();

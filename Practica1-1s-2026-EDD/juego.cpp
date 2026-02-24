@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <QWidget>
+#include <QTimer>
 
 Juego::Juego(QObject* parent): QObject(parent), ladoOscuroActivo(false),
     indiceTurnoActual(0), sentidoJuego(1){
@@ -379,42 +380,58 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
                        int numeroAdivinado,
                        const std::string& colorAdivinado) {
 
+    qDebug() << "[JUEGO] === jugarCarta INICIADO ===";
+    qDebug() << "[JUEGO] Índice carta:" << indiceCartaEnMano;
+
     // Verificaciones de seguridad
-    if (!jugador || indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize()) {
-        qDebug() << "Error: Parámetros inválidos en jugarCarta";
+    if (!jugador) {
+        qDebug() << "[JUEGO ERROR] Jugador es nullptr";
+        return;
+    }
+
+    if (indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize()) {
+        qDebug() << "[JUEGO ERROR] Índice de carta fuera de rango";
         return;
     }
 
     try {
-
-
-        // El jugador tira la carta (la quitamos de su mano)
+        // Obtener la carta de forma segura
         Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
         if (!cartaJugada.esValida()) {
-            qDebug() << "Error: Carta inválida seleccionada";
+            qDebug() << "[JUEGO ERROR] Carta no válida";
             return;
         }
 
+        qDebug() << "[JUEGO] Removiendo carta de la mano del jugador";
+
+        // El jugador tira la carta (la quitamos de su mano)
         jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
+
+        qDebug() << "[JUEGO] Agregando carta al descarte";
 
         // La ponemos en la pila de descarte
         descarte.insertarInicio(cartaJugada);
+
+        qDebug() << "[JUEGO] Emitiendo señales de actualización";
 
         // EMITIR SEÑALES: La carta fue jugada
         emit cartaJugadaSignal(indiceCartaEnMano);
         emit manoActualizadaSignal();
 
         // Actualizar información del descarte
-        if (cartaJugada.esValida()) {
-            colorActivo = cartaJugada.getLadoActivo()->getColor();
-            QString ruta = QString::fromStdString(cartaJugada.getLadoActivo()->getRutaArchivo());
+        LadoCarta* ladoActivo = cartaJugada.getLadoActivo();
+        if (ladoActivo) {
+            colorActivo = ladoActivo->getColor();
+            QString ruta = QString::fromStdString(ladoActivo->getRutaArchivo());
             emit descarteActualizadoSignal(ruta);
         }
 
-        qDebug() << "[JUEGO] Antes de llamar a aplicarEfectoCarta";
+        qDebug() << "[JUEGO] Aplicando efecto de la carta";
+
         // Procesamos qué hace esa carta
         aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
-        qDebug() << "[JUEGO] Después de llamar a aplicarEfectoCarta";
+
+        qDebug() << "[JUEGO] Efecto aplicado, avanzando turno";
 
         // Preparamos el turno del siguiente jugador
         avanzarTurno();
@@ -429,8 +446,12 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
         // Actualizar estado del mazo
         emit mazoActualizadoSignal(mazo.getSize());
 
+        qDebug() << "[JUEGO] === jugarCarta COMPLETADO ===";
+
+    } catch (const std::exception& e) {
+        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción estándar en jugarCarta:" << e.what();
     } catch (...) {
-        qDebug() << "Error crítico en jugarCarta. Índice:" << indiceCartaEnMano;
+        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción desconocida en jugarCarta";
     }
 }
 
@@ -537,9 +558,97 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
    }
 
    void Juego::onCartaJugadaSlot(int indiceCarta) {
-       Jugador* jugadorActual = getJugadorActual();
-       if (jugadorActual) {
-           jugarCarta(jugadorActual, indiceCarta);
+       qDebug() << "[JUEGO] === onCartaJugadaSlot INICIADO ===";
+       qDebug() << "[JUEGO] Índice carta recibido:" << indiceCarta;
+
+       // Bloquear múltiples llamadas simultáneas
+       static bool procesando = false;
+       if (procesando) {
+           qDebug() << "[JUEGO] Ya procesando otra carta, ignorando";
+           return;
+       }
+
+       procesando = true;
+
+       try {
+           // Validaciones básicas
+           Jugador* jugadorActual = getJugadorActual();
+           if (!jugadorActual || indiceCarta < 0 || indiceCarta >= jugadorActual->getMano().getSize()) {
+               qDebug() << "[JUEGO ERROR] Validaciones fallidas";
+               procesando = false;
+               return;
+           }
+
+           // Jugar la carta SIN emitir señales inmediatas
+           qDebug() << "[JUEGO] Llamando a jugarCartaSinSeñales";
+           jugarCartaSinSeñales(jugadorActual, indiceCarta, "", -1, "");
+
+           // Emitir señales DESPUÉS de un delay para evitar ciclos
+           QTimer::singleShot(50, this, [this]() {
+               emit manoActualizadaSignal();
+
+               Jugador* nuevoJugador = getJugadorActual();
+               if (nuevoJugador) {
+                   emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+               }
+
+               emit mazoActualizadoSignal(mazo.getSize());
+           });
+
+       } catch (...) {
+           qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en onCartaJugadaSlot";
+       }
+
+       procesando = false;
+       qDebug() << "[JUEGO] === onCartaJugadaSlot FINALIZADO ===";
+   }
+
+
+   bool Juego::puedeJugarCarta(const Carta& carta) {
+       qDebug() << "[JUEGO] Verificando si se puede jugar carta";
+
+       if (!carta.esValida()) {
+           qDebug() << "[JUEGO] Carta no válida";
+           return false;
+       }
+
+       if (descarte.estaVacia()) {
+           qDebug() << "[JUEGO] No hay cartas en descarte";
+           return true; // Primera carta siempre se puede jugar
+       }
+
+       try {
+           Carta cartaEnDescarte = descarte.obtenerElementoEnPosicion(0);
+           if (!cartaEnDescarte.esValida()) {
+               qDebug() << "[JUEGO] Carta en descarte no válida";
+               return true; // Si no hay carta válida en descarte, se puede jugar cualquiera
+           }
+
+           LadoCarta* ladoCartaJugar = carta.getLadoActivo();
+           LadoCarta* ladoDescarte = cartaEnDescarte.getLadoActivo();
+
+           if (!ladoCartaJugar || !ladoDescarte) {
+               qDebug() << "[JUEGO ERROR] Algún lado de carta es nullptr";
+               return false;
+           }
+
+           // Verificar compatibilidad
+           bool mismoColor = (ladoCartaJugar->getColor() == ladoDescarte->getColor());
+           bool mismoNumero = (ladoCartaJugar->getNumero() == ladoDescarte->getNumero());
+           bool esComodin = (ladoCartaJugar->getColor() == Color::NEGRO);
+
+           bool puedeJugar = mismoColor || mismoNumero || esComodin;
+
+           qDebug() << "[JUEGO] Puede jugar carta:" << puedeJugar;
+           qDebug() << "[JUEGO] Mismo color:" << mismoColor;
+           qDebug() << "[JUEGO] Mismo número:" << mismoNumero;
+           qDebug() << "[JUEGO] Es comodín:" << esComodin;
+
+           return puedeJugar;
+
+       } catch (...) {
+           qDebug() << "[JUEGO ERROR] Excepción al verificar si se puede jugar carta";
+           return false;
        }
    }
 
@@ -573,3 +682,43 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
        qDebug() << "[JUEGO] === Finalizó aplicarEfectoCarta ===";
    }
 
+
+
+   void Juego::jugarCartaSinSeñales(Jugador* jugador, int indiceCartaEnMano,
+                                    const std::string& jugadorSeleccionado,
+                                    int numeroAdivinado,
+                                    const std::string& colorAdivinado) {
+
+       qDebug() << "[JUEGO] === jugarCartaSinSeñales INICIADO ===";
+
+       if (!jugador || indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize()) {
+           qDebug() << "[JUEGO ERROR] Parámetros inválidos";
+           return;
+       }
+
+       try {
+           // Obtener y remover carta
+           Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
+           jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
+
+           // Agregar al descarte
+           descarte.insertarInicio(cartaJugada);
+
+           // Actualizar color activo
+           LadoCarta* ladoActivo = cartaJugada.getLadoActivo();
+           if (ladoActivo) {
+               colorActivo = ladoActivo->getColor();
+           }
+
+           // Aplicar efecto (SIN emitir señales desde aquí)
+           aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
+
+           // Avanzar turno
+           avanzarTurno();
+
+           qDebug() << "[JUEGO] === jugarCartaSinSeñales COMPLETADO ===";
+
+       } catch (...) {
+           qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en jugarCartaSinSeñales";
+       }
+   }

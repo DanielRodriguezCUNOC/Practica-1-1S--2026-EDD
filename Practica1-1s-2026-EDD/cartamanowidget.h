@@ -15,6 +15,7 @@ public:
     CartaManoWidget(int id, QString rutaImagen, QGraphicsItem* parent=nullptr);
     void setSize(double ancho, double alto);
     bool imagenValida()const;
+    int getIdCarta();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
