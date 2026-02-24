@@ -6,6 +6,8 @@ Configuraciones::Configuraciones(QWidget *parent)
     , ui(new Ui::Configuraciones)
 {
     ui->setupUi(this);
+
+    connect(ui->btnSalirConfig, &BotonAnimado::clicked, this, &Configuraciones::volverMenuInicio);
 }
 
 Configuraciones::~Configuraciones()
@@ -20,3 +22,5 @@ int Configuraciones::getCantidadJugadores() const{
 bool Configuraciones::getEsModoFlip() const{
     return ui->cbModoFlip->isChecked();
 }
+
+void Configuraciones::on_btnSalirConfig_clicked() {}

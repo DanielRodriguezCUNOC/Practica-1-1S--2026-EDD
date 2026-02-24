@@ -2,13 +2,16 @@
 #define JUEGO_H
 
 #include "carta.h"
-#include "listagenerica.h"
 #include "jugador.h"
+#include "listagenerica.h"
 #include "rutaimagenes.h"
 #include "utils.h"
+#include <qwindowdefs.h>
+#include <QObject>
 
-class Juego
+class Juego: public QObject
 {
+    Q_OBJECT
 private:
     // ====== ESTRUCTURAS PRINCIPALES ======
     ListaGenerica<Carta> mazo;
@@ -18,7 +21,7 @@ private:
     // ====== ESTADO DEL JUEGO ======
     bool ladoOscuroActivo;
     int indiceTurnoActual;
-    int sentidoJuego;        // 1 horario, -1 antihorario
+    int sentidoJuego;
     Color colorActivo;
 
     // ====== UTILIDADES ======
@@ -27,19 +30,34 @@ private:
     // ====== GENERACIÓN Y MEZCLA ======
     void generarMazoNormalManual(int numMazos);
     void generarMazoFlipManual(int numMazos);
+    void sacarPrimeraCarta();
 
     void mezclarArregloLados(LadoCarta* arreglo[], int tamano);
     void mezclarArregloCartas(Carta arreglo[], int tamano);
 
     int cartasPorPartida(int cantJugadores);
 
+    void jugarCartaSinSeñales(Jugador* jugador, int indiceCartaEnMano,
+                              const std::string& jugadorSeleccionado,
+                              int numeroAdivinado,
+                              const std::string& colorAdivinado);
+
+
+signals:
+    void cartaJugadaSignal(int idCarta);
+    void manoActualizadaSignal();
+    void turnoCambiadoSignal(QString nombreJugador);
+    void mazoActualizadoSignal(int cartasRestantes);
+    void descarteActualizadoSignal(QString rutaCarta);
+    void partidaIniciadaSignal();
+
 public:
     // ====== CONSTRUCTOR / DESTRUCTOR ======
-    Juego();
+    Juego(QObject* parent = nullptr);
     ~Juego();
 
     // ====== INICIALIZACIÓN ======
-    void inicializarMazo(bool modoFlip, int cantidadJugadores);
+    void inicializarMazo(int cantidadJugadores, bool modoFlip);
     void repartirCartas(int cartasPorJugador = 7);
 
     // ====== TURNOS ======
@@ -71,7 +89,7 @@ public:
 
     bool mazoEstaVacio() const;
 
-    // ====== CONSULTAS DE CARTAS ======
+    // ====== CARTAS ======
     bool adivinoCarta(
         const std::string& nombreJugador,
         int numeroCarta,
@@ -79,6 +97,8 @@ public:
         );
 
     Color convertirStringAColor(const std::string& colorStr);
+
+    bool puedeJugarCarta(const Carta& carta);
 
     // ====== JUGADORES ======
     Jugador* getJugadorActual();
@@ -105,7 +125,11 @@ public:
     void setLadoOscuroActivo(bool activo);
     void setColorActivo(Color color);
     void setIndiceTurnoActual(int nuevoIndice);
-};
+    void setJugadorEnLista(const std::string nombreJugador);
 
+public slots:
+    // Para recibir acciones de la UI
+    void onCartaJugadaSlot(int indiceCarta);
+};
 
 #endif
