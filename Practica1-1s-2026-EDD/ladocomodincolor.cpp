@@ -2,7 +2,7 @@
 #include "juego.h"
 
 LadoComodinColor::LadoComodinColor(Color c, int n, std::string ruta):
- LadoCarta(TipoCarta::NUMERO, c, n, ruta){}
+ LadoCarta(TipoCarta::COMODIN, c, n, ruta){}
 
 LadoCarta* LadoComodinColor::clonar() const {
     // Llama al constructor de copia de LadoNumero

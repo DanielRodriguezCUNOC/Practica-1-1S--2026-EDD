@@ -266,15 +266,21 @@
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
            <widget class="QWidget" name="widget_9" native="true">
-            <property name="maximumSize">
+            <property name="minimumSize">
              <size>
               <width>100</width>
-              <height>150</height>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>200</height>
              </size>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
-              <widget class="BotonAnimado" name="pushButton_2">
+              <widget class="BotonAnimado" name="btnAvisarUNO">
                <property name="styleSheet">
                 <string notr="true">Background-color: rgb(4, 187, 10);
 color:black;
@@ -308,13 +314,24 @@ color:Black;</string>
               </widget>
              </item>
              <item>
-              <widget class="BotonAnimado" name="pushButton">
+              <widget class="BotonAnimado" name="btnRetar">
                <property name="styleSheet">
                 <string notr="true">Background-color: rgb(210, 215, 17);
 color: black;</string>
                </property>
                <property name="text">
                 <string>Retar</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="BotonAnimado" name="btnReportar">
+               <property name="styleSheet">
+                <string notr="true">background-color:rgb(0, 126, 131);
+color:Black;</string>
+               </property>
+               <property name="text">
+                <string>Reportar</string>
                </property>
               </widget>
              </item>
@@ -326,13 +343,13 @@ color: black;</string>
             <property name="minimumSize">
              <size>
               <width>100</width>
-              <height>0</height>
+              <height>30</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>100</width>
-              <height>16777215</height>
+              <height>50</height>
              </size>
             </property>
            </widget>

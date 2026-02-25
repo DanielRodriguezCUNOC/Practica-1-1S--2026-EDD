@@ -21,29 +21,34 @@
 #include <QWidget>
 #include <QTimer>
 
-Juego::Juego(QObject* parent): QObject(parent), ladoOscuroActivo(false),
-    indiceTurnoActual(0), sentidoJuego(1){
+Juego::Juego(QObject *parent) : QObject(parent), ladoOscuroActivo(false),
+                                indiceTurnoActual(0), sentidoJuego(1)
+{
 }
 
+Juego::~Juego()
+{
 
-Juego::~Juego(){
-
-    while(!jugadores.estaVacia()){
-        Jugador* j = jugadores.obtenerElementoEnPosicion(0);
+    while (!jugadores.estaVacia())
+    {
+        Jugador *j = jugadores.obtenerElementoEnPosicion(0);
         delete j;
         jugadores.eliminarDatoEnPosicion(0);
     }
 }
 
-void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip){
+void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip)
+{
     qDebug() << "[JUEGO] Iniciando inicializarMazo";
 
     // Limpiar mazo y descarte anteriores
 
-    while(mazo.getSize() > 0){
+    while (mazo.getSize() > 0)
+    {
         mazo.eliminarDatoEnPosicion(0);
     }
-    while(descarte.getSize() > 0){
+    while (descarte.getSize() > 0)
+    {
         descarte.eliminarDatoEnPosicion(0);
     }
 
@@ -53,9 +58,12 @@ void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip){
     qDebug() << "[JUEGO] Número de mazos a crear:" << numMazos;
 
     // Crear el mazo según el modo
-    if (modoFlip) {
+    if (modoFlip)
+    {
         generarMazoFlipManual(numMazos);
-    } else {
+    }
+    else
+    {
         generarMazoNormalManual(numMazos);
     }
 
@@ -76,25 +84,35 @@ void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip){
     emit partidaIniciadaSignal();
 }
 
-void Juego::sacarPrimeraCarta(){
-    if (!mazo.estaVacia()) {
+void Juego::sacarPrimeraCarta()
+{
+    if (!mazo.estaVacia())
+    {
         Carta primeraCarta = robarDelMazo();
         descarte.insertarInicio(primeraCarta);
 
-        // Emitir señal para actualizar UI inmediatamente
+        // Sincronizar colorActivo con la primera carta del descarte
+        LadoCarta *lado = primeraCarta.getLadoActivo();
+        if (lado && lado->getColor() != Color::NEGRO && lado->getColor() != Color::INDEFINIDO)
+        {
+            colorActivo = lado->getColor();
+        }
+
         emit descarteActualizadoSignal(QString::fromStdString(
             primeraCarta.getLadoActivo()->getRutaArchivo()));
     }
 }
 
-void Juego::mezclarArregloLados(LadoCarta* arreglo[], int tamano) {
+void Juego::mezclarArregloLados(LadoCarta *arreglo[], int tamano)
+{
     // Algoritmo de Fisher-Yates para barajar el arreglo
-    for (int i = tamano - 1; i > 0; i--) {
+    for (int i = tamano - 1; i > 0; i--)
+    {
         // Generar un índice aleatorio entre 0 e i
         int j = rand() % (i + 1);
 
         // Intercambiar arreglo[i] con arreglo[j]
-        LadoCarta* temporal = arreglo[i];
+        LadoCarta *temporal = arreglo[i];
         arreglo[i] = arreglo[j];
         arreglo[j] = temporal;
     }
@@ -112,22 +130,27 @@ void Juego::mezclarArregloCartas(Carta arreglo[], int size)
     }
 }
 
-void Juego::generarMazoNormalManual(int numMazos){
+void Juego::generarMazoNormalManual(int numMazos)
+{
     qDebug() << "[MAZO NORMAL] Iniciando creación con" << numMazos << "mazos";
 
-    for(int n = 0; n < numMazos; n++){
+    for (int n = 0; n < numMazos; n++)
+    {
         Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
 
         // === CARTAS NUMÉRICAS ===
         // 1 carta de 0 por color (4 cartas)
-        for(Color color : colores){
+        for (Color color : colores)
+        {
             std::string rutaNumero0 = ruta.generarRuta(TipoCarta::NUMERO, color, 0);
             mazo.insertarFinal(Carta(new LadoNumero(color, 0, rutaNumero0)));
         }
 
         // 2 cartas de cada número 1-9 por color (72 cartas)
-        for(Color color : colores) {
-            for(int numero = 1; numero <= 9; numero++) {
+        for (Color color : colores)
+        {
+            for (int numero = 1; numero <= 9; numero++)
+            {
                 std::string rutaNumero = ruta.generarRuta(TipoCarta::NUMERO, color, numero);
                 // Primera carta
                 mazo.insertarFinal(Carta(new LadoNumero(color, numero, rutaNumero)));
@@ -139,21 +162,25 @@ void Juego::generarMazoNormalManual(int numMazos){
 
         // === CARTAS ESPECIALES DE COLOR ===
         // 2 cartas de cada tipo por color
-        for (Color color : colores) {
+        for (Color color : colores)
+        {
             // 2 cartas +2
-            for(int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 std::string rutaRoba2 = ruta.generarRuta(TipoCarta::ROBA2, color);
                 mazo.insertarFinal(Carta(new LadoRobaDos(color, -1, rutaRoba2)));
             }
 
             // 2 cartas Bloqueo
-            for(int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 std::string rutaBloqueo = ruta.generarRuta(TipoCarta::BLOQUEO, color);
                 mazo.insertarFinal(Carta(new LadoSalto(color, -1, rutaBloqueo)));
             }
 
             // 2 cartas Reversa
-            for(int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 std::string rutaReverse = ruta.generarRuta(TipoCarta::REVERSE, color);
                 mazo.insertarFinal(Carta(new LadoReverse(color, -1, rutaReverse)));
             }
@@ -167,7 +194,8 @@ void Juego::generarMazoNormalManual(int numMazos){
         std::string rutaComodinAdivinar = ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO);
         std::string rutaComodinCambiarMano = ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO);
 
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++)
+        {
             mazo.insertarFinal(Carta(new LadoComodinColor(Color::NEGRO, -1, rutaComodinColor)));
             mazo.insertarFinal(Carta(new LadoComodinRobarCuatro(Color::NEGRO, -1, rutaComodinRoba4)));
             mazo.insertarFinal(Carta(new LadoAdivinarCarta(Color::NEGRO, -1, rutaComodinAdivinar)));
@@ -180,13 +208,13 @@ void Juego::generarMazoNormalManual(int numMazos){
     qDebug() << "[MAZO NORMAL] Esperadas:" << (116 * numMazos);
 }
 
-
-
-void Juego::generarMazoFlipManual(int numMazos){
+void Juego::generarMazoFlipManual(int numMazos)
+{
     qDebug() << "[MAZO FLIP] Iniciando creación con" << numMazos << "mazos";
 
-    for(int n = 0; n < numMazos; n++){
-        qDebug() << "[MAZO FLIP] Creando mazo" << (n+1) << "de" << numMazos;
+    for (int n = 0; n < numMazos; n++)
+    {
+        qDebug() << "[MAZO FLIP] Creando mazo" << (n + 1) << "de" << numMazos;
 
         Color cClaros[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
         Color cOscuros[] = {Color::ROSA, Color::TURQUESA, Color::NARANJA, Color::PURPURA};
@@ -194,24 +222,27 @@ void Juego::generarMazoFlipManual(int numMazos){
         // === CARTAS NUMÉRICAS === (76 cartas: 38 cartas x 2 lados = 76 efectos)
 
         // 1 carta de 0 por cada color (4 cartas)
-        for(int i = 0; i < 4; i++){
-            LadoCarta* ladoClaro = new LadoNumero(cClaros[i], 0, ruta.generarRuta(TipoCarta::NUMERO, cClaros[i], 0));
-            LadoCarta* ladoOscuro = new LadoNumero(cOscuros[i], 0, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[i], 0));
+        for (int i = 0; i < 4; i++)
+        {
+            LadoCarta *ladoClaro = new LadoNumero(cClaros[i], 0, ruta.generarRuta(TipoCarta::NUMERO, cClaros[i], 0));
+            LadoCarta *ladoOscuro = new LadoNumero(cOscuros[i], 0, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[i], 0));
             mazo.insertarFinal(Carta(ladoClaro, ladoOscuro));
         }
         qDebug() << "[MAZO FLIP] Creadas 4 cartas de 0. Total mazo:" << mazo.getSize();
 
         // 2 cartas de cada número 1-9 por color (36 cartas)
-        for(int color = 0; color < 4; color++){
-            for(int numero = 1; numero <= 9; numero++){
+        for (int color = 0; color < 4; color++)
+        {
+            for (int numero = 1; numero <= 9; numero++)
+            {
                 // Primera carta del número
-                LadoCarta* ladoClaro1 = new LadoNumero(cClaros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cClaros[color], numero));
-                LadoCarta* ladoOscuro1 = new LadoNumero(cOscuros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[color], numero));
+                LadoCarta *ladoClaro1 = new LadoNumero(cClaros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cClaros[color], numero));
+                LadoCarta *ladoOscuro1 = new LadoNumero(cOscuros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[color], numero));
                 mazo.insertarFinal(Carta(ladoClaro1, ladoOscuro1));
 
                 // Segunda carta del número
-                LadoCarta* ladoClaro2 = new LadoNumero(cClaros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cClaros[color], numero));
-                LadoCarta* ladoOscuro2 = new LadoNumero(cOscuros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[color], numero));
+                LadoCarta *ladoClaro2 = new LadoNumero(cClaros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cClaros[color], numero));
+                LadoCarta *ladoOscuro2 = new LadoNumero(cOscuros[color], numero, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[color], numero));
                 mazo.insertarFinal(Carta(ladoClaro2, ladoOscuro2));
             }
         }
@@ -220,32 +251,37 @@ void Juego::generarMazoFlipManual(int numMazos){
 
         // === CARTAS ESPECIALES DE COLOR === (32 cartas)
 
-        for(int color = 0; color < 4; color++){
+        for (int color = 0; color < 4; color++)
+        {
             // 2 cartas: +1 (claro) / +3 (oscuro)
-            for(int i = 0; i < 2; i++){
-                LadoCarta* ladoRoba1 = new LadoRobaUno(cClaros[color], -1, ruta.generarRuta(TipoCarta::ROBA1, cClaros[color]));
-                LadoCarta* ladoRoba3 = new LadoRobaTres(cOscuros[color], -1, ruta.generarRuta(TipoCarta::ROBA3, cOscuros[color]));
+            for (int i = 0; i < 2; i++)
+            {
+                LadoCarta *ladoRoba1 = new LadoRobaUno(cClaros[color], -1, ruta.generarRuta(TipoCarta::ROBA1, cClaros[color]));
+                LadoCarta *ladoRoba3 = new LadoRobaTres(cOscuros[color], -1, ruta.generarRuta(TipoCarta::ROBA3, cOscuros[color]));
                 mazo.insertarFinal(Carta(ladoRoba1, ladoRoba3));
             }
 
             // 2 cartas: Cambio dirección (ambos lados)
-            for(int i = 0; i < 2; i++){
-                LadoCarta* ladoCambioClaro = new LadoCambiarDireccion(cClaros[color], -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, cClaros[color]));
-                LadoCarta* ladoCambioOscuro = new LadoCambiarDireccion(cOscuros[color], -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, cOscuros[color]));
+            for (int i = 0; i < 2; i++)
+            {
+                LadoCarta *ladoCambioClaro = new LadoCambiarDireccion(cClaros[color], -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, cClaros[color]));
+                LadoCarta *ladoCambioOscuro = new LadoCambiarDireccion(cOscuros[color], -1, ruta.generarRuta(TipoCarta::CAMBIARDIRECCION, cOscuros[color]));
                 mazo.insertarFinal(Carta(ladoCambioClaro, ladoCambioOscuro));
             }
 
             // 2 cartas: Bloqueo (claro) / Salto todos (oscuro)
-            for(int i = 0; i < 2; i++){
-                LadoCarta* ladoBloqueo = new LadoSalto(cClaros[color], -1, ruta.generarRuta(TipoCarta::BLOQUEO, cClaros[color]));
-                LadoCarta* ladoSaltoTodos = new LadoSaltoTodos(cOscuros[color], -1, ruta.generarRuta(TipoCarta::SALTODOS, cOscuros[color]));
+            for (int i = 0; i < 2; i++)
+            {
+                LadoCarta *ladoBloqueo = new LadoSalto(cClaros[color], -1, ruta.generarRuta(TipoCarta::BLOQUEO, cClaros[color]));
+                LadoCarta *ladoSaltoTodos = new LadoSaltoTodos(cOscuros[color], -1, ruta.generarRuta(TipoCarta::SALTODOS, cOscuros[color]));
                 mazo.insertarFinal(Carta(ladoBloqueo, ladoSaltoTodos));
             }
 
             // 2 cartas: FLIP (ambos lados)
-            for(int i = 0; i < 2; i++){
-                LadoCarta* ladoFlipClaro = new LadoFlip(cClaros[color], -1, ruta.generarRuta(TipoCarta::FLIP, cClaros[color]));
-                LadoCarta* ladoFlipOscuro = new LadoFlip(cOscuros[color], -1, ruta.generarRuta(TipoCarta::FLIP, cOscuros[color]));
+            for (int i = 0; i < 2; i++)
+            {
+                LadoCarta *ladoFlipClaro = new LadoFlip(cClaros[color], -1, ruta.generarRuta(TipoCarta::FLIP, cClaros[color]));
+                LadoCarta *ladoFlipOscuro = new LadoFlip(cOscuros[color], -1, ruta.generarRuta(TipoCarta::FLIP, cOscuros[color]));
                 mazo.insertarFinal(Carta(ladoFlipClaro, ladoFlipOscuro));
             }
         }
@@ -254,44 +290,50 @@ void Juego::generarMazoFlipManual(int numMazos){
         // === CARTAS COMODÍN === (24 cartas)
 
         // 4 cartas: +2 (claro) / +6 (oscuro)
-        for(int i = 0; i < 4; i++){
-            LadoCarta* ladoComodin2 = new LadoComodinRobarDos(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN2, Color::NEGRO));
-            LadoCarta* ladoComodin6 = new LadoComodinRobarSeis(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN6, Color::NEGRO));
+        for (int i = 0; i < 4; i++)
+        {
+            LadoCarta *ladoComodin2 = new LadoComodinRobarDos(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN2, Color::NEGRO));
+            LadoCarta *ladoComodin6 = new LadoComodinRobarSeis(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN6, Color::NEGRO));
             mazo.insertarFinal(Carta(ladoComodin2, ladoComodin6));
         }
 
         // 4 cartas: Cambio color (claro) / Color eterno (oscuro)
-        for(int i = 0; i < 4; i++){
-            LadoCarta* ladoComodinColor = new LadoComodinColor(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN, Color::NEGRO));
-            LadoCarta* ladoColorEterno = new LadoColorEterno(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COLORETERNO, Color::NEGRO));
+        for (int i = 0; i < 4; i++)
+        {
+            LadoCarta *ladoComodinColor = new LadoComodinColor(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN, Color::NEGRO));
+            LadoCarta *ladoColorEterno = new LadoColorEterno(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COLORETERNO, Color::NEGRO));
             mazo.insertarFinal(Carta(ladoComodinColor, ladoColorEterno));
         }
 
         // 4 cartas: Adivinar carta (ambos lados)
-        for(int i = 0; i < 4; i++){
-            LadoCarta* ladoAdivinarClaro = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
-            LadoCarta* ladoAdivinarOscuro = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
+        for (int i = 0; i < 4; i++)
+        {
+            LadoCarta *ladoAdivinarClaro = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
+            LadoCarta *ladoAdivinarOscuro = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
             mazo.insertarFinal(Carta(ladoAdivinarClaro, ladoAdivinarOscuro));
         }
 
         // 4 cartas: Cambiar mano (ambos lados)
-        for(int i = 0; i < 4; i++){
-            LadoCarta* ladoCambiarClaro = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
-            LadoCarta* ladoCambiarOscuro = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
+        for (int i = 0; i < 4; i++)
+        {
+            LadoCarta *ladoCambiarClaro = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
+            LadoCarta *ladoCambiarOscuro = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
             mazo.insertarFinal(Carta(ladoCambiarClaro, ladoCambiarOscuro));
         }
 
         // 4 cartas: Eclipse (claro) / Espía (oscuro)
-        for(int i = 0; i < 4; i++){
-            LadoCarta* ladoAdivinarCarta = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
-            LadoCarta* ladoCambiarMano = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
+        for (int i = 0; i < 4; i++)
+        {
+            LadoCarta *ladoAdivinarCarta = new LadoAdivinarCarta(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::ADIVINARCARTA, Color::NEGRO));
+            LadoCarta *ladoCambiarMano = new LadoCambiarMano(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::CAMBIARMANO, Color::NEGRO));
             mazo.insertarFinal(Carta(ladoAdivinarCarta, ladoCambiarMano));
         }
 
         // 4 cartas: +4 (claro) - estas parecen ser especiales adicionales
-        for(int i = 0; i < 4; i++){
-            LadoCarta* ladoComodin4Claro = new LadoComodinRobarCuatro(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO));
-            LadoCarta* ladoComodin4Oscuro = new LadoComodinRobarCuatro(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO));
+        for (int i = 0; i < 4; i++)
+        {
+            LadoCarta *ladoComodin4Claro = new LadoComodinRobarCuatro(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO));
+            LadoCarta *ladoComodin4Oscuro = new LadoComodinRobarCuatro(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO));
             mazo.insertarFinal(Carta(ladoComodin4Claro, ladoComodin4Oscuro));
         }
 
@@ -301,103 +343,123 @@ void Juego::generarMazoFlipManual(int numMazos){
     qDebug() << "[MAZO FLIP] Mazo completo creado. Total cartas:" << mazo.getSize();
     qDebug() << "[MAZO FLIP] Esperadas:" << (132 * numMazos);
 }
-   void Juego::avanzarTurno() {
+void Juego::avanzarTurno()
+{
 
-       // Avanzamos el turno según el sentido (1 o -1)
-       indiceTurnoActual += sentidoJuego;
+    // Avanzamos el turno según el sentido (1 o -1)
+    indiceTurnoActual += sentidoJuego;
 
-       int numJugadores = jugadores.getSize();
+    int numJugadores = jugadores.getSize();
 
-       // si salimos de los límites aplicado a una lista circular
-       if (indiceTurnoActual >= numJugadores) {
-           indiceTurnoActual = 0;
-       } else if (indiceTurnoActual < 0) {
-           indiceTurnoActual = numJugadores - 1;
-       }
-   }
+    // si salimos de los límites aplicado a una lista circular
+    if (indiceTurnoActual >= numJugadores)
+    {
+        indiceTurnoActual = 0;
+    }
+    else if (indiceTurnoActual < 0)
+    {
+        indiceTurnoActual = numJugadores - 1;
+    }
+}
 
+Carta Juego::robarDelMazo()
+{
+    if (mazo.estaVacia())
+    {
+        return nullptr;
+    }
+    return mazo.robarCarta();
+}
 
-   Carta Juego::robarDelMazo(){
-       if(mazo.estaVacia()){
-           return nullptr;
-       }
-       return mazo.robarCarta();
-   }
+bool Juego::getLadoOscuroActivo() const
+{
+    return ladoOscuroActivo;
+}
 
-   bool Juego::getLadoOscuroActivo()const{
-       return ladoOscuroActivo;
-   }
+void Juego::setLadoOscuroActivo(bool estado)
+{
+    ladoOscuroActivo = estado;
+}
 
-   void Juego::setLadoOscuroActivo(bool estado){
-       ladoOscuroActivo = estado;
-   }
+int Juego::getTamanoMazo() const
+{
+    return mazo.getSize();
+}
 
-   int Juego::getTamanoMazo()const{
-       return mazo.getSize();
-   }
-
-
-ListaGenerica<Jugador*>& Juego:: getJugadores(){
+ListaGenerica<Jugador *> &Juego::getJugadores()
+{
     return jugadores;
 }
 
-ListaGenerica<Carta>& Juego::getMazo(){
+ListaGenerica<Carta> &Juego::getMazo()
+{
     return mazo;
 }
 
-ListaGenerica<Carta>& Juego::getDescarte(){
+ListaGenerica<Carta> &Juego::getDescarte()
+{
     return descarte;
 }
 
-int Juego::getTamanoDescarte() const{
+int Juego::getTamanoDescarte() const
+{
     return descarte.getSize();
 }
 
-Jugador* Juego::getJugadorEnPosicion(int indice){
+Jugador *Juego::getJugadorEnPosicion(int indice)
+{
     return jugadores.obtenerElementoEnPosicion(indice);
 }
 
-int Juego::getCantidadJugadores() const{
+int Juego::getCantidadJugadores() const
+{
     return jugadores.getSize();
 }
 
-int Juego::getSentidoJuego() const{
+int Juego::getSentidoJuego() const
+{
     return sentidoJuego;
 }
 
-void Juego::setSentidoJuego(int sentido){
+void Juego::setSentidoJuego(int sentido)
+{
     sentidoJuego = sentido;
 }
 
-void Juego::agregarADescarte(Carta carta){
+void Juego::agregarADescarte(Carta carta)
+{
     descarte.insertarInicio(carta);
 }
 
-
 //* Agregar la UI para refrescarla cada vez que se realiza una accion
-void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
-                       const std::string& jugadorSeleccionado,
+void Juego::jugarCarta(Jugador *jugador, int indiceCartaEnMano,
+                       const std::string &jugadorSeleccionado,
                        int numeroAdivinado,
-                       const std::string& colorAdivinado) {
+                       const std::string &colorAdivinado)
+{
 
     qDebug() << "[JUEGO] === jugarCarta INICIADO ===";
     qDebug() << "[JUEGO] Índice carta:" << indiceCartaEnMano;
 
     // Verificaciones de seguridad
-    if (!jugador) {
+    if (!jugador)
+    {
         qDebug() << "[JUEGO ERROR] Jugador es nullptr";
         return;
     }
 
-    if (indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize()) {
+    if (indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize())
+    {
         qDebug() << "[JUEGO ERROR] Índice de carta fuera de rango";
         return;
     }
 
-    try {
+    try
+    {
         // Obtener la carta de forma segura
         Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
-        if (!cartaJugada.esValida()) {
+        if (!cartaJugada.esValida())
+        {
             qDebug() << "[JUEGO ERROR] Carta no válida";
             return;
         }
@@ -419,8 +481,9 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
         emit manoActualizadaSignal();
 
         // Actualizar información del descarte
-        LadoCarta* ladoActivo = cartaJugada.getLadoActivo();
-        if (ladoActivo) {
+        LadoCarta *ladoActivo = cartaJugada.getLadoActivo();
+        if (ladoActivo)
+        {
             colorActivo = ladoActivo->getColor();
             QString ruta = QString::fromStdString(ladoActivo->getRutaArchivo());
             emit descarteActualizadoSignal(ruta);
@@ -437,8 +500,9 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
         avanzarTurno();
 
         // EMITIR SEÑAL DE TURNO CAMBIADO
-        Jugador* nuevoJugador = getJugadorActual();
-        if (nuevoJugador) {
+        Jugador *nuevoJugador = getJugadorActual();
+        if (nuevoJugador)
+        {
             emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
             emit manoActualizadaSignal(); // La mano del nuevo jugador
         }
@@ -447,306 +511,507 @@ void Juego::jugarCarta(Jugador* jugador, int indiceCartaEnMano,
         emit mazoActualizadoSignal(mazo.getSize());
 
         qDebug() << "[JUEGO] === jugarCarta COMPLETADO ===";
-
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         qDebug() << "[JUEGO ERROR CRÍTICO] Excepción estándar en jugarCarta:" << e.what();
-    } catch (...) {
+    }
+    catch (...)
+    {
         qDebug() << "[JUEGO ERROR CRÍTICO] Excepción desconocida en jugarCarta";
     }
 }
 
-   void Juego::repartirCartas(int cartasPorJugador) {
+void Juego::repartirCartas(int cartasPorJugador)
+{
 
-       // Verificar que hay jugadores
-       if (jugadores.estaVacia()) {
-           return;
-       }
+    // Verificar que hay jugadores
+    if (jugadores.estaVacia())
+    {
+        return;
+    }
 
-       // Verificar que hay suficientes cartas en el mazo
-       int cartasNecesarias = jugadores.getSize() * cartasPorJugador;
-       if (mazo.getSize() < cartasNecesarias) {
-           return;
-       }
+    // Verificar que hay suficientes cartas en el mazo
+    int cartasNecesarias = jugadores.getSize() * cartasPorJugador;
+    if (mazo.getSize() < cartasNecesarias)
+    {
+        return;
+    }
 
-       // Repartir cartas a cada jugador
-       for (int i = 0; i < jugadores.getSize(); i++) {
-           Jugador* jugadorActual = jugadores.obtenerElementoEnPosicion(i);
+    // Repartir cartas a cada jugador
+    for (int i = 0; i < jugadores.getSize(); i++)
+    {
+        Jugador *jugadorActual = jugadores.obtenerElementoEnPosicion(i);
 
-           for (int j = 0; j < cartasPorJugador; j++) {
-               Carta cartaARobar = robarDelMazo();
-               if (cartaARobar.esValida()) jugadorActual->agregarCarta(cartaARobar);
+        for (int j = 0; j < cartasPorJugador; j++)
+        {
+            Carta cartaARobar = robarDelMazo();
+            if (cartaARobar.esValida())
+                jugadorActual->agregarCarta(cartaARobar);
+        }
+    }
 
-           }
-       }
+    // Colocar la primera carta en el descarte para comenzar el juego
+    if (!mazo.estaVacia())
+    {
+        Carta primeraCarta = robarDelMazo();
+        descarte.insertarInicio(primeraCarta);
 
-       // Colocar la primera carta en el descarte para comenzar el juego
-       if (!mazo.estaVacia()) {
-           Carta primeraCarta = robarDelMazo();
-           descarte.insertarInicio(primeraCarta);
+        // Actualizar el color activo según la primera carta
+        if (primeraCarta.esValida())
+        {
+            colorActivo = primeraCarta.getLadoActivo()->getColor();
 
-           // Actualizar el color activo según la primera carta
-           if (primeraCarta.esValida()) {
-               colorActivo = primeraCarta.getLadoActivo()->getColor();
+            // Si es comodín se elige un color
+            if (colorActivo == Color::NEGRO)
+            {
+                // Elegir un color aleatorio
+                Color coloresNormales[] = {Color::ROJO, Color::AZUL,
+                                           Color::VERDE, Color::AMARILLO};
+                colorActivo = coloresNormales[rand() % 4];
+            }
+        }
+    }
+}
 
-               // Si es comodín se elige un color
-               if (colorActivo == Color::NEGRO) {
-                   // Elegir un color aleatorio
-                   Color coloresNormales[] = {Color::ROJO, Color::AZUL,
-                                              Color::VERDE, Color::AMARILLO};
-                   colorActivo = coloresNormales[rand() % 4];
-               }
-           }
-       }
-   }
+Jugador *Juego::getJugadorActual()
+{
+    return jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
+}
 
-   Jugador* Juego::getJugadorActual(){
-       return jugadores.obtenerElementoEnPosicion(indiceTurnoActual);
-   }
+Jugador *Juego::getJugadorSeleccionado(const std::string &nombreJugador)
+{
+    for (int i = 0; i < jugadores.getSize(); i++)
+    {
+        Jugador *temp = jugadores.obtenerElementoEnPosicion(i);
+        if (temp->getNombreJugador() == nombreJugador)
+            return temp;
+    }
+    return nullptr;
+}
 
-   Jugador* Juego::getJugadorSeleccionado(const std::string& nombreJugador){
-       for(int i = 0; i < jugadores.getSize(); i++){
-           Jugador* temp = jugadores.obtenerElementoEnPosicion(i);
-           if(temp->getNombreJugador() == nombreJugador) return temp;
-       }
-       return nullptr;
-   }
+Color Juego::convertirStringAColor(const std::string &colorStr)
+{
+    if (colorStr == "Rojo")
+        return Color::ROJO;
+    if (colorStr == "Azul")
+        return Color::AZUL;
+    if (colorStr == "Verde")
+        return Color::VERDE;
+    if (colorStr == "Amarillo")
+        return Color::AMARILLO;
+    // Si estás en modo oscuro
+    if (colorStr == "Rosa")
+        return Color::ROSA;
+    if (colorStr == "Turquesa")
+        return Color::TURQUESA;
+    if (colorStr == "Naranja")
+        return Color::NARANJA;
+    if (colorStr == "Purpura")
+        return Color::PURPURA;
+    // Valor por defecto
+    return Color::NEGRO;
+}
 
-   Color Juego::convertirStringAColor(const std::string& colorStr) {
-       if (colorStr == "Rojo") return Color::ROJO;
-       if (colorStr == "Azul") return Color::AZUL;
-       if (colorStr == "Verde") return Color::VERDE;
-       if (colorStr == "Amarillo") return Color::AMARILLO;
-       // Si estás en modo oscuro
-       if (colorStr == "Rosa") return Color::ROSA;
-       if (colorStr == "Turquesa") return Color::TURQUESA;
-       if (colorStr == "Naranja") return Color::NARANJA;
-       if (colorStr == "Purpura") return Color::PURPURA;
-       // Valor por defecto
-       return Color::NEGRO;
-   }
+void Juego::barajarMazo()
+{
+    mazo.barajar();
+}
 
-   void Juego::barajarMazo()
-   {
-       mazo.barajar();
-   }
+void Juego::barajarDescarte()
+{
+    while (descarte.getSize() > 1)
+    {
+        Carta carta = descarte.robarCarta();
+        mazo.insertarFinal(carta);
+    }
+    barajarMazo();
+}
 
+Color Juego::getColorActivo() const
+{
+    return colorActivo;
+}
 
+void Juego::setColorActivo(Color nuevoColor)
+{
+    this->colorActivo = nuevoColor;
+}
 
-   void Juego::barajarDescarte(){
-       while(descarte.getSize()>1){
-           Carta carta = descarte.robarCarta();
-           mazo.insertarFinal(carta);
-       }
-       barajarMazo();
-   }
+bool Juego::mazoEstaVacio() const
+{
+    return mazo.getSize() <= 0;
+}
 
-   Color Juego::getColorActivo() const {
-       return colorActivo;
-   }
+void Juego::setJugadorEnLista(const std::string nombreJugador)
+{
+    Jugador *jugador = new Jugador(nombreJugador);
+    jugadores.insertarFinal(jugador);
+}
 
-   void Juego::setColorActivo(Color nuevoColor) {
-       this->colorActivo = nuevoColor;
-   }
+void Juego::onCartaJugadaSlot(int indiceCarta)
+{
+    qDebug() << "[JUEGO] === onCartaJugadaSlot INICIADO ===";
+    qDebug() << "[JUEGO] Índice carta recibido:" << indiceCarta;
 
-   bool Juego::mazoEstaVacio()const{
-       return mazo.getSize()<=0;
-   }
+    // Bloquear múltiples llamadas simultáneas
+    static bool procesando = false;
+    if (procesando)
+    {
+        qDebug() << "[JUEGO] Ya procesando otra carta, ignorando";
+        return;
+    }
 
-   void Juego::setJugadorEnLista(const std::string nombreJugador){
-       Jugador* jugador = new Jugador(nombreJugador);
-       jugadores.insertarFinal(jugador);
-   }
+    procesando = true;
 
-   void Juego::onCartaJugadaSlot(int indiceCarta) {
-       qDebug() << "[JUEGO] === onCartaJugadaSlot INICIADO ===";
-       qDebug() << "[JUEGO] Índice carta recibido:" << indiceCarta;
+    try
+    {
+        // Validaciones básicas
+        Jugador *jugadorActual = getJugadorActual();
+        if (!jugadorActual || indiceCarta < 0 || indiceCarta >= jugadorActual->getMano().getSize())
+        {
+            qDebug() << "[JUEGO ERROR] Validaciones fallidas";
+            // Reconectar señales de la UI aunque no se haya jugado
+            QTimer::singleShot(0, this, [this]()
+                               { emit manoActualizadaSignal(); });
+            procesando = false;
+            return;
+        }
 
-       // Bloquear múltiples llamadas simultáneas
-       static bool procesando = false;
-       if (procesando) {
-           qDebug() << "[JUEGO] Ya procesando otra carta, ignorando";
-           return;
-       }
+        Carta cartaIntentada = jugadorActual->getMano().obtenerElementoEnPosicion(indiceCarta);
+        if (!puedeJugarCarta(cartaIntentada))
+        {
+            qDebug() << "[JUEGO] Carta NO válida para jugar - no coincide color/número";
+            emit cartaInvalidaSignal();
+            // Reconectar señales de la UI para que el jugador pueda seguir eligiendo
+            QTimer::singleShot(0, this, [this]()
+                               { emit manoActualizadaSignal(); });
+            procesando = false;
+            return;
+        }
 
-       procesando = true;
+        // Determinar si la carta requiere entrada del usuario antes de jugarse
+        LadoCarta *ladoActivoCarta = cartaIntentada.getLadoActivo();
+        TipoCarta tipoCarta = ladoActivoCarta->getTipo();
 
-       try {
-           // Validaciones básicas
-           Jugador* jugadorActual = getJugadorActual();
-           if (!jugadorActual || indiceCarta < 0 || indiceCarta >= jugadorActual->getMano().getSize()) {
-               qDebug() << "[JUEGO ERROR] Validaciones fallidas";
-               procesando = false;
-               return;
-           }
+        bool necesitaColor = (tipoCarta == TipoCarta::COMODIN ||
+                              tipoCarta == TipoCarta::COMODIN4 ||
+                              tipoCarta == TipoCarta::COMODIN6 ||
+                              tipoCarta == TipoCarta::COMODIN2 ||
+                              tipoCarta == TipoCarta::CAMBIARMANO);
+        bool necesitaAdivinar = (tipoCarta == TipoCarta::ADIVINARCARTA);
 
-           Carta cartaIntentada = jugadorActual->getMano().obtenerElementoEnPosicion(indiceCarta);
-           if (!puedeJugarCarta(cartaIntentada)) {
-               qDebug() << "[JUEGO] Carta NO válida para jugar - no coincide color/número";
-               emit cartaInvalidaSignal(); // Notificar a la UI
-               procesando = false;
-               return;
-           }
+        if (necesitaColor)
+        {
+            qDebug() << "[JUEGO] Comodín detectado, solicitando color al jugador";
+            emit pedirColorSignal(indiceCarta, ladoOscuroActivo);
+            procesando = false;
+            return;
+        }
 
-           // Jugar la carta SIN emitir señales inmediatas
-           qDebug() << "[JUEGO] Llamando a jugarCartaSinSeñales";
-           jugarCartaSinSeñales(jugadorActual, indiceCarta, "", -1, "");
+        if (necesitaAdivinar)
+        {
+            qDebug() << "[JUEGO] AdivinarCarta detectada, solicitando datos";
+            emit pedirDatosAdivinarSignal(indiceCarta);
+            procesando = false;
+            return;
+        }
 
-           // Emitir señales DESPUÉS de un delay para evitar ciclos
-           QTimer::singleShot(50, this, [this]() {
+        // Carta normal: jugar directamente
+        qDebug() << "[JUEGO] Llamando a jugarCartaSinSeñales";
+        jugarCartaSinSeñales(jugadorActual, indiceCarta, "", -1, "");
+
+        QTimer::singleShot(50, this, [this]()
+                           {
                emit manoActualizadaSignal();
-
                Jugador* nuevoJugador = getJugadorActual();
                if (nuevoJugador) {
                    emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
                }
+               emit mazoActualizadoSignal(mazo.getSize()); });
+    }
+    catch (...)
+    {
+        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en onCartaJugadaSlot";
+    }
 
-               emit mazoActualizadoSignal(mazo.getSize());
-           });
+    procesando = false;
+    qDebug() << "[JUEGO] === onCartaJugadaSlot FINALIZADO ===";
+}
 
-       } catch (...) {
-           qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en onCartaJugadaSlot";
-       }
+void Juego::jugarCartaConColor(int indiceCarta, const std::string &color)
+{
+    qDebug() << "[JUEGO] === jugarCartaConColor === color:" << QString::fromStdString(color);
 
-       procesando = false;
-       qDebug() << "[JUEGO] === onCartaJugadaSlot FINALIZADO ===";
-   }
+    Jugador *jugadorActual = getJugadorActual();
+    if (!jugadorActual)
+        return;
 
+    jugarCartaSinSeñales(jugadorActual, indiceCarta, "", -1, color);
 
+    QTimer::singleShot(50, this, [this]()
+                       {
+        emit manoActualizadaSignal();
+        Jugador* nuevoJugador = getJugadorActual();
+        if (nuevoJugador)
+            emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+        emit mazoActualizadoSignal(mazo.getSize()); });
 
-   void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado,
-                                  int numeroSeleccionado, const std::string& colorSeleccionado) {
+    qDebug() << "[JUEGO] colorActivo después del comodín:" << static_cast<int>(colorActivo);
+}
 
-       qDebug() << "[JUEGO] === Iniciando aplicarEfectoCarta ===";
+void Juego::jugarCartaAdivinar(int indiceCarta, const std::string &color,
+                               const std::string &jugador, int numero)
+{
+    qDebug() << "[JUEGO] === jugarCartaAdivinar === jugador:" << QString::fromStdString(jugador)
+             << "color:" << QString::fromStdString(color) << "numero:" << numero;
 
-       if (!cartaJugada.esValida()) {
-           qDebug() << "[JUEGO ERROR] Carta inválida recibida";
-           return;
-       }
+    Jugador *jugadorActual = getJugadorActual();
+    if (!jugadorActual)
+        return;
 
-       LadoCarta* ladoActual = cartaJugada.getLadoActivo();
-       if (!ladoActual) {
-           qDebug() << "[JUEGO ERROR] Lado actual es nullptr";
-           return;
-       }
+    jugarCartaSinSeñales(jugadorActual, indiceCarta, jugador, numero, color);
 
-       qDebug() << "[JUEGO] Aplicando efecto de carta tipo:" << static_cast<int>(ladoActual->getTipo());
+    QTimer::singleShot(50, this, [this]()
+                       {
+        emit manoActualizadaSignal();
+        Jugador* nuevoJugador = getJugadorActual();
+        if (nuevoJugador)
+            emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+        emit mazoActualizadoSignal(mazo.getSize()); });
+}
 
-       try {
-           // Llamar al método aplicarEfecto del lado activo de la carta
-           ladoActual->aplicarEfecto(this, colorSeleccionado, jugadorSeleccionado, numeroSeleccionado);
-           qDebug() << "[JUEGO] Efecto aplicado correctamente";
-       } catch (...) {
-           qDebug() << "[JUEGO ERROR] Excepción al aplicar efecto de carta";
-       }
+void Juego::intentarRobarCarta()
+{
+    qDebug() << "[JUEGO] === intentarRobarCarta INICIADO ===";
 
-       qDebug() << "[JUEGO] === Finalizó aplicarEfectoCarta ===";
-   }
+    Jugador *jugadorActual = getJugadorActual();
+    if (!jugadorActual)
+        return;
 
+    // Responsabilidad de Juego: verificar si el jugador puede jugar antes de robar
+    bool tieneCartaValida = false;
+    ListaGenerica<Carta> &mano = jugadorActual->getMano();
+    for (int i = 0; i < mano.getSize(); i++)
+    {
+        if (puedeJugarCarta(mano.obtenerElementoEnPosicion(i)))
+        {
+            tieneCartaValida = true;
+            break;
+        }
+    }
 
+    if (tieneCartaValida)
+    {
+        qDebug() << "[JUEGO] Jugador tiene carta jugable, no puede robar";
+        emit debeJugarAntesDeRobarSignal();
+        return;
+    }
 
-   void Juego::jugarCartaSinSeñales(Jugador* jugador, int indiceCartaEnMano,
-                                    const std::string& jugadorSeleccionado,
-                                    int numeroAdivinado,
-                                    const std::string& colorAdivinado) {
+    // Reciclar el descarte si el mazo está vacío
+    if (mazoEstaVacio())
+    {
+        qDebug() << "[JUEGO] Mazo vacío, reciclando descarte";
+        barajarDescarte();
+    }
 
-       qDebug() << "[JUEGO] === jugarCartaSinSeñales INICIADO ===";
+    Carta nuevaCarta = robarDelMazo();
+    if (!nuevaCarta.esValida())
+    {
+        qDebug() << "[JUEGO] Sin cartas disponibles";
+        emit mazoSinCartasSignal();
+        return;
+    }
 
-       if (!jugador || indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize()) {
-           qDebug() << "[JUEGO ERROR] Parámetros inválidos";
-           return;
-       }
+    jugadorActual->agregarCarta(nuevaCarta);
+    qDebug() << "[JUEGO] Carta robada. Mano del jugador:" << jugadorActual->getMano().getSize();
 
-       try {
-           // Obtener y remover carta
-           Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
-           jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
+    avanzarTurno();
 
-           // Agregar al descarte
-           descarte.insertarInicio(cartaJugada);
+    emit manoActualizadaSignal();
+    Jugador *nuevoJugador = getJugadorActual();
+    if (nuevoJugador)
+    {
+        emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+    }
 
-           // Actualizar color activo
-           LadoCarta* ladoActivo = cartaJugada.getLadoActivo();
-           if (ladoActivo) {
-               colorActivo = ladoActivo->getColor();
+    qDebug() << "[JUEGO] === intentarRobarCarta FINALIZADO ===";
+}
 
-               // ✅ Emitir señal para actualizar imagen del descarte en la UI
-               QString rutaImagen = QString::fromStdString(ladoActivo->getRutaArchivo());
-               qDebug() << "[JUEGO] Emitiendo descarteActualizadoSignal con:" << rutaImagen;
-               emit descarteActualizadoSignal(rutaImagen);
+void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado,
+                               int numeroSeleccionado, const std::string &colorSeleccionado)
+{
 
-           }
+    qDebug() << "[JUEGO] === Iniciando aplicarEfectoCarta ===";
 
-           // Aplicar efecto (SIN emitir señales desde aquí)
-           aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
+    if (!cartaJugada.esValida())
+    {
+        qDebug() << "[JUEGO ERROR] Carta inválida recibida";
+        return;
+    }
 
-           // Avanzar turno
-           avanzarTurno();
+    LadoCarta *ladoActual = cartaJugada.getLadoActivo();
+    if (!ladoActual)
+    {
+        qDebug() << "[JUEGO ERROR] Lado actual es nullptr";
+        return;
+    }
 
-           qDebug() << "[JUEGO] === jugarCartaSinSeñales COMPLETADO ===";
+    qDebug() << "[JUEGO] Aplicando efecto de carta tipo:" << static_cast<int>(ladoActual->getTipo());
 
-       } catch (...) {
-           qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en jugarCartaSinSeñales";
-       }
-   }
+    try
+    {
+        // Llamar al método aplicarEfecto del lado activo de la carta
+        ladoActual->aplicarEfecto(this, colorSeleccionado, jugadorSeleccionado, numeroSeleccionado);
+        qDebug() << "[JUEGO] Efecto aplicado correctamente";
+    }
+    catch (...)
+    {
+        qDebug() << "[JUEGO ERROR] Excepción al aplicar efecto de carta";
+    }
 
+    qDebug() << "[JUEGO] === Finalizó aplicarEfectoCarta ===";
+}
 
-   bool Juego::puedeJugarCarta(const Carta& carta) {
-       qDebug() << "[JUEGO] Verificando si se puede jugar carta";
+void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
+                                 const std::string &jugadorSeleccionado,
+                                 int numeroAdivinado,
+                                 const std::string &colorAdivinado)
+{
 
-       if (!carta.esValida()) {
-           qDebug() << "[JUEGO] Carta no válida";
-           return false;
-       }
+    qDebug() << "[JUEGO] === jugarCartaSinSeñales INICIADO ===";
 
-       if (descarte.estaVacia()) {
-           return true; // Primera carta siempre se puede jugar
-       }
+    if (!jugador || indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize())
+    {
+        qDebug() << "[JUEGO ERROR] Parámetros inválidos";
+        return;
+    }
 
-       try {
-           Carta cartaEnDescarte = descarte.obtenerElementoEnPosicion(0);
-           if (!cartaEnDescarte.esValida()) {
-               return true;
-           }
+    try
+    {
+        // Obtener y remover carta
+        Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
+        jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
 
-           LadoCarta* ladoCartaJugar = carta.getLadoActivo();
-           LadoCarta* ladoDescarte = cartaEnDescarte.getLadoActivo();
+        // Agregar al descarte
+        descarte.insertarInicio(cartaJugada);
 
-           if (!ladoCartaJugar || !ladoDescarte) {
-               return false;
-           }
+        // Actualizar color activo: si el jugador eligió un color (comodíes/cartas especiales)
+        // ese tiene prioridad sobre el color físico de la carta
+        LadoCarta *ladoActivo = cartaJugada.getLadoActivo();
+        if (ladoActivo)
+        {
+            colorActivo = ladoActivo->getColor();
 
-           Color colorCarta    = ladoCartaJugar->getColor();
-           Color colorDescarte = ladoDescarte->getColor();
-           int   numeroCarta   = ladoCartaJugar->getNumero();
-           int   numDescarte   = ladoDescarte->getNumero();
+            if (!colorAdivinado.empty())
+            {
+                colorActivo = convertirStringAColor(colorAdivinado);
+                qDebug() << "[JUEGO] colorActivo forzado por selección del jugador:" << static_cast<int>(colorActivo);
+            }
 
-           // Comodín siempre puede jugarse
-           bool esComodin = (colorCarta == Color::NEGRO);
+            QString rutaImagen = QString::fromStdString(ladoActivo->getRutaArchivo());
+            qDebug() << "[JUEGO] Emitiendo descarteActualizadoSignal con:" << rutaImagen;
+            emit descarteActualizadoSignal(rutaImagen);
+        }
 
-           // Mismo color activo (puede diferir del descarte si se jugó comodín)
-           bool mismoColor = (colorCarta == colorActivo);
+        // Aplicar efecto, No se emiten señales porque sino truena XD
+        aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
 
-           // Mismo número (ambos deben ser >= 0 para comparar)
-           bool mismoNumero = (numeroCarta >= 0 && numDescarte >= 0 && numeroCarta == numDescarte);
+        if (colorAdivinado.empty() && !descarte.estaVacia())
+        {
+            Carta topDescarte = descarte.obtenerElementoEnPosicion(0);
+            if (topDescarte.esValida())
+            {
+                LadoCarta *ladoTop = topDescarte.getLadoActivo();
+                if (ladoTop)
+                {
+                    Color colorTop = ladoTop->getColor();
+                    if (colorTop != Color::NEGRO && colorTop != Color::INDEFINIDO)
+                    {
+                        colorActivo = colorTop;
+                        qDebug() << "[JUEGO] colorActivo re-sincronizado desde descarte:" << static_cast<int>(colorActivo);
+                    }
+                }
+            }
+        }
 
-           // Mismo tipo de carta especial (mismo número == -1 significa mismo tipo especial)
-           bool mismoTipo = (numeroCarta == -1 && numDescarte == -1 &&
-                             ladoCartaJugar->getTipo() == ladoDescarte->getTipo());
+        // Avanzar turno
+        avanzarTurno();
 
-           bool puedeJugar = esComodin || mismoColor || mismoNumero || mismoTipo;
+        qDebug() << "[JUEGO] === jugarCartaSinSeñales COMPLETADO ===";
+    }
+    catch (...)
+    {
+        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en jugarCartaSinSeñales";
+    }
+}
 
-           qDebug() << "[JUEGO] colorActivo:" << static_cast<int>(colorActivo)
-                    << "colorCarta:" << static_cast<int>(colorCarta)
-                    << "colorDescarte:" << static_cast<int>(colorDescarte);
-           qDebug() << "[JUEGO] esComodin:" << esComodin
-                    << "mismoColor:" << mismoColor
-                    << "mismoNumero:" << mismoNumero
-                    << "mismoTipo:" << mismoTipo;
-           qDebug() << "[JUEGO] → puedeJugar:" << puedeJugar;
+bool Juego::puedeJugarCarta(const Carta &carta)
+{
 
-           return puedeJugar;
+    qDebug() << "[JUEGO] Verificando si se puede jugar carta";
 
-       } catch (...) {
-           return false;
-       }
-   }
+    if (!carta.esValida())
+    {
+        qDebug() << "[JUEGO] Carta no válida";
+        return false;
+    }
+
+    if (descarte.estaVacia())
+    {
+        // Primera carta siempre se puede jugar
+        return true;
+    }
+
+    try
+    {
+        Carta cartaEnDescarte = descarte.obtenerElementoEnPosicion(0);
+        if (!cartaEnDescarte.esValida())
+        {
+            return true;
+        }
+
+        LadoCarta *ladoCartaJugar = carta.getLadoActivo();
+        LadoCarta *ladoDescarte = cartaEnDescarte.getLadoActivo();
+
+        if (!ladoCartaJugar || !ladoDescarte)
+        {
+            return false;
+        }
+
+        Color colorCarta = ladoCartaJugar->getColor();
+        Color colorDescarte = ladoDescarte->getColor();
+        int numeroCarta = ladoCartaJugar->getNumero();
+        int numDescarte = ladoDescarte->getNumero();
+
+        // Comodín siempre puede jugarse
+        bool esComodin = (colorCarta == Color::NEGRO);
+
+        // Mismo color activo (puede diferir del descarte si se jugó comodín)
+        bool mismoColor = (colorCarta == colorActivo);
+
+        // Mismo número (ambos deben ser >= 0 para comparar)
+        bool mismoNumero = (numeroCarta >= 0 && numDescarte >= 0 && numeroCarta == numDescarte);
+
+        // Mismo tipo de carta especial (mismo número == -1 significa mismo tipo especial)
+        bool mismoTipo = (numeroCarta == -1 && numDescarte == -1 &&
+                          ladoCartaJugar->getTipo() == ladoDescarte->getTipo());
+
+        bool puedeJugar = esComodin || mismoColor || mismoNumero || mismoTipo;
+
+        qDebug() << "[JUEGO] colorActivo:" << static_cast<int>(colorActivo)
+                 << "colorCarta:" << static_cast<int>(colorCarta)
+                 << "colorDescarte:" << static_cast<int>(colorDescarte);
+        qDebug() << "[JUEGO] esComodin:" << esComodin
+                 << "mismoColor:" << mismoColor
+                 << "mismoNumero:" << mismoNumero
+                 << "mismoTipo:" << mismoTipo;
+        qDebug() << "[JUEGO] → puedeJugar:" << puedeJugar;
+
+        return puedeJugar;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}

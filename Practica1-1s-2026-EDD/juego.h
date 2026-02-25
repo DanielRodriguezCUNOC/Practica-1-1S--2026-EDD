@@ -51,6 +51,10 @@ signals:
     void descarteActualizadoSignal(QString rutaCarta);
     void partidaIniciadaSignal();
     void cartaInvalidaSignal();
+    void debeJugarAntesDeRobarSignal(); // Jugador intenta robar teniendo carta válida
+    void mazoSinCartasSignal();          // No quedan cartas disponibles
+    void pedirColorSignal(int indiceCarta, bool modoOscuro); // Comodín necesita selección de color
+    void pedirDatosAdivinarSignal(int indiceCarta);          // AdivinarCarta necesita datos
 
 public:
     // ====== CONSTRUCTOR / DESTRUCTOR ======
@@ -128,9 +132,15 @@ public:
     void setIndiceTurnoActual(int nuevoIndice);
     void setJugadorEnLista(const std::string nombreJugador);
 
+    // Continuación de jugadas que requieren input del usuario
+    void jugarCartaConColor(int indiceCarta, const std::string& color);
+    void jugarCartaAdivinar(int indiceCarta, const std::string& color,
+                            const std::string& jugador, int numero);
+
 public slots:
     // Para recibir acciones de la UI
     void onCartaJugadaSlot(int indiceCarta);
+    void intentarRobarCarta(); // Valida y ejecuta robo de carta
 };
 
 #endif
