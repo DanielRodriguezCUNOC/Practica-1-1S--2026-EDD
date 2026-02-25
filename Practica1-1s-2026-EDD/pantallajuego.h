@@ -50,6 +50,10 @@ public slots:
     void onRobarCarta();
     void onPasarTurno();
     void onCartaInvalida();
+    void onDebeJugarAntesDeRobar();
+    void onMazoSinCartas();
+    void onPedirColor(int indiceCarta, bool modoOscuro);
+    void onPedirDatosAdivinar(int indiceCarta);
 
 private:
     void configurarConexiones();

@@ -3,16 +3,14 @@
 #include <QCursor>
 #include <QFileInfo>
 #include <QGraphicsSceneMouseEvent>
-CartaManoWidget::CartaManoWidget(int idCarta, QString rutaImg, QGraphicsItem* parent):
-    QObject(), QGraphicsPixmapItem(parent), id(idCarta){
-
-    qDebug() << "[CARTA WIDGET] Creando carta con ID:" << id << "ruta:" << rutaImg;
+CartaManoWidget::CartaManoWidget(int idCarta, QString rutaImg, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(parent), id(idCarta)
+{
 
     QString rutaValida = buscarImagenAlternativa(rutaImg);
 
     QPixmap pixmap;
-    if (!pixmap.load(rutaValida)) {
-        qDebug() << "ERROR CRÍTICO: No se pudo cargar ninguna imagen para:" << rutaImg;
+    if (!pixmap.load(rutaValida))
+    {
         // Crear un rectángulo de color como último recurso
         pixmap = QPixmap(135, 180);
         pixmap.fill(Qt::darkGray);
@@ -21,61 +19,66 @@ CartaManoWidget::CartaManoWidget(int idCarta, QString rutaImg, QGraphicsItem* pa
     setPixmap(pixmap);
     setAcceptHoverEvents(true);
     setFlag(QGraphicsItem::ItemIsSelectable, false);
-    qDebug() << "[CARTA WIDGET] Carta creada exitosamente con ID:" << idCarta;
 }
-void CartaManoWidget::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+void CartaManoWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
     emit cartaSeleccionada(this->id);
-    event->accept();   // Consumir el evento (evita propagación y recursión)
+    event->accept(); // Consumir el evento (evita propagación y recursión)
 }
 
-void CartaManoWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+void CartaManoWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
     setY(y() - 25);
 }
 
-void CartaManoWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+void CartaManoWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
     setY(y() + 25);
 }
 
-void CartaManoWidget::setSize(double ancho, double alto){
-    setScale(ancho/boundingRect().width());
+void CartaManoWidget::setSize(double ancho, double alto)
+{
+    setScale(ancho / boundingRect().width());
 }
 
-bool CartaManoWidget::imagenValida()const{
+bool CartaManoWidget::imagenValida() const
+{
     return !pixmap().isNull();
 }
 
-
-
-QString CartaManoWidget::buscarImagenAlternativa(QString rutaOriginal) {
+QString CartaManoWidget::buscarImagenAlternativa(QString rutaOriginal)
+{
     // Si la imagen original existe, usarla
-    if (QFile::exists(rutaOriginal)) {
+    if (QFile::exists(rutaOriginal))
+    {
         return rutaOriginal;
     }
-
-    qDebug() << "Imagen no encontrada, buscando alternativa para:" << rutaOriginal;
 
     // Estrategia 1: Para cartas de comodín (están en carpeta COMODINES)
     if (rutaOriginal.contains("COMODINES") ||
         rutaOriginal.contains("Comodin") ||
         rutaOriginal.contains("+4") ||
-        rutaOriginal.contains("+6")) {
+        rutaOriginal.contains("+6"))
+    {
 
         // Extraer el nombre del archivo
         QFileInfo info(rutaOriginal);
         QString nombreArchivo = info.fileName();
 
         // Buscar en la otra carpeta de comodines
-        if (rutaOriginal.contains("/NORMAL/COMODINES/")) {
+        if (rutaOriginal.contains("/NORMAL/COMODINES/"))
+        {
             QString alternativa = ":/assets/FLIP/COMODINES/" + nombreArchivo;
-            if (QFile::exists(alternativa)) {
-                qDebug() << "  Usando comodín FLIP:" << alternativa;
+            if (QFile::exists(alternativa))
+            {
                 return alternativa;
             }
         }
-        else if (rutaOriginal.contains("/FLIP/COMODINES/")) {
+        else if (rutaOriginal.contains("/FLIP/COMODINES/"))
+        {
             QString alternativa = ":/assets/NORMAL/COMODINES/" + nombreArchivo;
-            if (QFile::exists(alternativa)) {
-                qDebug() << "  Usando comodín NORMAL:" << alternativa;
+            if (QFile::exists(alternativa))
+            {
                 return alternativa;
             }
         }
@@ -83,32 +86,36 @@ QString CartaManoWidget::buscarImagenAlternativa(QString rutaOriginal) {
 
     // Estrategia 2: Para cartas de color (están en carpetas de colores)
     // Si es NORMAL con color oscuro, buscar en FLIP
-    if (rutaOriginal.contains("/NORMAL/")) {
+    if (rutaOriginal.contains("/NORMAL/"))
+    {
         if (rutaOriginal.contains("ROSADO") ||
             rutaOriginal.contains("TURQUESA") ||
             rutaOriginal.contains("NARANJA") ||
-            rutaOriginal.contains("PURPURA")) {
+            rutaOriginal.contains("PURPURA"))
+        {
 
             QString alternativa = rutaOriginal;
             alternativa.replace("/NORMAL/", "/FLIP/");
-            if (QFile::exists(alternativa)) {
-                qDebug() << "  Usando alternativa FLIP:" << alternativa;
+            if (QFile::exists(alternativa))
+            {
                 return alternativa;
             }
         }
     }
 
     // Estrategia 3: Si es FLIP con color claro, buscar en NORMAL
-    if (rutaOriginal.contains("/FLIP/")) {
+    if (rutaOriginal.contains("/FLIP/"))
+    {
         if (rutaOriginal.contains("ROJO") ||
             rutaOriginal.contains("AZUL") ||
             rutaOriginal.contains("VERDE") ||
-            rutaOriginal.contains("AMARILLO")) {
+            rutaOriginal.contains("AMARILLO"))
+        {
 
             QString alternativa = rutaOriginal;
             alternativa.replace("/FLIP/", "/NORMAL/");
-            if (QFile::exists(alternativa)) {
-                qDebug() << "  Usando alternativa NORMAL:" << alternativa;
+            if (QFile::exists(alternativa))
+            {
                 return alternativa;
             }
         }
@@ -116,16 +123,15 @@ QString CartaManoWidget::buscarImagenAlternativa(QString rutaOriginal) {
 
     // Estrategia 4: Intentar con el dorso genérico
     QString dorso = ":/assets/VARIOS/POSTERIOR.png";
-    if (QFile::exists(dorso)) {
-        qDebug() << "  Usando dorso genérico:" << dorso;
+    if (QFile::exists(dorso))
+    {
         return dorso;
     }
 
-    // Último recurso: devolver la original (fallará, pero ya manejamos eso)
-    qDebug() << "  No se encontró ninguna alternativa";
     return rutaOriginal;
 }
 
-int CartaManoWidget::getIdCarta(){
+int CartaManoWidget::getIdCarta()
+{
     return id;
 }
