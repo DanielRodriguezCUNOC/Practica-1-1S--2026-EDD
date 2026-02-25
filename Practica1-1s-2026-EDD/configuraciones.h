@@ -3,8 +3,9 @@
 
 #include <QWidget>
 
-namespace Ui {
-class Configuraciones;
+namespace Ui
+{
+    class Configuraciones;
 }
 
 class Configuraciones : public QWidget
@@ -21,7 +22,11 @@ public:
     ~Configuraciones();
     int getCantidadJugadores() const;
     bool getEsModoFlip() const;
-
+    bool getAcumulacion() const;
+    bool getRetoMasCuatro() const;
+    bool getRobarSinLimite() const;
+    bool getGritoUno() const;
+    bool getGanarConNegra() const;
 
 private slots:
     void on_btnSalirConfig_clicked();

@@ -6,10 +6,8 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 
-
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     this->setObjectName("MenuInicio");
@@ -17,12 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
     pantallaMenu = ui->stackedWidget->widget(0);
 
     //* Inicializar todas las pantallas
-    pantallaConfiguracion= nullptr;
+    pantallaConfiguracion = nullptr;
     pantallaAyuda = nullptr;
     pantallaJuego = nullptr;
 
     //* Agregar configuracion al stack
-   // ui->stackedWidget->addWidget(pantallaConfiguracion);
 
     //* Mostrar menu al iniciar
     ui->stackedWidget->setCurrentWidget(pantallaMenu);
@@ -46,15 +43,16 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::on_btnAyuda_clicked()
 {
-    if(!pantallaAyuda){
+    if (!pantallaAyuda)
+    {
         pantallaAyuda = new Ayuda(this);
         ui->stackedWidget->addWidget(pantallaAyuda);
 
         //* AQUÍ conectar la señal después de crear pantallaAyuda
-        connect(pantallaAyuda, &Ayuda::volverMenuInicio, this, [=](){
+        connect(pantallaAyuda, &Ayuda::volverMenuInicio, this, [=]()
+                {
            // ui->stackedWidget->setCurrentIndex(0);
-            ui->stackedWidget->setCurrentWidget(pantallaMenu);
-        });
+            ui->stackedWidget->setCurrentWidget(pantallaMenu); });
     }
     ui->stackedWidget->setCurrentWidget(pantallaAyuda);
 }
@@ -64,32 +62,42 @@ void MainWindow::on_btnJugar_clicked()
     //* Obtenemos los datos de la pantalla de configuracion
     int numJugadores = pantallaConfiguracion->getCantidadJugadores();
     bool esFlip = pantallaConfiguracion->getEsModoFlip();
+    bool acumulacion = pantallaConfiguracion->getAcumulacion();
+    bool retoMasCuatro = pantallaConfiguracion->getRetoMasCuatro();
+    bool robarSinLimite = pantallaConfiguracion->getRobarSinLimite();
+    bool gritoUno = pantallaConfiguracion->getGritoUno();
+    bool ganarConNegra = pantallaConfiguracion->getGanarConNegra();
 
     //*Validar datos
-    if (numJugadores < 2) {
+    if (numJugadores < 2)
+    {
         QMessageBox::warning(this, "Error", "Se necesitan mínimo 2 jugadores para iniciar.");
         return;
     }
 
-    if(!pantallaJuego){
-        pantallaJuego = new PantallaJuego(numJugadores, esFlip, this);
-        ui->stackedWidget->addWidget(pantallaJuego);
-        connect(pantallaJuego, &PantallaJuego::salirPartida, this, [=](){
-            ui->stackedWidget->setCurrentWidget(pantallaMenu);
-        });
+    // Siempre destruir la instancia anterior para resetear el estado de la partida
+    if (pantallaJuego)
+    {
+        ui->stackedWidget->removeWidget(pantallaJuego);
+        delete pantallaJuego;
+        pantallaJuego = nullptr;
     }
-    ui->stackedWidget->setCurrentWidget(pantallaJuego);
 
+    pantallaJuego = new PantallaJuego(numJugadores, esFlip, acumulacion, retoMasCuatro, robarSinLimite, gritoUno, ganarConNegra, this);
+    ui->stackedWidget->addWidget(pantallaJuego);
+    connect(pantallaJuego, &PantallaJuego::salirPartida, this, [this]()
+            { ui->stackedWidget->setCurrentWidget(pantallaMenu); });
+    ui->stackedWidget->setCurrentWidget(pantallaJuego);
 }
 
 void MainWindow::on_btnConfigurar_clicked()
 {
-    if(!pantallaConfiguracion){
+    if (!pantallaConfiguracion)
+    {
         pantallaConfiguracion = new Configuraciones(this);
         ui->stackedWidget->addWidget(pantallaConfiguracion);
-        connect(pantallaConfiguracion, &Configuraciones::volverMenuInicio, this, [=](){
-            ui->stackedWidget->setCurrentWidget(pantallaMenu);
-        });
+        connect(pantallaConfiguracion, &Configuraciones::volverMenuInicio, this, [=]()
+                { ui->stackedWidget->setCurrentWidget(pantallaMenu); });
     }
     ui->stackedWidget->setCurrentWidget(pantallaConfiguracion);
 }
@@ -97,16 +105,17 @@ void MainWindow::on_btnConfigurar_clicked()
 void MainWindow::on_btnSalir_clicked()
 {
     //* Mostrar confirmacion
-    QMessageBox::StandardButton respuesta = QMessageBox::question( this, "UNO",
+    QMessageBox::StandardButton respuesta = QMessageBox::question(this, "UNO",
                                                                   "¿Estás seguro de que quieres salir?",
                                                                   QMessageBox::No | QMessageBox::Yes,
-                                                                  QMessageBox::Yes
-                                                                  );
-    if (respuesta == QMessageBox::Yes) {
+                                                                  QMessageBox::Yes);
+    if (respuesta == QMessageBox::Yes)
+    {
         qApp->quit();
     }
 }
 
-MainWindow::~MainWindow(){
+MainWindow::~MainWindow()
+{
     delete ui;
 }
