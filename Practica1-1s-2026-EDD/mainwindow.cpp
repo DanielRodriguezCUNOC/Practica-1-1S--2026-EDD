@@ -64,6 +64,7 @@ void MainWindow::on_btnJugar_clicked()
     //* Obtenemos los datos de la pantalla de configuracion
     int numJugadores = pantallaConfiguracion->getCantidadJugadores();
     bool esFlip = pantallaConfiguracion->getEsModoFlip();
+    bool acumulacion = pantallaConfiguracion->getAcumulacion();
 
     //*Validar datos
     if (numJugadores < 2) {
@@ -72,7 +73,7 @@ void MainWindow::on_btnJugar_clicked()
     }
 
     if(!pantallaJuego){
-        pantallaJuego = new PantallaJuego(numJugadores, esFlip, this);
+        pantallaJuego = new PantallaJuego(numJugadores, esFlip, acumulacion, this);
         ui->stackedWidget->addWidget(pantallaJuego);
         connect(pantallaJuego, &PantallaJuego::salirPartida, this, [=](){
             ui->stackedWidget->setCurrentWidget(pantallaMenu);

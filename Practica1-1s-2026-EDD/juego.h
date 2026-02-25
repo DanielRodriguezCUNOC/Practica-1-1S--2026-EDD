@@ -23,6 +23,9 @@ private:
     int indiceTurnoActual;
     int sentidoJuego;
     Color colorActivo;
+    bool acumulacionActiva;
+    int penaAcumulada;
+    TipoCarta tipoPenaActual;
 
     // ====== UTILIDADES ======
     RutaImagenes ruta;
@@ -131,6 +134,12 @@ public:
     void setColorActivo(Color color);
     void setIndiceTurnoActual(int nuevoIndice);
     void setJugadorEnLista(const std::string nombreJugador);
+    void setAcumulacion(bool activo);
+    void setPenaAcumulada(int pena);
+    void setTipoPenaActual(TipoCarta tipo);
+    bool getAcumulacion() const;
+    int getPenaAcumulada() const;
+    TipoCarta getTipoPenaActual() const;
 
     // Continuación de jugadas que requieren input del usuario
     void jugarCartaConColor(int indiceCarta, const std::string& color);

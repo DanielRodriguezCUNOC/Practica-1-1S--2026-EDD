@@ -36,7 +36,7 @@ private slots:
     void on_btnPasarTurno_clicked();
 
 public:
-    explicit PantallaJuego(int cantidadaJugdores, bool esFlip, QWidget *parent = nullptr);
+    explicit PantallaJuego(int cantidadaJugdores, bool esFlip, bool acumulacion, QWidget *parent = nullptr);
     ~PantallaJuego();
     void iniciarNuevaPartida(int numJugadores, bool esFlip);
     void dibujarMazo(ListaGenerica<Carta> mazoBackend);

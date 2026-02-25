@@ -22,7 +22,9 @@
 #include <QTimer>
 
 Juego::Juego(QObject *parent) : QObject(parent), ladoOscuroActivo(false),
-                                indiceTurnoActual(0), sentidoJuego(1)
+                                indiceTurnoActual(0), sentidoJuego(1),
+                                acumulacionActiva(false), penaAcumulada(0),
+                                tipoPenaActual(TipoCarta::NUMERO)
 {
 }
 
@@ -53,6 +55,8 @@ void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip)
     }
 
     ladoOscuroActivo = false;
+    penaAcumulada = 0;
+    tipoPenaActual = TipoCarta::NUMERO;
 
     int numMazos = ((cantidadJugadores - 1) / 6) + 1;
     qDebug() << "[JUEGO] Número de mazos a crear:" << numMazos;
@@ -638,6 +642,13 @@ void Juego::setColorActivo(Color nuevoColor)
     this->colorActivo = nuevoColor;
 }
 
+void Juego::setAcumulacion(bool activo) { acumulacionActiva = activo; }
+bool Juego::getAcumulacion() const { return acumulacionActiva; }
+int Juego::getPenaAcumulada() const { return penaAcumulada; }
+void Juego::setPenaAcumulada(int pena) { penaAcumulada = pena; }
+TipoCarta Juego::getTipoPenaActual() const { return tipoPenaActual; }
+void Juego::setTipoPenaActual(TipoCarta tipo) { tipoPenaActual = tipo; }
+
 bool Juego::mazoEstaVacio() const
 {
     return mazo.getSize() <= 0;
@@ -788,6 +799,25 @@ void Juego::intentarRobarCarta()
     Jugador *jugadorActual = getJugadorActual();
     if (!jugadorActual)
         return;
+
+    // Acumulación: si hay pena pendiente el jugador acepta robar todas las cartas acumuladas
+    if (acumulacionActiva && penaAcumulada > 0)
+    {
+        int totalRobar = penaAcumulada;
+        penaAcumulada = 0;
+        for (int i = 0; i < totalRobar; i++)
+        {
+            if (mazoEstaVacio()) barajarDescarte();
+            Carta robada = robarDelMazo();
+            if (robada.esValida()) jugadorActual->agregarCarta(robada);
+        }
+        avanzarTurno();
+        emit manoActualizadaSignal();
+        Jugador *nuevoJugador = getJugadorActual();
+        if (nuevoJugador)
+            emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+        return;
+    }
 
     // Responsabilidad de Juego: verificar si el jugador puede jugar antes de robar
     bool tieneCartaValida = false;
@@ -977,6 +1007,12 @@ bool Juego::puedeJugarCarta(const Carta &carta)
         if (!ladoCartaJugar || !ladoDescarte)
         {
             return false;
+        }
+
+        // Acumulación: si hay pena pendiente solo se puede apilar la misma penalización
+        if (acumulacionActiva && penaAcumulada > 0)
+        {
+            return ladoCartaJugar->getTipo() == tipoPenaActual;
         }
 
         Color colorCarta = ladoCartaJugar->getColor();

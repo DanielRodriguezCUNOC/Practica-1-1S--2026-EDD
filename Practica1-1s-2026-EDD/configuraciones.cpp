@@ -23,4 +23,8 @@ bool Configuraciones::getEsModoFlip() const{
     return ui->cbModoFlip->isChecked();
 }
 
+bool Configuraciones::getAcumulacion() const{
+    return ui->cbAcumulacion->isChecked();
+}
+
 void Configuraciones::on_btnSalirConfig_clicked() {}

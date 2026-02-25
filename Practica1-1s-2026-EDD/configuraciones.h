@@ -21,7 +21,7 @@ public:
     ~Configuraciones();
     int getCantidadJugadores() const;
     bool getEsModoFlip() const;
-
+    bool getAcumulacion() const;
 
 private slots:
     void on_btnSalirConfig_clicked();

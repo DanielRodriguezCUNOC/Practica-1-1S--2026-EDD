@@ -7,12 +7,13 @@
 #include <QFileInfo>
 #include <QTimer>
 
-PantallaJuego::PantallaJuego(int cantidadJugadores, bool esFlip, QWidget *parent)
+PantallaJuego::PantallaJuego(int cantidadJugadores, bool esFlip, bool acumulacion, QWidget *parent)
     : QWidget(parent), ui(new Ui::PantallaJuego)
       //* Inicializar el puntero de juego
       ,
       juego(new Juego(this)), numJugadores(cantidadJugadores), modoJuego(esFlip)
 {
+    juego->setAcumulacion(acumulacion);
     ui->setupUi(this);
 
     ui->manoJugadorWidget->resize(1241, 240);

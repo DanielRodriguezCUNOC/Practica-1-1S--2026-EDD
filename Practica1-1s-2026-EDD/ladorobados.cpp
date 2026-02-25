@@ -10,15 +10,16 @@ LadoCarta* LadoRobaDos::clonar() const {
 }
 void LadoRobaDos::aplicarEfecto(Juego* juego, const std::string& colorSeleccionado,
                               const std::string jugadorSeleccionado, int numeroSeleccionado) {
-    // El siguiente jugador pierde el turno y roba 2 cartas
+    if (juego->getAcumulacion()) {
+        juego->setPenaAcumulada(juego->getPenaAcumulada() + 2);
+        juego->setTipoPenaActual(TipoCarta::ROBA2);
+        return;
+    }
     juego->avanzarTurno();
     Jugador* victima = juego->getJugadorActual();
-
-    for(int i = 0; i < 2; i++) {
-        if(juego->mazoEstaVacio()) juego->barajarDescarte();
-
+    for (int i = 0; i < 2; i++) {
+        if (juego->mazoEstaVacio()) juego->barajarDescarte();
         Carta robada = juego->robarDelMazo();
-        if(robada.esValida())victima->agregarCarta(robada);
+        if (robada.esValida()) victima->agregarCarta(robada);
     }
-
 }

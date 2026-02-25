@@ -10,14 +10,16 @@ LadoCarta* LadoComodinRobarCuatro::clonar() const {
 
 void LadoComodinRobarCuatro::aplicarEfecto(Juego* juego, const std::string& colorSeleccionado,
                                  const std::string jugadorSeleccionado, int numeroSeleccionado) {
-    // El siguiente jugador pierde el turno y roba 4 cartas
+    if (juego->getAcumulacion()) {
+        juego->setPenaAcumulada(juego->getPenaAcumulada() + 4);
+        juego->setTipoPenaActual(TipoCarta::COMODIN4);
+        return;
+    }
     juego->avanzarTurno();
     Jugador* victima = juego->getJugadorActual();
-
-    for(int i = 0; i < 4; i++) {
-        if(juego->mazoEstaVacio()) juego->barajarDescarte();
-
+    for (int i = 0; i < 4; i++) {
+        if (juego->mazoEstaVacio()) juego->barajarDescarte();
         Carta robada = juego->robarDelMazo();
-        if(robada.esValida())victima->agregarCarta(robada);
+        if (robada.esValida()) victima->agregarCarta(robada);
     }
 }
