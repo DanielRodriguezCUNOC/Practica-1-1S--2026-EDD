@@ -48,8 +48,6 @@ Juego::~Juego()
 
 void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip)
 {
-    qDebug() << "[JUEGO] Iniciando inicializarMazo";
-
     // Limpiar mazo y descarte anteriores
 
     while (mazo.getSize() > 0)
@@ -66,10 +64,7 @@ void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip)
     tipoPenaActual = TipoCarta::NUMERO;
     retoPendiente = false;
     gritoUnoPendiente = false;
-    // robarSinLimite/gritoUnoActivo se preservan (los configura el usuario antes de iniciar)
-
     int numMazos = ((cantidadJugadores - 1) / 6) + 1;
-    qDebug() << "[JUEGO] Número de mazos a crear:" << numMazos;
 
     // Crear el mazo según el modo
     if (modoFlip)
@@ -81,19 +76,14 @@ void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip)
         generarMazoNormalManual(numMazos);
     }
 
-    qDebug() << "[JUEGO] Mazo creado con" << mazo.getSize() << "cartas";
-
     // MEZCLAR EL MAZO COMPLETO
     barajarMazo();
-    qDebug() << "[JUEGO] Mazo mezclado";
 
     // Repartir cartas a jugadores
     repartirCartas();
-    qDebug() << "[JUEGO] Cartas repartidas";
 
     // Sacar primera carta para descarte
     sacarPrimeraCarta();
-    qDebug() << "[JUEGO] Primera carta colocada en descarte";
 
     emit partidaIniciadaSignal();
 }
@@ -146,8 +136,6 @@ void Juego::mezclarArregloCartas(Carta arreglo[], int size)
 
 void Juego::generarMazoNormalManual(int numMazos)
 {
-    qDebug() << "[MAZO NORMAL] Iniciando creación con" << numMazos << "mazos";
-
     for (int n = 0; n < numMazos; n++)
     {
         Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
@@ -172,7 +160,6 @@ void Juego::generarMazoNormalManual(int numMazos)
                 mazo.insertarFinal(Carta(new LadoNumero(color, numero, rutaNumero)));
             }
         }
-        qDebug() << "[MAZO NORMAL] Creadas 76 cartas numéricas. Total:" << mazo.getSize();
 
         // === CARTAS ESPECIALES DE COLOR ===
         // 2 cartas de cada tipo por color
@@ -199,7 +186,6 @@ void Juego::generarMazoNormalManual(int numMazos)
                 mazo.insertarFinal(Carta(new LadoReverse(color, -1, rutaReverse)));
             }
         }
-        qDebug() << "[MAZO NORMAL] Creadas 24 cartas especiales de color. Total:" << mazo.getSize();
 
         // === CARTAS COMODÍN ===
         // 4 cartas de cada tipo comodín
@@ -215,21 +201,13 @@ void Juego::generarMazoNormalManual(int numMazos)
             mazo.insertarFinal(Carta(new LadoAdivinarCarta(Color::NEGRO, -1, rutaComodinAdivinar)));
             mazo.insertarFinal(Carta(new LadoCambiarMano(Color::NEGRO, -1, rutaComodinCambiarMano)));
         }
-        qDebug() << "[MAZO NORMAL] Creadas 16 cartas comodín. Total:" << mazo.getSize();
     }
-
-    qDebug() << "[MAZO NORMAL] Mazo completo creado. Total cartas:" << mazo.getSize();
-    qDebug() << "[MAZO NORMAL] Esperadas:" << (116 * numMazos);
 }
 
 void Juego::generarMazoFlipManual(int numMazos)
 {
-    qDebug() << "[MAZO FLIP] Iniciando creación con" << numMazos << "mazos";
-
     for (int n = 0; n < numMazos; n++)
     {
-        qDebug() << "[MAZO FLIP] Creando mazo" << (n + 1) << "de" << numMazos;
-
         Color cClaros[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
         Color cOscuros[] = {Color::ROSA, Color::TURQUESA, Color::NARANJA, Color::PURPURA};
 
@@ -242,7 +220,6 @@ void Juego::generarMazoFlipManual(int numMazos)
             LadoCarta *ladoOscuro = new LadoNumero(cOscuros[i], 0, ruta.generarRuta(TipoCarta::NUMERO, cOscuros[i], 0));
             mazo.insertarFinal(Carta(ladoClaro, ladoOscuro));
         }
-        qDebug() << "[MAZO FLIP] Creadas 4 cartas de 0. Total mazo:" << mazo.getSize();
 
         // 2 cartas de cada número 1-9 por color (36 cartas)
         for (int color = 0; color < 4; color++)
@@ -260,7 +237,6 @@ void Juego::generarMazoFlipManual(int numMazos)
                 mazo.insertarFinal(Carta(ladoClaro2, ladoOscuro2));
             }
         }
-        qDebug() << "[MAZO FLIP] Creadas 72 cartas numéricas 1-9. Total mazo:" << mazo.getSize();
         // Total numéricas: 76 cartas
 
         // === CARTAS ESPECIALES DE COLOR === (32 cartas)
@@ -299,7 +275,6 @@ void Juego::generarMazoFlipManual(int numMazos)
                 mazo.insertarFinal(Carta(ladoFlipClaro, ladoFlipOscuro));
             }
         }
-        qDebug() << "[MAZO FLIP] Creadas 32 cartas especiales de color. Total mazo:" << mazo.getSize();
 
         // === CARTAS COMODÍN === (24 cartas)
 
@@ -350,12 +325,7 @@ void Juego::generarMazoFlipManual(int numMazos)
             LadoCarta *ladoComodin4Oscuro = new LadoComodinRobarCuatro(Color::NEGRO, -1, ruta.generarRuta(TipoCarta::COMODIN4, Color::NEGRO));
             mazo.insertarFinal(Carta(ladoComodin4Claro, ladoComodin4Oscuro));
         }
-
-        qDebug() << "[MAZO FLIP] Creadas 24 cartas comodín. Total mazo:" << mazo.getSize();
     }
-
-    qDebug() << "[MAZO FLIP] Mazo completo creado. Total cartas:" << mazo.getSize();
-    qDebug() << "[MAZO FLIP] Esperadas:" << (132 * numMazos);
 }
 void Juego::avanzarTurno()
 {
@@ -451,20 +421,14 @@ void Juego::jugarCarta(Jugador *jugador, int indiceCartaEnMano,
                        int numeroAdivinado,
                        const std::string &colorAdivinado)
 {
-
-    qDebug() << "[JUEGO] === jugarCarta INICIADO ===";
-    qDebug() << "[JUEGO] Índice carta:" << indiceCartaEnMano;
-
     // Verificaciones de seguridad
     if (!jugador)
     {
-        qDebug() << "[JUEGO ERROR] Jugador es nullptr";
         return;
     }
 
     if (indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize())
     {
-        qDebug() << "[JUEGO ERROR] Índice de carta fuera de rango";
         return;
     }
 
@@ -474,21 +438,14 @@ void Juego::jugarCarta(Jugador *jugador, int indiceCartaEnMano,
         Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
         if (!cartaJugada.esValida())
         {
-            qDebug() << "[JUEGO ERROR] Carta no válida";
             return;
         }
-
-        qDebug() << "[JUEGO] Removiendo carta de la mano del jugador";
 
         // El jugador tira la carta (la quitamos de su mano)
         jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
 
-        qDebug() << "[JUEGO] Agregando carta al descarte";
-
         // La ponemos en la pila de descarte
         descarte.insertarInicio(cartaJugada);
-
-        qDebug() << "[JUEGO] Emitiendo señales de actualización";
 
         // EMITIR SEÑALES: La carta fue jugada
         emit cartaJugadaSignal(indiceCartaEnMano);
@@ -503,12 +460,8 @@ void Juego::jugarCarta(Jugador *jugador, int indiceCartaEnMano,
             emit descarteActualizadoSignal(ruta);
         }
 
-        qDebug() << "[JUEGO] Aplicando efecto de la carta";
-
         // Procesamos qué hace esa carta
         aplicarEfectoCarta(cartaJugada, jugadorSeleccionado, numeroAdivinado, colorAdivinado);
-
-        qDebug() << "[JUEGO] Efecto aplicado, avanzando turno";
 
         // Preparamos el turno del siguiente jugador
         avanzarTurno();
@@ -523,16 +476,12 @@ void Juego::jugarCarta(Jugador *jugador, int indiceCartaEnMano,
 
         // Actualizar estado del mazo
         emit mazoActualizadoSignal(mazo.getSize());
-
-        qDebug() << "[JUEGO] === jugarCarta COMPLETADO ===";
     }
     catch (const std::exception &e)
     {
-        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción estándar en jugarCarta:" << e.what();
     }
     catch (...)
     {
-        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción desconocida en jugarCarta";
     }
 }
 
@@ -668,15 +617,18 @@ void Juego::setGanarConNegra(bool activo) { ganarConNegraActivo = activo; }
 
 void Juego::avisarUno()
 {
-    if (!gritoUnoActivo) return;
+    if (!gritoUnoActivo)
+        return;
     gritoUnoPendiente = false;
 }
 
 void Juego::reportarUno()
 {
-    if (!gritoUnoActivo) return;
+    if (!gritoUnoActivo)
+        return;
     Jugador *jugadorActual = getJugadorActual();
-    if (!jugadorActual) return;
+    if (!jugadorActual)
+        return;
 
     if (gritoUnoPendiente)
     {
@@ -687,17 +639,18 @@ void Juego::reportarUno()
         {
             for (int i = 0; i < 2; i++)
             {
-                if (mazoEstaVacio()) barajarDescarte();
+                if (mazoEstaVacio())
+                    barajarDescarte();
                 Carta robada = robarDelMazo();
-                if (robada.esValida()) culpable->agregarCarta(robada);
+                if (robada.esValida())
+                    culpable->agregarCarta(robada);
             }
         }
         gritoUnoPendiente = false;
         QTimer::singleShot(50, this, [this, nombreCulpable]()
-        {
+                           {
             emit manoActualizadaSignal();
-            emit unoReportadoSignal(true, nombreCulpable);
-        });
+            emit unoReportadoSignal(true, nombreCulpable); });
     }
     else
     {
@@ -705,15 +658,16 @@ void Juego::reportarUno()
         QString nombreReportador = QString::fromStdString(jugadorActual->getNombreJugador());
         for (int i = 0; i < 2; i++)
         {
-            if (mazoEstaVacio()) barajarDescarte();
+            if (mazoEstaVacio())
+                barajarDescarte();
             Carta robada = robarDelMazo();
-            if (robada.esValida()) jugadorActual->agregarCarta(robada);
+            if (robada.esValida())
+                jugadorActual->agregarCarta(robada);
         }
         QTimer::singleShot(50, this, [this, nombreReportador]()
-        {
+                           {
             emit manoActualizadaSignal();
-            emit unoReportadoSignal(false, nombreReportador);
-        });
+            emit unoReportadoSignal(false, nombreReportador); });
     }
 }
 
@@ -730,14 +684,10 @@ void Juego::setJugadorEnLista(const std::string nombreJugador)
 
 void Juego::onCartaJugadaSlot(int indiceCarta)
 {
-    qDebug() << "[JUEGO] === onCartaJugadaSlot INICIADO ===";
-    qDebug() << "[JUEGO] Índice carta recibido:" << indiceCarta;
-
     // Bloquear múltiples llamadas simultáneas
     static bool procesando = false;
     if (procesando)
     {
-        qDebug() << "[JUEGO] Ya procesando otra carta, ignorando";
         return;
     }
 
@@ -762,7 +712,6 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
         Jugador *jugadorActual = getJugadorActual();
         if (!jugadorActual || indiceCarta < 0 || indiceCarta >= jugadorActual->getMano().getSize())
         {
-            qDebug() << "[JUEGO ERROR] Validaciones fallidas";
             // Reconectar señales de la UI aunque no se haya jugado
             QTimer::singleShot(0, this, [this]()
                                { emit manoActualizadaSignal(); });
@@ -773,7 +722,6 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
         Carta cartaIntentada = jugadorActual->getMano().obtenerElementoEnPosicion(indiceCarta);
         if (!puedeJugarCarta(cartaIntentada))
         {
-            qDebug() << "[JUEGO] Carta NO válida para jugar - no coincide color/número";
             emit cartaInvalidaSignal();
             QTimer::singleShot(0, this, [this]()
                                { emit manoActualizadaSignal(); });
@@ -787,7 +735,6 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
             cartaIntentada.getLadoActivo() &&
             cartaIntentada.getLadoActivo()->getColor() == Color::NEGRO)
         {
-            qDebug() << "[JUEGO] Carta negra bloqueada como última carta";
             emit cartaNegraBloqueadaSignal();
             QTimer::singleShot(0, this, [this]()
                                { emit manoActualizadaSignal(); });
@@ -808,7 +755,6 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
 
         if (necesitaColor)
         {
-            qDebug() << "[JUEGO] Comodín detectado, solicitando color al jugador";
             emit pedirColorSignal(indiceCarta, ladoOscuroActivo);
             procesando = false;
             return;
@@ -816,14 +762,12 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
 
         if (necesitaAdivinar)
         {
-            qDebug() << "[JUEGO] AdivinarCarta detectada, solicitando datos";
             emit pedirDatosAdivinarSignal(indiceCarta);
             procesando = false;
             return;
         }
 
         // Carta normal: jugar directamente
-        qDebug() << "[JUEGO] Llamando a jugarCartaSinSeñales";
         jugarCartaSinSeñales(jugadorActual, indiceCarta, "", -1, "");
 
         QTimer::singleShot(50, this, [this]()
@@ -837,17 +781,13 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
     }
     catch (...)
     {
-        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en onCartaJugadaSlot";
     }
 
     procesando = false;
-    qDebug() << "[JUEGO] === onCartaJugadaSlot FINALIZADO ===";
 }
 
 void Juego::jugarCartaConColor(int indiceCarta, const std::string &color)
 {
-    qDebug() << "[JUEGO] === jugarCartaConColor === color:" << QString::fromStdString(color);
-
     Jugador *jugadorActual = getJugadorActual();
     if (!jugadorActual)
         return;
@@ -863,16 +803,11 @@ void Juego::jugarCartaConColor(int indiceCarta, const std::string &color)
         emit mazoActualizadoSignal(mazo.getSize());
         if (retoPendiente)
             emit retoPosibleSignal(); });
-
-    qDebug() << "[JUEGO] colorActivo después del comodín:" << static_cast<int>(colorActivo);
 }
 
 void Juego::jugarCartaAdivinar(int indiceCarta, const std::string &color,
                                const std::string &jugador, int numero)
 {
-    qDebug() << "[JUEGO] === jugarCartaAdivinar === jugador:" << QString::fromStdString(jugador)
-             << "color:" << QString::fromStdString(color) << "numero:" << numero;
-
     Jugador *jugadorActual = getJugadorActual();
     if (!jugadorActual)
         return;
@@ -890,8 +825,6 @@ void Juego::jugarCartaAdivinar(int indiceCarta, const std::string &color,
 
 void Juego::intentarRobarCarta()
 {
-    qDebug() << "[JUEGO] === intentarRobarCarta INICIADO ===";
-
     Jugador *jugadorActual = getJugadorActual();
     if (!jugadorActual)
         return;
@@ -954,7 +887,6 @@ void Juego::intentarRobarCarta()
 
     if (tieneCartaValida)
     {
-        qDebug() << "[JUEGO] Jugador tiene carta jugable, no puede robar";
         emit debeJugarAntesDeRobarSignal();
         return;
     }
@@ -980,27 +912,23 @@ void Juego::intentarRobarCarta()
         }
         // No avanzar turno: el jugador debe jugar la carta que encontró
         emit manoActualizadaSignal();
-        qDebug() << "[JUEGO] === intentarRobarCarta FINALIZADO (sinLimite) ===";
         return;
     }
 
     // Opción A: robar 1 carta y pasar turno
     if (mazoEstaVacio())
     {
-        qDebug() << "[JUEGO] Mazo vacío, reciclando descarte";
         barajarDescarte();
     }
 
     Carta nuevaCarta = robarDelMazo();
     if (!nuevaCarta.esValida())
     {
-        qDebug() << "[JUEGO] Sin cartas disponibles";
         emit mazoSinCartasSignal();
         return;
     }
 
     jugadorActual->agregarCarta(nuevaCarta);
-    qDebug() << "[JUEGO] Carta robada. Mano del jugador:" << jugadorActual->getMano().getSize();
 
     avanzarTurno();
 
@@ -1010,8 +938,6 @@ void Juego::intentarRobarCarta()
     {
         emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
     }
-
-    qDebug() << "[JUEGO] === intentarRobarCarta FINALIZADO ===";
 }
 
 void Juego::resolverReto()
@@ -1082,36 +1008,25 @@ void Juego::resolverReto()
 void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado,
                                int numeroSeleccionado, const std::string &colorSeleccionado)
 {
-
-    qDebug() << "[JUEGO] === Iniciando aplicarEfectoCarta ===";
-
     if (!cartaJugada.esValida())
     {
-        qDebug() << "[JUEGO ERROR] Carta inválida recibida";
         return;
     }
 
     LadoCarta *ladoActual = cartaJugada.getLadoActivo();
     if (!ladoActual)
     {
-        qDebug() << "[JUEGO ERROR] Lado actual es nullptr";
         return;
     }
-
-    qDebug() << "[JUEGO] Aplicando efecto de carta tipo:" << static_cast<int>(ladoActual->getTipo());
 
     try
     {
         // Llamar al método aplicarEfecto del lado activo de la carta
         ladoActual->aplicarEfecto(this, colorSeleccionado, jugadorSeleccionado, numeroSeleccionado);
-        qDebug() << "[JUEGO] Efecto aplicado correctamente";
     }
     catch (...)
     {
-        qDebug() << "[JUEGO ERROR] Excepción al aplicar efecto de carta";
     }
-
-    qDebug() << "[JUEGO] === Finalizó aplicarEfectoCarta ===";
 }
 
 void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
@@ -1119,12 +1034,8 @@ void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
                                  int numeroAdivinado,
                                  const std::string &colorAdivinado)
 {
-
-    qDebug() << "[JUEGO] === jugarCartaSinSeñales INICIADO ===";
-
     if (!jugador || indiceCartaEnMano < 0 || indiceCartaEnMano >= jugador->getMano().getSize())
     {
-        qDebug() << "[JUEGO ERROR] Parámetros inválidos";
         return;
     }
 
@@ -1158,11 +1069,9 @@ void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
             if (!colorAdivinado.empty())
             {
                 colorActivo = convertirStringAColor(colorAdivinado);
-                qDebug() << "[JUEGO] colorActivo forzado por selección del jugador:" << static_cast<int>(colorActivo);
             }
 
             QString rutaImagen = QString::fromStdString(ladoActivo->getRutaArchivo());
-            qDebug() << "[JUEGO] Emitiendo descarteActualizadoSignal con:" << rutaImagen;
             emit descarteActualizadoSignal(rutaImagen);
         }
 
@@ -1181,7 +1090,6 @@ void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
                     if (colorTop != Color::NEGRO && colorTop != Color::INDEFINIDO)
                     {
                         colorActivo = colorTop;
-                        qDebug() << "[JUEGO] colorActivo re-sincronizado desde descarte:" << static_cast<int>(colorActivo);
                     }
                 }
             }
@@ -1209,23 +1117,16 @@ void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
 
         // Avanzar turno
         avanzarTurno();
-
-        qDebug() << "[JUEGO] === jugarCartaSinSeñales COMPLETADO ===";
     }
     catch (...)
     {
-        qDebug() << "[JUEGO ERROR CRÍTICO] Excepción en jugarCartaSinSeñales";
     }
 }
 
 bool Juego::puedeJugarCarta(const Carta &carta)
 {
-
-    qDebug() << "[JUEGO] Verificando si se puede jugar carta";
-
     if (!carta.esValida())
     {
-        qDebug() << "[JUEGO] Carta no válida";
         return false;
     }
 
@@ -1276,15 +1177,6 @@ bool Juego::puedeJugarCarta(const Carta &carta)
                           ladoCartaJugar->getTipo() == ladoDescarte->getTipo());
 
         bool puedeJugar = esComodin || mismoColor || mismoNumero || mismoTipo;
-
-        qDebug() << "[JUEGO] colorActivo:" << static_cast<int>(colorActivo)
-                 << "colorCarta:" << static_cast<int>(colorCarta)
-                 << "colorDescarte:" << static_cast<int>(colorDescarte);
-        qDebug() << "[JUEGO] esComodin:" << esComodin
-                 << "mismoColor:" << mismoColor
-                 << "mismoNumero:" << mismoNumero
-                 << "mismoTipo:" << mismoTipo;
-        qDebug() << "[JUEGO] → puedeJugar:" << puedeJugar;
 
         return puedeJugar;
     }

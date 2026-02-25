@@ -55,14 +55,15 @@ PantallaJuego::PantallaJuego(int cantidadJugadores, bool esFlip, bool acumulacio
     vista->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     // Layout para manoJugadorWidget
+    // new QVBoxLayout(parent) ya instala el layout automáticamente, no llamar setLayout de nuevo
     QVBoxLayout *layout = new QVBoxLayout(ui->manoJugadorWidget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(vista);
-    ui->manoJugadorWidget->setLayout(layout);
 
     this->escena->clear();
 
-    iniciarNuevaPartida(numJugadores, modoJuego);
+    // Diferir el inicio para que el widget sea visible antes de mostrar los diálogos
+    QTimer::singleShot(150, this, [this]() { iniciarNuevaPartida(numJugadores, modoJuego); });
 }
 
 PantallaJuego::~PantallaJuego()
