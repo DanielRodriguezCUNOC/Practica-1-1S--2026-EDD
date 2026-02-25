@@ -6,8 +6,9 @@
 #include <QGraphicsView>
 #include "juego.h"
 
-namespace Ui {
-class PantallaJuego;
+namespace Ui
+{
+    class PantallaJuego;
 }
 
 class PantallaJuego : public QWidget
@@ -17,12 +18,14 @@ class PantallaJuego : public QWidget
 private:
     Ui::PantallaJuego *ui;
     //* Creamos una instancia de nuestro juego
-    Juego* juego;
-    QGraphicsScene* escena;
-    QGraphicsView* vista;
+    Juego *juego;
+    QGraphicsScene *escena;
+    QGraphicsView *vista;
 
     int numJugadores;
     bool modoJuego;
+    bool retoActivo = false;
+    bool gritoUnoActivo = false;
     bool actualizandoMano = false;
 signals:
     void salirPartida();
@@ -35,8 +38,12 @@ private slots:
 
     void on_btnPasarTurno_clicked();
 
+    void on_btnRetar_clicked();
+    void on_btnAvisarUNO_clicked();
+    void on_btnReportar_clicked();
+
 public:
-    explicit PantallaJuego(int cantidadaJugdores, bool esFlip, bool acumulacion, QWidget *parent = nullptr);
+    explicit PantallaJuego(int cantidadaJugdores, bool esFlip, bool acumulacion, bool retoMasCuatro, bool robarSinLimite, bool gritoUno, bool ganarConNegra, QWidget *parent = nullptr);
     ~PantallaJuego();
     void iniciarNuevaPartida(int numJugadores, bool esFlip);
     void dibujarMazo(ListaGenerica<Carta> mazoBackend);
@@ -54,12 +61,12 @@ public slots:
     void onMazoSinCartas();
     void onPedirColor(int indiceCarta, bool modoOscuro);
     void onPedirDatosAdivinar(int indiceCarta);
+    void onRetoPosible();
+    void onCartaNegraBloqueada();
 
 private:
     void configurarConexiones();
     void mostrarCartaDescarte(Carta carta);
-
-
 };
 
 #endif // PANTALLAJUEGO_H

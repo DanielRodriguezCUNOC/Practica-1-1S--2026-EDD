@@ -7,13 +7,18 @@
 #include <QFileInfo>
 #include <QTimer>
 
-PantallaJuego::PantallaJuego(int cantidadJugadores, bool esFlip, bool acumulacion, QWidget *parent)
+PantallaJuego::PantallaJuego(int cantidadJugadores, bool esFlip, bool acumulacion, bool retoMasCuatro, bool robarSinLimite, bool gritoUno, bool ganarConNegra, QWidget *parent)
     : QWidget(parent), ui(new Ui::PantallaJuego)
       //* Inicializar el puntero de juego
       ,
-      juego(new Juego(this)), numJugadores(cantidadJugadores), modoJuego(esFlip)
+      juego(new Juego(this)), numJugadores(cantidadJugadores), modoJuego(esFlip),
+      retoActivo(retoMasCuatro), gritoUnoActivo(gritoUno)
 {
     juego->setAcumulacion(acumulacion);
+    juego->setRetoMasCuatro(retoMasCuatro);
+    juego->setRobarSinLimite(robarSinLimite);
+    juego->setGritoUno(gritoUno);
+    juego->setGanarConNegra(ganarConNegra);
     ui->setupUi(this);
 
     ui->manoJugadorWidget->resize(1241, 240);
@@ -33,6 +38,11 @@ PantallaJuego::PantallaJuego(int cantidadJugadores, bool esFlip, bool acumulacio
                         "margin: 0px;"
                         "padding: 0px;"
                         "}");
+
+    ui->btnRetar->setVisible(retoActivo);
+    ui->btnRetar->setEnabled(false);
+    ui->btnAvisarUNO->setVisible(gritoUnoActivo);
+    ui->btnReportar->setVisible(gritoUnoActivo);
 
     ui->btnMazo->setIcon(QIcon(":/assets/VARIOS/POSTERIOR.png"));
     ui->btnMazo->setIconSize(QSize(120, 180));
@@ -158,6 +168,30 @@ void PantallaJuego::configurarConexiones()
     connect(juego, &Juego::pedirDatosAdivinarSignal,
             this, &PantallaJuego::onPedirDatosAdivinar);
 
+    connect(juego, &Juego::retoPosibleSignal,
+            this, &PantallaJuego::onRetoPosible);
+
+    connect(juego, &Juego::cartaNegraBloqueadaSignal,
+            this, &PantallaJuego::onCartaNegraBloqueada);
+
+    connect(juego, &Juego::retoResultadoSignal, this, [this](bool exito)
+            {
+        if (exito)
+            QMessageBox::information(this, "¡Reto exitoso!",
+                "El lanzador tenía una carta válida. ¡Roba 4 cartas!");
+        else
+            QMessageBox::warning(this, "Reto fallido",
+                "El lanzador no tenía otra opción. Robas 6 cartas."); });
+
+    connect(juego, &Juego::unoReportadoSignal, this, [this](bool fueValido, QString nombre)
+            {
+        if (fueValido)
+            QMessageBox::warning(this, "¡UNO no dicho!",
+                QString("%1 no dijo UNO. ¡Roba 2 cartas!").arg(nombre));
+        else
+            QMessageBox::information(this, "Reporte incorrecto",
+                QString("%1 reportó sin razón. ¡Roba 2 cartas!").arg(nombre)); });
+
     // Conectar botones de acción
     connect(ui->btnRobarCarta, &BotonAnimado::clicked,
             this, &PantallaJuego::onRobarCarta);
@@ -178,6 +212,9 @@ void PantallaJuego::actualizarManoJugador()
 {
     if (actualizandoMano)
         return;
+
+    if (retoActivo)
+        ui->btnRetar->setEnabled(false);
 
     actualizandoMano = true;
 
@@ -212,6 +249,7 @@ void PantallaJuego::actualizarManoJugador()
             actualizandoMano = false;
             QMessageBox::information(this, "¡Ganador!",
                                      QString("%1 ha ganado la partida!").arg(QString::fromStdString(jugadorActual->getNombreJugador())));
+            QTimer::singleShot(0, this, [this]() { emit salirPartida(); });
             return;
         }
 
@@ -298,15 +336,18 @@ void PantallaJuego::actualizarTurno(QString nombreJugador)
 void PantallaJuego::actualizarDescarte(QString rutaCarta)
 {
     QPushButton *btn = ui->pilaCartas->findChild<QPushButton *>("btnDescarte");
-    if (!btn) return;
+    if (!btn)
+        return;
 
     QPixmap pixmap;
     // Intentar cargar la imagen; si falla usar el dorso genérico
-    if (!pixmap.load(rutaCarta)) {
+    if (!pixmap.load(rutaCarta))
+    {
         pixmap.load(":/assets/VARIOS/POSTERIOR.png");
     }
 
-    if (!pixmap.isNull()) {
+    if (!pixmap.isNull())
+    {
         btn->setIcon(QIcon(pixmap.scaled(100, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
         btn->setIconSize(QSize(100, 150));
     }
@@ -384,9 +425,12 @@ void PantallaJuego::onPedirColor(int indiceCarta, bool modoOscuro)
 {
     // Colores disponibles según el lado activo del juego
     QStringList colores;
-    if (modoOscuro) {
+    if (modoOscuro)
+    {
         colores << "Naranja" << "Rosa" << "Turquesa" << "Purpura";
-    } else {
+    }
+    else
+    {
         colores << "Rojo" << "Azul" << "Verde" << "Amarillo";
     }
 
@@ -397,9 +441,12 @@ void PantallaJuego::onPedirColor(int indiceCarta, bool modoOscuro)
         "Selecciona el color que quieres activar:",
         colores, 0, false, &ok);
 
-    if (ok && !colorElegido.isEmpty()) {
+    if (ok && !colorElegido.isEmpty())
+    {
         juego->jugarCartaConColor(indiceCarta, colorElegido.toStdString());
-    } else {
+    }
+    else
+    {
         // Jugador canceló: reconectar las señales para que pueda seguir jugando
         actualizarManoJugador();
     }
@@ -408,16 +455,19 @@ void PantallaJuego::onPedirColor(int indiceCarta, bool modoOscuro)
 void PantallaJuego::onPedirDatosAdivinar(int indiceCarta)
 {
     // Paso 1: Seleccionar la víctima (cualquier jugador excepto el actual)
-    Jugador* actual = juego->getJugadorActual();
+    Jugador *actual = juego->getJugadorActual();
     QStringList nombresJugadores;
-    for (int i = 0; i < juego->getCantidadJugadores(); i++) {
-        Jugador* j = juego->getJugadorEnPosicion(i);
-        if (j && j != actual) {
+    for (int i = 0; i < juego->getCantidadJugadores(); i++)
+    {
+        Jugador *j = juego->getJugadorEnPosicion(i);
+        if (j && j != actual)
+        {
             nombresJugadores << QString::fromStdString(j->getNombreJugador());
         }
     }
 
-    if (nombresJugadores.isEmpty()) {
+    if (nombresJugadores.isEmpty())
+    {
         actualizarManoJugador();
         return;
     }
@@ -427,13 +477,20 @@ void PantallaJuego::onPedirDatosAdivinar(int indiceCarta)
         this, "Adivinar Carta",
         "¿A qué jugador quieres adivinar?",
         nombresJugadores, 0, false, &ok);
-    if (!ok || victima.isEmpty()) { actualizarManoJugador(); return; }
+    if (!ok || victima.isEmpty())
+    {
+        actualizarManoJugador();
+        return;
+    }
 
     // Paso 2: Seleccionar el color de la carta a adivinar
     QStringList colores;
-    if (juego->getLadoOscuroActivo()) {
+    if (juego->getLadoOscuroActivo())
+    {
         colores << "Naranja" << "Rosa" << "Turquesa" << "Purpura";
-    } else {
+    }
+    else
+    {
         colores << "Rojo" << "Azul" << "Verde" << "Amarillo";
     }
 
@@ -441,14 +498,52 @@ void PantallaJuego::onPedirDatosAdivinar(int indiceCarta)
         this, "Adivinar Carta",
         "¿Qué color tiene la carta que estás adivinando?",
         colores, 0, false, &ok);
-    if (!ok || color.isEmpty()) { actualizarManoJugador(); return; }
+    if (!ok || color.isEmpty())
+    {
+        actualizarManoJugador();
+        return;
+    }
 
     // Paso 3: Ingresar el número de la carta
     int numero = QInputDialog::getInt(
         this, "Adivinar Carta",
         "¿Qué número tiene la carta? (0-9):",
         0, 0, 9, 1, &ok);
-    if (!ok) { actualizarManoJugador(); return; }
+    if (!ok)
+    {
+        actualizarManoJugador();
+        return;
+    }
 
     juego->jugarCartaAdivinar(indiceCarta, color.toStdString(), victima.toStdString(), numero);
+}
+
+void PantallaJuego::onRetoPosible()
+{
+    ui->btnRetar->setEnabled(true);
+}
+
+void PantallaJuego::on_btnRetar_clicked()
+{
+    if (!juego->getRetoPendiente())
+        return;
+    juego->resolverReto();
+}
+
+void PantallaJuego::onCartaNegraBloqueada()
+{
+    QMessageBox::warning(this, "Carta bloqueada",
+                         "No puedes ganar con una carta negra (comodín)."
+
+                         "Debes robar una carta hasta poder jugar una de color.");
+}
+
+void PantallaJuego::on_btnAvisarUNO_clicked()
+{
+    juego->avisarUno();
+}
+
+void PantallaJuego::on_btnReportar_clicked()
+{
+    juego->reportarUno();
 }

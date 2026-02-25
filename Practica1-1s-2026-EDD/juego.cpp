@@ -24,7 +24,14 @@
 Juego::Juego(QObject *parent) : QObject(parent), ladoOscuroActivo(false),
                                 indiceTurnoActual(0), sentidoJuego(1),
                                 acumulacionActiva(false), penaAcumulada(0),
-                                tipoPenaActual(TipoCarta::NUMERO)
+                                tipoPenaActual(TipoCarta::NUMERO),
+                                retoMasCuatroActivo(false), retoPendiente(false),
+                                indiceJugadorLanzador(0),
+                                colorAntesDeReto(Color::INDEFINIDO), numAnteDeReto(-1),
+                                robarSinLimite(false),
+                                gritoUnoActivo(false), gritoUnoPendiente(false),
+                                indiceJugadorConUno(0),
+                                ganarConNegraActivo(false)
 {
 }
 
@@ -57,6 +64,9 @@ void Juego::inicializarMazo(int cantidadJugadores, bool modoFlip)
     ladoOscuroActivo = false;
     penaAcumulada = 0;
     tipoPenaActual = TipoCarta::NUMERO;
+    retoPendiente = false;
+    gritoUnoPendiente = false;
+    // robarSinLimite/gritoUnoActivo se preservan (los configura el usuario antes de iniciar)
 
     int numMazos = ((cantidadJugadores - 1) / 6) + 1;
     qDebug() << "[JUEGO] Número de mazos a crear:" << numMazos;
@@ -648,6 +658,64 @@ int Juego::getPenaAcumulada() const { return penaAcumulada; }
 void Juego::setPenaAcumulada(int pena) { penaAcumulada = pena; }
 TipoCarta Juego::getTipoPenaActual() const { return tipoPenaActual; }
 void Juego::setTipoPenaActual(TipoCarta tipo) { tipoPenaActual = tipo; }
+void Juego::setRetoMasCuatro(bool activo) { retoMasCuatroActivo = activo; }
+bool Juego::getRetoMasCuatro() const { return retoMasCuatroActivo; }
+bool Juego::getRetoPendiente() const { return retoPendiente; }
+void Juego::setRobarSinLimite(bool activo) { robarSinLimite = activo; }
+void Juego::setGritoUno(bool activo) { gritoUnoActivo = activo; }
+bool Juego::getGritoUnoPendiente() const { return gritoUnoPendiente; }
+void Juego::setGanarConNegra(bool activo) { ganarConNegraActivo = activo; }
+
+void Juego::avisarUno()
+{
+    if (!gritoUnoActivo) return;
+    gritoUnoPendiente = false;
+}
+
+void Juego::reportarUno()
+{
+    if (!gritoUnoActivo) return;
+    Jugador *jugadorActual = getJugadorActual();
+    if (!jugadorActual) return;
+
+    if (gritoUnoPendiente)
+    {
+        // Válido: el jugador con 1 carta no avisó UNO → roba 2
+        Jugador *culpable = getJugadorEnPosicion(indiceJugadorConUno);
+        QString nombreCulpable = culpable ? QString::fromStdString(culpable->getNombreJugador()) : "";
+        if (culpable)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                if (mazoEstaVacio()) barajarDescarte();
+                Carta robada = robarDelMazo();
+                if (robada.esValida()) culpable->agregarCarta(robada);
+            }
+        }
+        gritoUnoPendiente = false;
+        QTimer::singleShot(50, this, [this, nombreCulpable]()
+        {
+            emit manoActualizadaSignal();
+            emit unoReportadoSignal(true, nombreCulpable);
+        });
+    }
+    else
+    {
+        // Reporte erróneo: reportador roba 2
+        QString nombreReportador = QString::fromStdString(jugadorActual->getNombreJugador());
+        for (int i = 0; i < 2; i++)
+        {
+            if (mazoEstaVacio()) barajarDescarte();
+            Carta robada = robarDelMazo();
+            if (robada.esValida()) jugadorActual->agregarCarta(robada);
+        }
+        QTimer::singleShot(50, this, [this, nombreReportador]()
+        {
+            emit manoActualizadaSignal();
+            emit unoReportadoSignal(false, nombreReportador);
+        });
+    }
+}
 
 bool Juego::mazoEstaVacio() const
 {
@@ -677,6 +745,19 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
 
     try
     {
+        // Cerrar ventana de reporte UNO: el nuevo jugador empieza a actuar
+        gritoUnoPendiente = false;
+
+        // Si hay reto pendiente el jugador no puede jugar cartas normales
+        if (retoPendiente)
+        {
+            emit cartaInvalidaSignal();
+            QTimer::singleShot(0, this, [this]()
+                               { emit manoActualizadaSignal(); });
+            procesando = false;
+            return;
+        }
+
         // Validaciones básicas
         Jugador *jugadorActual = getJugadorActual();
         if (!jugadorActual || indiceCarta < 0 || indiceCarta >= jugadorActual->getMano().getSize())
@@ -694,7 +775,20 @@ void Juego::onCartaJugadaSlot(int indiceCarta)
         {
             qDebug() << "[JUEGO] Carta NO válida para jugar - no coincide color/número";
             emit cartaInvalidaSignal();
-            // Reconectar señales de la UI para que el jugador pueda seguir eligiendo
+            QTimer::singleShot(0, this, [this]()
+                               { emit manoActualizadaSignal(); });
+            procesando = false;
+            return;
+        }
+
+        // Ganar con negra: bloquear si es la única carta y es negra (a menos que esté habilitado)
+        if (!ganarConNegraActivo &&
+            jugadorActual->getMano().getSize() == 1 &&
+            cartaIntentada.getLadoActivo() &&
+            cartaIntentada.getLadoActivo()->getColor() == Color::NEGRO)
+        {
+            qDebug() << "[JUEGO] Carta negra bloqueada como última carta";
+            emit cartaNegraBloqueadaSignal();
             QTimer::singleShot(0, this, [this]()
                                { emit manoActualizadaSignal(); });
             procesando = false;
@@ -766,7 +860,9 @@ void Juego::jugarCartaConColor(int indiceCarta, const std::string &color)
         Jugador* nuevoJugador = getJugadorActual();
         if (nuevoJugador)
             emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
-        emit mazoActualizadoSignal(mazo.getSize()); });
+        emit mazoActualizadoSignal(mazo.getSize());
+        if (retoPendiente)
+            emit retoPosibleSignal(); });
 
     qDebug() << "[JUEGO] colorActivo después del comodín:" << static_cast<int>(colorActivo);
 }
@@ -807,9 +903,11 @@ void Juego::intentarRobarCarta()
         penaAcumulada = 0;
         for (int i = 0; i < totalRobar; i++)
         {
-            if (mazoEstaVacio()) barajarDescarte();
+            if (mazoEstaVacio())
+                barajarDescarte();
             Carta robada = robarDelMazo();
-            if (robada.esValida()) jugadorActual->agregarCarta(robada);
+            if (robada.esValida())
+                jugadorActual->agregarCarta(robada);
         }
         avanzarTurno();
         emit manoActualizadaSignal();
@@ -818,6 +916,29 @@ void Juego::intentarRobarCarta()
             emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
         return;
     }
+
+    // Reto pendiente: víctima acepta las 4 cartas sin retar
+    if (retoMasCuatroActivo && retoPendiente)
+    {
+        retoPendiente = false;
+        for (int i = 0; i < 4; i++)
+        {
+            if (mazoEstaVacio())
+                barajarDescarte();
+            Carta robada = robarDelMazo();
+            if (robada.esValida())
+                jugadorActual->agregarCarta(robada);
+        }
+        avanzarTurno();
+        emit manoActualizadaSignal();
+        Jugador *nuevoJugador = getJugadorActual();
+        if (nuevoJugador)
+            emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+        return;
+    }
+
+    // Cerrar ventana de reporte UNO: el jugador empieza a actuar
+    gritoUnoPendiente = false;
 
     // Responsabilidad de Juego: verificar si el jugador puede jugar antes de robar
     bool tieneCartaValida = false;
@@ -838,7 +959,32 @@ void Juego::intentarRobarCarta()
         return;
     }
 
-    // Reciclar el descarte si el mazo está vacío
+    if (robarSinLimite)
+    {
+        // Opción B: robar hasta encontrar una carta jugable
+        bool encontroJugable = false;
+        while (!encontroJugable)
+        {
+            if (mazoEstaVacio())
+                barajarDescarte();
+            Carta nuevaCarta = robarDelMazo();
+            if (!nuevaCarta.esValida())
+            {
+                emit mazoSinCartasSignal();
+                emit manoActualizadaSignal();
+                return;
+            }
+            jugadorActual->agregarCarta(nuevaCarta);
+            if (puedeJugarCarta(nuevaCarta))
+                encontroJugable = true;
+        }
+        // No avanzar turno: el jugador debe jugar la carta que encontró
+        emit manoActualizadaSignal();
+        qDebug() << "[JUEGO] === intentarRobarCarta FINALIZADO (sinLimite) ===";
+        return;
+    }
+
+    // Opción A: robar 1 carta y pasar turno
     if (mazoEstaVacio())
     {
         qDebug() << "[JUEGO] Mazo vacío, reciclando descarte";
@@ -866,6 +1012,71 @@ void Juego::intentarRobarCarta()
     }
 
     qDebug() << "[JUEGO] === intentarRobarCarta FINALIZADO ===";
+}
+
+void Juego::resolverReto()
+{
+    if (!retoPendiente)
+        return;
+    retoPendiente = false;
+
+    Jugador *lanzador = getJugadorEnPosicion(indiceJugadorLanzador);
+    Jugador *victima = getJugadorActual();
+    if (!lanzador || !victima)
+        return;
+
+    // Verificar si lanzador tenía carta del color activo anterior o del número anterior
+    bool teniaCarta = false;
+    ListaGenerica<Carta> &mano = lanzador->getMano();
+    for (int i = 0; i < mano.getSize() && !teniaCarta; i++)
+    {
+        Carta c = mano.obtenerElementoEnPosicion(i);
+        if (!c.esValida())
+            continue;
+        LadoCarta *lado = c.getLadoActivo();
+        if (!lado)
+            continue;
+        if (lado->getColor() == colorAntesDeReto)
+            teniaCarta = true;
+        else if (lado->getNumero() >= 0 && lado->getNumero() == numAnteDeReto)
+            teniaCarta = true;
+    }
+
+    if (teniaCarta)
+    {
+        // Reto exitoso: lanzador roba 4, víctima conserva su turno
+        for (int i = 0; i < 4; i++)
+        {
+            if (mazoEstaVacio())
+                barajarDescarte();
+            Carta robada = robarDelMazo();
+            if (robada.esValida())
+                lanzador->agregarCarta(robada);
+        }
+    }
+    else
+    {
+        // Reto fallido: víctima roba 6, pierde turno
+        for (int i = 0; i < 6; i++)
+        {
+            if (mazoEstaVacio())
+                barajarDescarte();
+            Carta robada = robarDelMazo();
+            if (robada.esValida())
+                victima->agregarCarta(robada);
+        }
+        avanzarTurno();
+    }
+
+    bool retoExitoso = teniaCarta;
+    QTimer::singleShot(50, this, [this, retoExitoso]()
+                       {
+        emit manoActualizadaSignal();
+        Jugador *nuevoJugador = getJugadorActual();
+        if (nuevoJugador)
+            emit turnoCambiadoSignal(QString::fromStdString(nuevoJugador->getNombreJugador()));
+        emit mazoActualizadoSignal(mazo.getSize());
+        emit retoResultadoSignal(retoExitoso); });
 }
 
 void Juego::aplicarEfectoCarta(Carta cartaJugada, const std::string jugadorSeleccionado,
@@ -919,6 +1130,17 @@ void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
 
     try
     {
+        // Guardar estado previo para posible reto del +4
+        Color colorPrevio = colorActivo;
+        int numPrevio = -1;
+        if (!descarte.estaVacia())
+        {
+            Carta topAntes = descarte.obtenerElementoEnPosicion(0);
+            if (topAntes.esValida() && topAntes.getLadoActivo())
+                numPrevio = topAntes.getLadoActivo()->getNumero();
+        }
+        int lanzadorIdx = indiceTurnoActual;
+
         // Obtener y remover carta
         Carta cartaJugada = jugador->getMano().obtenerElementoEnPosicion(indiceCartaEnMano);
         jugador->getMano().eliminarDatoEnPosicion(indiceCartaEnMano);
@@ -963,6 +1185,26 @@ void Juego::jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
                     }
                 }
             }
+        }
+
+        // Detectar COMODIN4 con reto habilitado
+        if (retoMasCuatroActivo && ladoActivo && ladoActivo->getTipo() == TipoCarta::COMODIN4)
+        {
+            retoPendiente = true;
+            indiceJugadorLanzador = lanzadorIdx;
+            colorAntesDeReto = colorPrevio;
+            numAnteDeReto = numPrevio;
+        }
+
+        // Grito UNO: si el jugador se queda con exactamente 1 carta, debe avisar
+        if (gritoUnoActivo && jugador->getMano().getSize() == 1)
+        {
+            gritoUnoPendiente = true;
+            indiceJugadorConUno = lanzadorIdx;
+        }
+        else
+        {
+            gritoUnoPendiente = false;
         }
 
         // Avanzar turno

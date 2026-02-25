@@ -9,14 +9,14 @@
 #include <qwindowdefs.h>
 #include <QObject>
 
-class Juego: public QObject
+class Juego : public QObject
 {
     Q_OBJECT
 private:
     // ====== ESTRUCTURAS PRINCIPALES ======
     ListaGenerica<Carta> mazo;
     ListaGenerica<Carta> descarte;
-    ListaGenerica<Jugador*> jugadores;
+    ListaGenerica<Jugador *> jugadores;
 
     // ====== ESTADO DEL JUEGO ======
     bool ladoOscuroActivo;
@@ -26,6 +26,16 @@ private:
     bool acumulacionActiva;
     int penaAcumulada;
     TipoCarta tipoPenaActual;
+    bool retoMasCuatroActivo;
+    bool retoPendiente;
+    int indiceJugadorLanzador;
+    Color colorAntesDeReto;
+    int numAnteDeReto;
+    bool robarSinLimite;
+    bool gritoUnoActivo;
+    bool gritoUnoPendiente;
+    int indiceJugadorConUno;
+    bool ganarConNegraActivo;
 
     // ====== UTILIDADES ======
     RutaImagenes ruta;
@@ -35,16 +45,15 @@ private:
     void generarMazoFlipManual(int numMazos);
     void sacarPrimeraCarta();
 
-    void mezclarArregloLados(LadoCarta* arreglo[], int tamano);
+    void mezclarArregloLados(LadoCarta *arreglo[], int tamano);
     void mezclarArregloCartas(Carta arreglo[], int tamano);
 
     int cartasPorPartida(int cantJugadores);
 
-    void jugarCartaSinSeñales(Jugador* jugador, int indiceCartaEnMano,
-                              const std::string& jugadorSeleccionado,
+    void jugarCartaSinSeñales(Jugador *jugador, int indiceCartaEnMano,
+                              const std::string &jugadorSeleccionado,
                               int numeroAdivinado,
-                              const std::string& colorAdivinado);
-
+                              const std::string &colorAdivinado);
 
 signals:
     void cartaJugadaSignal(int idCarta);
@@ -54,14 +63,18 @@ signals:
     void descarteActualizadoSignal(QString rutaCarta);
     void partidaIniciadaSignal();
     void cartaInvalidaSignal();
-    void debeJugarAntesDeRobarSignal(); // Jugador intenta robar teniendo carta válida
-    void mazoSinCartasSignal();          // No quedan cartas disponibles
+    void debeJugarAntesDeRobarSignal();                      // Jugador intenta robar teniendo carta válida
+    void mazoSinCartasSignal();                              // No quedan cartas disponibles
     void pedirColorSignal(int indiceCarta, bool modoOscuro); // Comodín necesita selección de color
     void pedirDatosAdivinarSignal(int indiceCarta);          // AdivinarCarta necesita datos
+    void retoPosibleSignal();                                // Víctima del +4 puede retar
+    void retoResultadoSignal(bool retoExitoso);              // Resultado del reto
+    void unoReportadoSignal(bool fueValido, QString nombreCulpable); // Resultado del reporte UNO
+    void cartaNegraBloqueadaSignal();                        // No se puede ganar con carta negra
 
 public:
     // ====== CONSTRUCTOR / DESTRUCTOR ======
-    Juego(QObject* parent = nullptr);
+    Juego(QObject *parent = nullptr);
     ~Juego();
 
     // ====== INICIALIZACIÓN ======
@@ -74,19 +87,17 @@ public:
 
     // ====== ACCIONES DE JUEGO ======
     void jugarCarta(
-        Jugador* jugador,
+        Jugador *jugador,
         int indiceCartaEnMano,
-        const std::string& jugadorSeleccionado = "",
+        const std::string &jugadorSeleccionado = "",
         int numeroAdivinado = -1,
-        const std::string& colorAdivinado = ""
-        );
+        const std::string &colorAdivinado = "");
 
     void aplicarEfectoCarta(
         Carta cartaJugada,
         const std::string jugadorSeleccionado = "",
         int numeroSeleccionado = -1,
-        const std::string& colorSeleccionado = ""
-        );
+        const std::string &colorSeleccionado = "");
 
     // ====== MAZO Y DESCARTE ======
     void barajarMazo();
@@ -99,19 +110,18 @@ public:
 
     // ====== CARTAS ======
     bool adivinoCarta(
-        const std::string& nombreJugador,
+        const std::string &nombreJugador,
         int numeroCarta,
-        const std::string& colorCarta
-        );
+        const std::string &colorCarta);
 
-    Color convertirStringAColor(const std::string& colorStr);
+    Color convertirStringAColor(const std::string &colorStr);
 
-    bool puedeJugarCarta(const Carta& carta);
+    bool puedeJugarCarta(const Carta &carta);
 
     // ====== JUGADORES ======
-    Jugador* getJugadorActual();
-    Jugador* getJugadorSeleccionado(const std::string& nombreJugador);
-    Jugador* getJugadorEnPosicion(int indice);
+    Jugador *getJugadorActual();
+    Jugador *getJugadorSeleccionado(const std::string &nombreJugador);
+    Jugador *getJugadorEnPosicion(int indice);
 
     int getCantidadJugadores() const;
 
@@ -119,14 +129,14 @@ public:
     int getSentidoJuego() const;
     bool getLadoOscuroActivo() const;
     Color getColorActivo() const;
-    int getIndiceTurnoActual()const;
+    int getIndiceTurnoActual() const;
 
     int getTamanoMazo() const;
     int getTamanoDescarte() const;
 
-    ListaGenerica<Carta>& getMazo();
-    ListaGenerica<Carta>& getDescarte();
-    ListaGenerica<Jugador*>& getJugadores();
+    ListaGenerica<Carta> &getMazo();
+    ListaGenerica<Carta> &getDescarte();
+    ListaGenerica<Jugador *> &getJugadores();
 
     // ====== SETTERS ======
     void setSentidoJuego(int sentido);
@@ -140,11 +150,21 @@ public:
     bool getAcumulacion() const;
     int getPenaAcumulada() const;
     TipoCarta getTipoPenaActual() const;
+    void setRetoMasCuatro(bool activo);
+    bool getRetoMasCuatro() const;
+    bool getRetoPendiente() const;
+    void resolverReto();
+    void setRobarSinLimite(bool activo);
+    void setGritoUno(bool activo);
+    bool getGritoUnoPendiente() const;
+    void setGanarConNegra(bool activo);
+    void avisarUno();
+    void reportarUno();
 
     // Continuación de jugadas que requieren input del usuario
-    void jugarCartaConColor(int indiceCarta, const std::string& color);
-    void jugarCartaAdivinar(int indiceCarta, const std::string& color,
-                            const std::string& jugador, int numero);
+    void jugarCartaConColor(int indiceCarta, const std::string &color);
+    void jugarCartaAdivinar(int indiceCarta, const std::string &color,
+                            const std::string &jugador, int numero);
 
 public slots:
     // Para recibir acciones de la UI
